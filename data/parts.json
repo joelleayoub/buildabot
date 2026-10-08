@@ -1,0 +1,995 @@
+[
+  {
+    "id": "chassis-2wd-tt-acrylic",
+    "name": "2WD acrylic robot chassis kit (TT motors)",
+    "slot": "chassis",
+    "brand": "Generic",
+    "description": "Cheapest starting point. Two-deck acrylic plate with mounts for two TT gearmotors, two wheels and a caster. Fine for light indoor bots.",
+    "price_usd_approx": 15,
+    "pack_size": 1,
+    "mass_g": 250,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=2WD%20smart%20robot%20car%20chassis%20kit%20TT%20motor",
+    "tags": [
+      "beginner",
+      "budget",
+      "indoor"
+    ],
+    "compat": {
+      "motor_form_factor": "TT",
+      "motor_mounts": 2,
+      "max_payload_kg": 1,
+      "includes_wheels": true,
+      "includes_caster": true
+    }
+  },
+  {
+    "id": "chassis-4wd-tt-aluminum",
+    "name": "4WD aluminum chassis kit (TT motors)",
+    "slot": "chassis",
+    "brand": "Generic",
+    "description": "Stiffer 4-wheel platform for TT motors with wheels included. Skid-steer, more traction on rugs than 2WD.",
+    "price_usd_approx": 30,
+    "pack_size": 1,
+    "mass_g": 600,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=4WD%20aluminum%20robot%20car%20chassis%20TT%20motor",
+    "tags": [
+      "beginner",
+      "indoor",
+      "rugs"
+    ],
+    "compat": {
+      "motor_form_factor": "TT",
+      "motor_mounts": 4,
+      "max_payload_kg": 2,
+      "includes_wheels": true,
+      "includes_caster": false
+    }
+  },
+  {
+    "id": "chassis-2wd-37d-plate",
+    "name": "2WD plate chassis for 37D motors (printable or aluminum)",
+    "slot": "chassis",
+    "brand": "Generic / DIY",
+    "description": "Two-deck base sized for 37D metal gearmotors plus a lidar on top — the classic layout for a ROS 2 mapping rover. Can be 3D-printed or bought as an aluminum plate.",
+    "price_usd_approx": 40,
+    "pack_size": 1,
+    "mass_g": 900,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=37mm%20motor%20mounting%20bracket%20robot%20chassis%20plate",
+    "tags": [
+      "ros2",
+      "mapping",
+      "printable",
+      "indoor"
+    ],
+    "compat": {
+      "motor_form_factor": "37D",
+      "motor_mounts": 2,
+      "max_payload_kg": 5,
+      "includes_wheels": false,
+      "includes_caster": false
+    }
+  },
+  {
+    "id": "chassis-4wd-25d-aluminum",
+    "name": "4WD aluminum chassis for 25D motors",
+    "slot": "chassis",
+    "brand": "Generic",
+    "description": "Mid-size 4WD platform for 25D metal gearmotors. Good balance of torque, size and price for indoor rovers that carry a small computer.",
+    "price_usd_approx": 45,
+    "pack_size": 1,
+    "mass_g": 800,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=4WD%20aluminum%20chassis%2025mm%20gear%20motor%20robot",
+    "tags": [
+      "indoor",
+      "rugs",
+      "mid-size"
+    ],
+    "compat": {
+      "motor_form_factor": "25D",
+      "motor_mounts": 4,
+      "max_payload_kg": 3,
+      "includes_wheels": false,
+      "includes_caster": false
+    }
+  },
+  {
+    "id": "motor-tt-basic",
+    "name": "TT gearmotor 1:48, 3–6 V",
+    "slot": "drive_motor",
+    "brand": "Generic",
+    "description": "Yellow plastic gearmotor found in most starter kits. Cheap and easy, but no encoder, so no accurate odometry.",
+    "price_usd_approx": 3,
+    "pack_size": 1,
+    "mass_g": 30,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=TT%20gear%20motor%201%3A48%203-6V",
+    "tags": [
+      "beginner",
+      "budget"
+    ],
+    "compat": {
+      "motor_form_factor": "TT",
+      "nominal_v": 6,
+      "stall_current_a": 1.5,
+      "no_load_rpm": 200,
+      "stall_torque_kgcm": 0.8,
+      "has_encoder": false,
+      "shaft": "TT"
+    }
+  },
+  {
+    "id": "motor-tt-encoder",
+    "name": "TT gearmotor 1:48 with Hall encoder",
+    "slot": "drive_motor",
+    "brand": "Generic",
+    "description": "Same TT form factor with a Hall encoder, so the robot can measure how far it moved. Minimum for basic odometry.",
+    "price_usd_approx": 8,
+    "pack_size": 1,
+    "mass_g": 35,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=TT%20motor%20with%20encoder%20hall",
+    "tags": [
+      "odometry",
+      "budget"
+    ],
+    "compat": {
+      "motor_form_factor": "TT",
+      "nominal_v": 6,
+      "stall_current_a": 1.5,
+      "no_load_rpm": 200,
+      "stall_torque_kgcm": 0.8,
+      "has_encoder": true,
+      "shaft": "TT"
+    }
+  },
+  {
+    "id": "motor-pololu-25d-12v-mp-20",
+    "name": "Pololu 25D 20.4:1 12 V medium-power gearmotor with 48 CPR encoder",
+    "slot": "drive_motor",
+    "brand": "Pololu",
+    "description": "Quality metal gearmotor with an integrated quadrature encoder. Specs approximate — confirm on the product page.",
+    "price_usd_approx": 45,
+    "pack_size": 1,
+    "mass_g": 95,
+    "buy_url": "https://www.pololu.com/search?query=25D%2020.4%3A1%20metal%20gearmotor%2012V%20encoder",
+    "tags": [
+      "odometry",
+      "quality"
+    ],
+    "compat": {
+      "motor_form_factor": "25D",
+      "nominal_v": 12,
+      "stall_current_a": 2.1,
+      "no_load_rpm": 450,
+      "stall_torque_kgcm": 4,
+      "has_encoder": true,
+      "shaft": "4mm"
+    }
+  },
+  {
+    "id": "motor-jgb37-520-12v-encoder",
+    "name": "JGB37-520 12 V gearmotor with encoder (~330 RPM)",
+    "slot": "drive_motor",
+    "brand": "Generic",
+    "description": "Popular low-cost 37 mm metal gearmotor with Hall encoder. Strong enough for a 3–5 kg indoor rover. Specs vary by seller.",
+    "price_usd_approx": 12,
+    "pack_size": 1,
+    "mass_g": 160,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=JGB37-520%2012V%20encoder%20motor%20330rpm",
+    "tags": [
+      "odometry",
+      "budget",
+      "ros2"
+    ],
+    "compat": {
+      "motor_form_factor": "37D",
+      "nominal_v": 12,
+      "stall_current_a": 3,
+      "no_load_rpm": 330,
+      "stall_torque_kgcm": 10,
+      "has_encoder": true,
+      "shaft": "6mm"
+    }
+  },
+  {
+    "id": "motor-pololu-37d-12v-30",
+    "name": "Pololu 37D 30:1 12 V gearmotor with 64 CPR encoder",
+    "slot": "drive_motor",
+    "brand": "Pololu",
+    "description": "Robust metal gearmotor with high-resolution encoder. Draws a lot of current at stall, so pair with a strong driver. Specs approximate.",
+    "price_usd_approx": 50,
+    "pack_size": 1,
+    "mass_g": 210,
+    "buy_url": "https://www.pololu.com/search?query=37D%2030%3A1%20metal%20gearmotor%2012V%20encoder",
+    "tags": [
+      "odometry",
+      "quality",
+      "ros2"
+    ],
+    "compat": {
+      "motor_form_factor": "37D",
+      "nominal_v": 12,
+      "stall_current_a": 5.5,
+      "no_load_rpm": 330,
+      "stall_torque_kgcm": 14,
+      "has_encoder": true,
+      "shaft": "6mm"
+    }
+  },
+  {
+    "id": "wheels-tt-65mm",
+    "name": "65 mm rubber wheels for TT motors (pair)",
+    "slot": "wheels",
+    "brand": "Generic",
+    "description": "Standard TT-fit wheels. Usually included with TT chassis kits.",
+    "price_usd_approx": 4,
+    "pack_size": 2,
+    "mass_g": 60,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=65mm%20rubber%20wheel%20TT%20motor",
+    "tags": [
+      "budget"
+    ],
+    "compat": {
+      "wheel_shaft": "TT",
+      "wheel_diameter_mm": 65
+    }
+  },
+  {
+    "id": "wheels-70mm-4mm-hub",
+    "name": "70 mm rubber wheels with 4 mm hubs (pair)",
+    "slot": "wheels",
+    "brand": "Generic",
+    "description": "Grippy wheels with hubs for 4 mm motor shafts (e.g. 25D motors).",
+    "price_usd_approx": 12,
+    "pack_size": 2,
+    "mass_g": 120,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=70mm%20rubber%20wheel%204mm%20shaft%20coupling",
+    "tags": [],
+    "compat": {
+      "wheel_shaft": "4mm",
+      "wheel_diameter_mm": 70
+    }
+  },
+  {
+    "id": "wheels-100mm-6mm-hub",
+    "name": "100 mm rubber wheels with 6 mm hubs (pair)",
+    "slot": "wheels",
+    "brand": "Generic",
+    "description": "Larger wheels for 37D motors — roll over cables and rug edges more easily.",
+    "price_usd_approx": 15,
+    "pack_size": 2,
+    "mass_g": 250,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=100mm%20rubber%20wheel%206mm%20hex%20coupling%20robot",
+    "tags": [
+      "rugs"
+    ],
+    "compat": {
+      "wheel_shaft": "6mm",
+      "wheel_diameter_mm": 100
+    }
+  },
+  {
+    "id": "caster-ball-metal",
+    "name": "Metal ball caster (1\")",
+    "slot": "caster",
+    "brand": "Pololu",
+    "description": "Third contact point for two-wheel differential-drive robots.",
+    "price_usd_approx": 6,
+    "pack_size": 1,
+    "mass_g": 40,
+    "buy_url": "https://www.pololu.com/search?query=ball%20caster%201%20inch%20metal",
+    "tags": [
+      "2wd"
+    ],
+    "compat": {}
+  },
+  {
+    "id": "driver-l298n",
+    "name": "L298N dual H-bridge module",
+    "slot": "motor_driver",
+    "brand": "Generic",
+    "description": "Very common but outdated: loses ~2 V as heat and gets hot. OK for TT motors, not recommended for metal gearmotors.",
+    "price_usd_approx": 4,
+    "pack_size": 1,
+    "mass_g": 30,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=L298N%20motor%20driver%20module",
+    "tags": [
+      "budget",
+      "legacy"
+    ],
+    "compat": {
+      "motor_v_min": 5,
+      "motor_v_max": 35,
+      "continuous_a_per_channel": 2,
+      "channels": 2,
+      "logic_v": [
+        3.3,
+        5
+      ],
+      "voltage_drop_v": 2
+    }
+  },
+  {
+    "id": "driver-tb6612fng",
+    "name": "TB6612FNG dual motor driver carrier",
+    "slot": "motor_driver",
+    "brand": "SparkFun / Pololu",
+    "description": "Efficient small MOSFET driver. Great for TT and small 6–12 V motors up to ~1.2 A each.",
+    "price_usd_approx": 6,
+    "pack_size": 1,
+    "mass_g": 5,
+    "buy_url": "https://www.pololu.com/search?query=TB6612FNG%20dual%20motor%20driver%20carrier",
+    "tags": [
+      "beginner",
+      "efficient"
+    ],
+    "compat": {
+      "motor_v_min": 4.5,
+      "motor_v_max": 13.5,
+      "continuous_a_per_channel": 1.2,
+      "channels": 2,
+      "logic_v": [
+        3.3,
+        5
+      ]
+    }
+  },
+  {
+    "id": "driver-cytron-mdd3a",
+    "name": "Cytron MDD3A dual 3 A motor driver",
+    "slot": "motor_driver",
+    "brand": "Cytron",
+    "description": "Beginner-friendly driver with test buttons and LEDs. 4–16 V, 3 A per channel.",
+    "price_usd_approx": 10,
+    "pack_size": 1,
+    "mass_g": 20,
+    "buy_url": "https://www.cytron.io/search?q=MDD3A",
+    "tags": [
+      "beginner",
+      "mid-size"
+    ],
+    "compat": {
+      "motor_v_min": 4,
+      "motor_v_max": 16,
+      "continuous_a_per_channel": 3,
+      "channels": 2,
+      "logic_v": [
+        3.3,
+        5
+      ]
+    }
+  },
+  {
+    "id": "driver-cytron-mdd10a",
+    "name": "Cytron MDD10A dual 10 A motor driver",
+    "slot": "motor_driver",
+    "brand": "Cytron",
+    "description": "Rugged driver for metal gearmotors. 10 A continuous per channel — plenty of headroom for 37D motors.",
+    "price_usd_approx": 30,
+    "pack_size": 1,
+    "mass_g": 60,
+    "buy_url": "https://www.cytron.io/search?q=MDD10A",
+    "tags": [
+      "ros2",
+      "high-current"
+    ],
+    "compat": {
+      "motor_v_min": 5,
+      "motor_v_max": 30,
+      "continuous_a_per_channel": 10,
+      "channels": 2,
+      "logic_v": [
+        3.3,
+        5
+      ]
+    }
+  },
+  {
+    "id": "ctrl-arduino-uno-r4-minima",
+    "name": "Arduino UNO R4 Minima",
+    "slot": "controller",
+    "brand": "Arduino",
+    "description": "Classic beginner board with huge tutorial support. 5 V logic. Can be powered from the battery via VIN (6–24 V).",
+    "price_usd_approx": 20,
+    "pack_size": 1,
+    "mass_g": 25,
+    "buy_url": "https://store.arduino.cc/search?q=uno%20r4%20minima",
+    "tags": [
+      "beginner"
+    ],
+    "compat": {
+      "host_logic_v": 5,
+      "has_i2c": true,
+      "has_uart": true,
+      "vin_min": 6,
+      "vin_max": 24,
+      "battery_load_w": 0.5,
+      "onboard_5v_out_a": 0.4
+    }
+  },
+  {
+    "id": "ctrl-esp32-devkitc",
+    "name": "ESP32-DevKitC",
+    "slot": "controller",
+    "brand": "Espressif",
+    "description": "Wi-Fi + Bluetooth microcontroller, 3.3 V logic. Good for phone/remote control and micro-ROS.",
+    "price_usd_approx": 10,
+    "pack_size": 1,
+    "mass_g": 10,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=ESP32%20DevKitC",
+    "tags": [
+      "wifi",
+      "micro-ros",
+      "budget"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "has_i2c": true,
+      "has_uart": true,
+      "five_v_load": {
+        "typical_a": 0.15,
+        "peak_a": 0.4
+      }
+    }
+  },
+  {
+    "id": "ctrl-pico-2",
+    "name": "Raspberry Pi Pico 2",
+    "slot": "controller",
+    "brand": "Raspberry Pi",
+    "description": "Tiny, cheap 3.3 V microcontroller with excellent PIO for reading encoders. Supports micro-ROS.",
+    "price_usd_approx": 5,
+    "pack_size": 1,
+    "mass_g": 5,
+    "buy_url": "https://www.raspberrypi.com/products/raspberry-pi-pico-2/",
+    "tags": [
+      "budget",
+      "micro-ros",
+      "encoders"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "has_i2c": true,
+      "has_uart": true,
+      "five_v_load": {
+        "typical_a": 0.05,
+        "peak_a": 0.1
+      }
+    }
+  },
+  {
+    "id": "ctrl-teensy-41",
+    "name": "Teensy 4.1",
+    "slot": "controller",
+    "brand": "PJRC",
+    "description": "Very fast 3.3 V microcontroller used in the linorobot2 reference design for motor control and micro-ROS.",
+    "price_usd_approx": 32,
+    "pack_size": 1,
+    "mass_g": 10,
+    "buy_url": "https://www.pjrc.com/store/teensy41.html",
+    "tags": [
+      "ros2",
+      "micro-ros",
+      "encoders"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "has_i2c": true,
+      "has_uart": true,
+      "five_v_load": {
+        "typical_a": 0.1,
+        "peak_a": 0.2
+      }
+    }
+  },
+  {
+    "id": "compute-rpi5-8gb",
+    "name": "Raspberry Pi 5 (8 GB)",
+    "slot": "compute",
+    "brand": "Raspberry Pi",
+    "description": "The default brain for a ROS 2 rover: runs SLAM and Nav2 for lidar-based mapping. Needs a solid 5 V / 5 A supply under load.",
+    "price_usd_approx": 80,
+    "pack_size": 1,
+    "mass_g": 50,
+    "buy_url": "https://www.raspberrypi.com/products/raspberry-pi-5/",
+    "tags": [
+      "ros2",
+      "mapping",
+      "recommended"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "usb_ports": 4,
+      "has_i2c": true,
+      "has_uart": true,
+      "has_csi": true,
+      "ros2": true,
+      "five_v_load": {
+        "typical_a": 1.5,
+        "peak_a": 3.5
+      }
+    }
+  },
+  {
+    "id": "compute-rpi4-4gb",
+    "name": "Raspberry Pi 4 Model B (4 GB)",
+    "slot": "compute",
+    "brand": "Raspberry Pi",
+    "description": "Slightly older and cheaper; still runs ROS 2 navigation on small maps.",
+    "price_usd_approx": 55,
+    "pack_size": 1,
+    "mass_g": 46,
+    "buy_url": "https://www.raspberrypi.com/products/raspberry-pi-4-model-b/",
+    "tags": [
+      "ros2",
+      "budget"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "usb_ports": 4,
+      "has_i2c": true,
+      "has_uart": true,
+      "has_csi": true,
+      "ros2": true,
+      "five_v_load": {
+        "typical_a": 1.2,
+        "peak_a": 3
+      }
+    }
+  },
+  {
+    "id": "compute-rpi-zero2w",
+    "name": "Raspberry Pi Zero 2 W",
+    "slot": "compute",
+    "brand": "Raspberry Pi",
+    "description": "Tiny Linux board for camera streaming or simple Python control. Too little RAM for comfortable ROS 2 navigation.",
+    "price_usd_approx": 15,
+    "pack_size": 1,
+    "mass_g": 10,
+    "buy_url": "https://www.raspberrypi.com/products/raspberry-pi-zero-2-w/",
+    "tags": [
+      "budget",
+      "camera"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "usb_ports": 1,
+      "has_i2c": true,
+      "has_uart": true,
+      "has_csi": true,
+      "ros2": false,
+      "five_v_load": {
+        "typical_a": 0.4,
+        "peak_a": 1.2
+      }
+    }
+  },
+  {
+    "id": "compute-jetson-orin-nano-super",
+    "name": "NVIDIA Jetson Orin Nano Super Developer Kit",
+    "slot": "compute",
+    "brand": "NVIDIA",
+    "description": "GPU board for on-robot AI vision (object detection, person following). Powered from a DC barrel input, not 5 V. Verify input range in NVIDIA docs before wiring.",
+    "price_usd_approx": 249,
+    "pack_size": 1,
+    "mass_g": 180,
+    "buy_url": "https://www.nvidia.com/en-us/autonomous-machines/embedded-systems/jetson-orin/nano-super-developer-kit/",
+    "tags": [
+      "ros2",
+      "ai-vision",
+      "premium"
+    ],
+    "compat": {
+      "host_logic_v": 3.3,
+      "usb_ports": 4,
+      "has_i2c": true,
+      "has_uart": true,
+      "has_csi": true,
+      "ros2": true,
+      "vin_min": 9,
+      "vin_max": 20,
+      "battery_load_w": 15
+    }
+  },
+  {
+    "id": "batt-aa-nimh-6x",
+    "name": "6× AA NiMH holder + cells (7.2 V, 2000 mAh)",
+    "slot": "battery",
+    "brand": "Generic",
+    "description": "Safe and simple for TT-motor starter bots. Not enough voltage or capacity for a computer.",
+    "price_usd_approx": 15,
+    "pack_size": 1,
+    "mass_g": 170,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=6%20AA%20battery%20holder%20switch",
+    "tags": [
+      "beginner",
+      "safe"
+    ],
+    "compat": {
+      "battery_nominal_v": 7.2,
+      "battery_max_v": 8.4,
+      "capacity_wh": 14.4,
+      "max_continuous_a": 4,
+      "chemistry": "NiMH"
+    }
+  },
+  {
+    "id": "batt-2s-lipo-2200",
+    "name": "2S LiPo 7.4 V 2200 mAh 25C",
+    "slot": "battery",
+    "brand": "Generic",
+    "description": "Light, punchy pack for small 6–9 V motors. Requires a LiPo balance charger and safe-charging habits.",
+    "price_usd_approx": 15,
+    "pack_size": 1,
+    "mass_g": 110,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=2S%207.4V%202200mAh%20lipo%2025C",
+    "tags": [
+      "lipo"
+    ],
+    "compat": {
+      "battery_nominal_v": 7.4,
+      "battery_max_v": 8.4,
+      "capacity_wh": 16.3,
+      "max_continuous_a": 55,
+      "chemistry": "LiPo"
+    }
+  },
+  {
+    "id": "batt-3s-lipo-2200",
+    "name": "3S LiPo 11.1 V 2200 mAh 25C",
+    "slot": "battery",
+    "brand": "Generic",
+    "description": "Matches 12 V motors well. Needs a balance charger, LiPo bag and a low-voltage alarm.",
+    "price_usd_approx": 20,
+    "pack_size": 1,
+    "mass_g": 180,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=3S%2011.1V%202200mAh%20lipo%2025C",
+    "tags": [
+      "lipo",
+      "12v"
+    ],
+    "compat": {
+      "battery_nominal_v": 11.1,
+      "battery_max_v": 12.6,
+      "capacity_wh": 24.4,
+      "max_continuous_a": 55,
+      "chemistry": "LiPo"
+    }
+  },
+  {
+    "id": "batt-3s-liion-18650-bms",
+    "name": "3S 18650 Li-ion pack 11.1 V 2600 mAh with 10 A BMS",
+    "slot": "battery",
+    "brand": "Generic",
+    "description": "Safer daily-driver option for 12 V rovers: built-in protection board, charges with a simple 12.6 V charger.",
+    "price_usd_approx": 25,
+    "pack_size": 1,
+    "mass_g": 150,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=3S%2018650%20battery%20pack%2011.1V%20BMS%2010A",
+    "tags": [
+      "safe",
+      "12v",
+      "recommended"
+    ],
+    "compat": {
+      "battery_nominal_v": 11.1,
+      "battery_max_v": 12.6,
+      "capacity_wh": 28.9,
+      "max_continuous_a": 10,
+      "chemistry": "Li-ion"
+    }
+  },
+  {
+    "id": "batt-4s-liion-5200-bms",
+    "name": "4S Li-ion pack 14.8 V 5200 mAh with 15 A BMS",
+    "slot": "battery",
+    "brand": "Generic",
+    "description": "Long runtime for rovers carrying a Pi 5 or Jetson plus lidar. Over 12 V motor rating — use PWM limiting or 14–24 V motors.",
+    "price_usd_approx": 55,
+    "pack_size": 1,
+    "mass_g": 400,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=4S%2014.8V%205200mAh%20li-ion%20battery%20pack%20BMS",
+    "tags": [
+      "long-runtime"
+    ],
+    "compat": {
+      "battery_nominal_v": 14.8,
+      "battery_max_v": 16.8,
+      "capacity_wh": 77,
+      "max_continuous_a": 15,
+      "chemistry": "Li-ion"
+    }
+  },
+  {
+    "id": "reg-lm2596-3a",
+    "name": "LM2596 adjustable buck converter (set to 5 V)",
+    "slot": "regulator",
+    "brand": "Generic",
+    "description": "Cheap step-down for microcontrollers and small sensors. Realistically ~2 A — too weak for a Raspberry Pi 5.",
+    "price_usd_approx": 3,
+    "pack_size": 1,
+    "mass_g": 15,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=LM2596%20buck%20converter%20module",
+    "tags": [
+      "budget"
+    ],
+    "compat": {
+      "input_v_min": 4.5,
+      "input_v_max": 40,
+      "output_v": 5,
+      "output_a": 2
+    }
+  },
+  {
+    "id": "reg-xl4015-5a",
+    "name": "XL4015 5 A adjustable buck converter (set to 5 V)",
+    "slot": "regulator",
+    "brand": "Generic",
+    "description": "Budget higher-current step-down. Add a heatsink above ~3.5 A; set output to 5.1 V before connecting anything.",
+    "price_usd_approx": 4,
+    "pack_size": 1,
+    "mass_g": 25,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=XL4015%205A%20buck%20converter",
+    "tags": [
+      "budget"
+    ],
+    "compat": {
+      "input_v_min": 4,
+      "input_v_max": 38,
+      "output_v": 5,
+      "output_a": 3.5
+    }
+  },
+  {
+    "id": "reg-pololu-d36v50f5",
+    "name": "Pololu 5 V 5.5 A step-down regulator D36V50F5",
+    "slot": "regulator",
+    "brand": "Pololu",
+    "description": "Reliable fixed 5 V supply with enough current for a Raspberry Pi 5 plus lidar and USB sensors.",
+    "price_usd_approx": 25,
+    "pack_size": 1,
+    "mass_g": 10,
+    "buy_url": "https://www.pololu.com/search?query=D36V50F5",
+    "tags": [
+      "recommended",
+      "ros2"
+    ],
+    "compat": {
+      "input_v_min": 6,
+      "input_v_max": 50,
+      "output_v": 5,
+      "output_a": 5.5
+    }
+  },
+  {
+    "id": "lidar-rplidar-a1m8",
+    "name": "Slamtec RPLIDAR A1M8 (12 m, 360°)",
+    "slot": "lidar",
+    "brand": "Slamtec",
+    "description": "Classic hobby 2D lidar with mature ROS 2 driver. Connects via included USB adapter.",
+    "price_usd_approx": 99,
+    "pack_size": 1,
+    "mass_g": 170,
+    "buy_url": "https://www.slamtec.com/en/Lidar/A1",
+    "tags": [
+      "mapping",
+      "ros2"
+    ],
+    "compat": {
+      "interface": "usb",
+      "ros2_driver": true,
+      "five_v_load": {
+        "typical_a": 0.5,
+        "peak_a": 0.8
+      }
+    }
+  },
+  {
+    "id": "lidar-rplidar-c1",
+    "name": "Slamtec RPLIDAR C1 (12 m, 360°)",
+    "slot": "lidar",
+    "brand": "Slamtec",
+    "description": "Newer compact, quieter Slamtec lidar. USB via adapter, ROS 2 driver available.",
+    "price_usd_approx": 70,
+    "pack_size": 1,
+    "mass_g": 110,
+    "buy_url": "https://www.slamtec.com/en/C1",
+    "tags": [
+      "mapping",
+      "ros2",
+      "recommended"
+    ],
+    "compat": {
+      "interface": "usb",
+      "ros2_driver": true,
+      "five_v_load": {
+        "typical_a": 0.25,
+        "peak_a": 0.5
+      }
+    }
+  },
+  {
+    "id": "lidar-ld19",
+    "name": "LDROBOT LD19 DTOF lidar (12 m, 360°)",
+    "slot": "lidar",
+    "brand": "LDROBOT",
+    "description": "Small, light lidar with UART output (USB adapter often bundled). Community ROS 2 driver.",
+    "price_usd_approx": 70,
+    "pack_size": 1,
+    "mass_g": 45,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=LD19%20lidar%20LDROBOT",
+    "tags": [
+      "mapping",
+      "ros2",
+      "lightweight"
+    ],
+    "compat": {
+      "interface": "uart",
+      "sensor_logic_v": 3.3,
+      "ros2_driver": true,
+      "five_v_load": {
+        "typical_a": 0.3,
+        "peak_a": 0.5
+      }
+    }
+  },
+  {
+    "id": "cam-rpi-camera-3",
+    "name": "Raspberry Pi Camera Module 3",
+    "slot": "camera",
+    "brand": "Raspberry Pi",
+    "description": "Autofocus camera on the CSI port. Good for streaming video, QR codes and simple vision.",
+    "price_usd_approx": 25,
+    "pack_size": 1,
+    "mass_g": 4,
+    "buy_url": "https://www.raspberrypi.com/products/camera-module-3/",
+    "tags": [
+      "vision",
+      "budget"
+    ],
+    "compat": {
+      "interface": "csi",
+      "five_v_load": {
+        "typical_a": 0.2,
+        "peak_a": 0.3
+      }
+    }
+  },
+  {
+    "id": "cam-oak-d-lite",
+    "name": "Luxonis OAK-D Lite (stereo depth + AI)",
+    "slot": "camera",
+    "brand": "Luxonis",
+    "description": "Depth camera with on-board AI: detects people/objects and depth without a GPU on the robot.",
+    "price_usd_approx": 150,
+    "pack_size": 1,
+    "mass_g": 61,
+    "buy_url": "https://shop.luxonis.com/",
+    "tags": [
+      "depth",
+      "ai-vision",
+      "person-following"
+    ],
+    "compat": {
+      "interface": "usb",
+      "ros2_driver": true,
+      "five_v_load": {
+        "typical_a": 0.6,
+        "peak_a": 1
+      }
+    }
+  },
+  {
+    "id": "cam-realsense-d435i",
+    "name": "Intel RealSense D435i depth camera",
+    "slot": "camera",
+    "brand": "Intel RealSense",
+    "description": "Widely used depth camera with IMU and strong ROS 2 support for 3D obstacle avoidance.",
+    "price_usd_approx": 330,
+    "pack_size": 1,
+    "mass_g": 72,
+    "buy_url": "https://www.intelrealsense.com/depth-camera-d435i/",
+    "tags": [
+      "depth",
+      "ros2",
+      "premium"
+    ],
+    "compat": {
+      "interface": "usb",
+      "ros2_driver": true,
+      "five_v_load": {
+        "typical_a": 0.7,
+        "peak_a": 1.5
+      }
+    }
+  },
+  {
+    "id": "imu-mpu6050",
+    "name": "MPU-6050 6-DOF IMU (GY-521)",
+    "slot": "imu",
+    "brand": "Generic",
+    "description": "Cheap accelerometer + gyro. Helps odometry on turns. Board accepts 3.3–5 V.",
+    "price_usd_approx": 3,
+    "pack_size": 1,
+    "mass_g": 3,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=GY-521%20MPU6050",
+    "tags": [
+      "budget"
+    ],
+    "compat": {
+      "interface": "i2c",
+      "sensor_logic_v": 3.3,
+      "five_v_load": {
+        "typical_a": 0.01,
+        "peak_a": 0.01
+      }
+    }
+  },
+  {
+    "id": "imu-bno085",
+    "name": "Adafruit BNO085 9-DOF orientation IMU",
+    "slot": "imu",
+    "brand": "Adafruit",
+    "description": "Outputs fused orientation directly — much easier than raw IMUs. 3.3–5 V.",
+    "price_usd_approx": 25,
+    "pack_size": 1,
+    "mass_g": 3,
+    "buy_url": "https://www.adafruit.com/search?q=BNO085",
+    "tags": [
+      "recommended",
+      "orientation"
+    ],
+    "compat": {
+      "interface": "i2c",
+      "sensor_logic_v": 3.3,
+      "five_v_load": {
+        "typical_a": 0.02,
+        "peak_a": 0.03
+      }
+    }
+  },
+  {
+    "id": "dist-hc-sr04",
+    "name": "HC-SR04 ultrasonic distance sensor",
+    "slot": "distance_sensor",
+    "brand": "Generic",
+    "description": "Classic obstacle sensor (2–400 cm). Echo pin is 5 V — needs a voltage divider on 3.3 V boards.",
+    "price_usd_approx": 2,
+    "pack_size": 1,
+    "mass_g": 9,
+    "buy_url": "https://www.aliexpress.com/wholesale?SearchText=HC-SR04%20ultrasonic",
+    "tags": [
+      "beginner",
+      "obstacle"
+    ],
+    "compat": {
+      "interface": "gpio",
+      "sensor_logic_v": 5,
+      "five_v_load": {
+        "typical_a": 0.015,
+        "peak_a": 0.02
+      }
+    }
+  },
+  {
+    "id": "dist-vl53l1x",
+    "name": "VL53L1X time-of-flight distance sensor (up to 4 m)",
+    "slot": "distance_sensor",
+    "brand": "Pololu / SparkFun",
+    "description": "Precise laser distance sensor on I2C. Good cliff/edge and close-obstacle detection.",
+    "price_usd_approx": 15,
+    "pack_size": 1,
+    "mass_g": 1,
+    "buy_url": "https://www.pololu.com/search?query=VL53L1X%20carrier",
+    "tags": [
+      "obstacle",
+      "cliff-detection"
+    ],
+    "compat": {
+      "interface": "i2c",
+      "sensor_logic_v": 3.3,
+      "five_v_load": {
+        "typical_a": 0.02,
+        "peak_a": 0.04
+      }
+    }
+  }
+]

@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+/* Rendered build guide (markdown) */
+.guide h1 { font-size: 1.5rem; font-weight: 600; margin: 0 0 0.5rem; }
+.guide h2 { font-size: 1.15rem; font-weight: 600; margin: 1.5rem 0 0.5rem; }
+.guide h3 { font-weight: 600; margin: 1rem 0 0.25rem; }
+.guide p { margin: 0.5rem 0; }
+.guide ul { list-style: disc; padding-left: 1.25rem; margin: 0.5rem 0; }
+.guide ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
+.guide li { margin: 0.25rem 0; }
+.guide ul.contains-task-list { list-style: none; padding-left: 0.25rem; }
+.guide table { border-collapse: collapse; margin: 0.75rem 0; width: 100%; }
+.guide th, .guide td { border: 1px solid color-mix(in srgb, var(--foreground) 20%, transparent); padding: 0.35rem 0.6rem; text-align: left; vertical-align: top; }
+.guide th { font-weight: 600; }
+.guide code { font-family: var(--font-geist-mono), monospace; font-size: 0.9em; }
+.guide a { text-decoration: underline; text-underline-offset: 2px; }

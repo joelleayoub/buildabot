@@ -1,0 +1,72 @@
+[
+  {
+    "id": "ref-linorobot2",
+    "name": "linorobot2",
+    "url": "https://github.com/linorobot/linorobot2",
+    "license": "Apache-2.0 (check repo)",
+    "summary": "Open-source ROS 2 rover framework: 2WD, 4WD or mecanum base, microcontroller running micro-ROS for motors, Raspberry Pi or Jetson for SLAM and Nav2, 2D lidar.",
+    "robot_type": "rover",
+    "drive": "differential / skid-steer / mecanum",
+    "autonomy": "mapping_navigation",
+    "difficulty": "intermediate",
+    "approx_cost_usd": [350, 700],
+    "best_for": ["home mapping", "autonomous navigation", "learning ROS 2"],
+    "similar_part_ids": ["chassis-2wd-37d-plate", "motor-jgb37-520-12v-encoder", "driver-cytron-mdd10a", "ctrl-teensy-41", "compute-rpi5-8gb", "lidar-rplidar-c1", "imu-bno085", "batt-3s-liion-18650-bms", "reg-pololu-d36v50f5"]
+  },
+  {
+    "id": "ref-turtlebot3-burger",
+    "name": "TurtleBot3 Burger",
+    "url": "https://github.com/ROBOTIS-GIT/turtlebot3",
+    "license": "Apache-2.0 (check repo)",
+    "summary": "The reference educational ROS rover from ROBOTIS: compact two-wheel base with smart servos, lidar and a Raspberry Pi. Huge documentation and tutorials.",
+    "robot_type": "rover",
+    "drive": "differential",
+    "autonomy": "mapping_navigation",
+    "difficulty": "beginner-intermediate",
+    "approx_cost_usd": [550, 700],
+    "best_for": ["learning ROS 2 navigation", "classroom", "following tutorials exactly"],
+    "similar_part_ids": ["compute-rpi4-4gb", "lidar-ld19", "imu-bno085"]
+  },
+  {
+    "id": "ref-jetbot",
+    "name": "NVIDIA JetBot",
+    "url": "https://github.com/NVIDIA-AI-IOT/jetbot",
+    "license": "MIT (check repo)",
+    "summary": "Small 2WD camera robot built around a Jetson board, made for learning AI vision: collision avoidance and road following trained from camera images.",
+    "robot_type": "rover",
+    "drive": "differential",
+    "autonomy": "obstacle_avoidance",
+    "difficulty": "beginner-intermediate",
+    "approx_cost_usd": [300, 450],
+    "best_for": ["AI vision", "object following", "learning neural networks"],
+    "similar_part_ids": ["chassis-2wd-tt-acrylic", "compute-jetson-orin-nano-super", "cam-rpi-camera-3"]
+  },
+  {
+    "id": "ref-donkeycar",
+    "name": "Donkey Car",
+    "url": "https://github.com/autorope/donkeycar",
+    "license": "MIT (check repo)",
+    "summary": "Self-driving RC car platform: a 1/10 or 1/16 RC car with a Raspberry Pi and camera that learns to drive a track from your demonstrations.",
+    "robot_type": "rover",
+    "drive": "ackermann (car steering)",
+    "autonomy": "obstacle_avoidance",
+    "difficulty": "beginner",
+    "approx_cost_usd": [250, 400],
+    "best_for": ["racing", "outdoor tracks", "end-to-end learning"],
+    "similar_part_ids": ["compute-rpi5-8gb", "cam-rpi-camera-3"]
+  },
+  {
+    "id": "ref-starter-avoider",
+    "name": "Arduino obstacle-avoiding car (classic starter build)",
+    "url": "https://projecthub.arduino.cc/",
+    "license": "Various community projects",
+    "summary": "The typical first robot: TT-motor chassis, small motor driver, Arduino and an ultrasonic sensor. Drives around and turns away from obstacles. Search Arduino Project Hub for many variants.",
+    "robot_type": "rover",
+    "drive": "differential",
+    "autonomy": "obstacle_avoidance",
+    "difficulty": "beginner",
+    "approx_cost_usd": [40, 80],
+    "best_for": ["first robot", "kids & students", "learning electronics"],
+    "similar_part_ids": ["chassis-2wd-tt-acrylic", "motor-tt-basic", "driver-tb6612fng", "ctrl-arduino-uno-r4-minima", "dist-hc-sr04", "batt-aa-nimh-6x"]
+  }
+]
