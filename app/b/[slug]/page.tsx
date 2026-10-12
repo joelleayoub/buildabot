@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteHeader } from "@/components/SiteHeader";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -75,6 +76,8 @@ async function SharedBuild({ params }: { params: Promise<{ slug: string }> }) {
 
 export default function SharedBuildPage({ params }: { params: Promise<{ slug: string }> }) {
   return (
+    <>
+    <SiteHeader />
     <main className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-semibold tracking-tight">Shared rover build</h1>
@@ -86,5 +89,6 @@ export default function SharedBuildPage({ params }: { params: Promise<{ slug: st
         <SharedBuild params={params} />
       </Suspense>
     </main>
+    </>
   );
 }

@@ -118,6 +118,7 @@ function compactPart(p: Part) {
   return { id: p.id, name: p.name, brand: p.brand, price_usd_approx: p.price_usd_approx, pack_size: p.pack_size, tags: p.tags, description: p.description, compat };
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any -- tool inputs are validated by the JSON schemas above
 type Input = Record<string, any>;
 
 export async function runAdvisorTool(name: string, input: Input, catalog: Catalog, session: AdvisorSession): Promise<unknown> {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SiteHeader } from "@/components/SiteHeader";
 import { jsonCatalog } from "@/lib/advisor/agent";
 import type { Part, Slot } from "@/lib/compat/types";
 import { SlotBadge } from "@/components/SlotIcon";
@@ -24,6 +25,8 @@ export default async function PartsPage() {
   const unknownSlots = [...bySlot.keys()].filter((s) => !SLOT_ORDER.includes(s));
 
   return (
+    <>
+    <SiteHeader />
     <main className="mx-auto w-full max-w-5xl px-4 py-10 sm:px-6">
       <h1 className="text-3xl font-semibold tracking-tight">Parts catalog</h1>
       <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
@@ -105,5 +108,6 @@ export default async function PartsPage() {
         );
       })}
     </main>
+    </>
   );
 }

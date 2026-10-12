@@ -7,7 +7,7 @@ export function advisorConfigured(): boolean {
 
 export const NOT_CONFIGURED: ApiError = {
   error: "advisor_not_configured",
-  message: "The AI advisor isn't switched on yet. You can still start from a sample build and edit it by hand.",
+  message: "The AI advisor isn't switched on yet. You can still answer the questions and build your robot step by step.",
 };
 
 /** Maps an error thrown while calling Claude to an HTTP status and a message safe to show users. */

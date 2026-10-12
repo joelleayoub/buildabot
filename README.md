@@ -1,42 +1,35 @@
-# BuildABot starter kit
+# buildabot
 
-Everything Claude Code needs to build the rover MVP. See `CLAUDE.md` for the full brief and 7-day plan.
+Answer a few questions and get a robot build where every part works together. You see it in 3D, then get a wiring diagram, a parts list with shop links, a share link and a step-by-step build guide. An AI advisor ("Ask buildabot") can explain parts, change the build and write a detailed guide.
 
-## Setup (≈15 min)
+## Run it
 
 ```bash
-# 1. Create the app, then copy this kit's folders (CLAUDE.md, data/, lib/, scripts/, supabase/) into it
-npx create-next-app@latest buildabot --ts --tailwind --app --eslint
-cd buildabot
-npm i @anthropic-ai/sdk @supabase/supabase-js
-npm i -D tsx
-
-# 2. Check the compatibility engine works (12 tests should pass)
-npx tsx --test lib/compat/checkBuild.test.ts
-
-# 3. Database: create a Supabase project, then in its SQL editor run
-#    supabase/schema.sql, then supabase/seed.sql
-node scripts/build-seed.mjs   # regenerate seed.sql whenever data/*.json changes
-
-# 4. .env.local
-ANTHROPIC_API_KEY=...
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...
+npm install
+npm run dev        # http://localhost:3000
 ```
 
-## First prompt for Claude Code
+`.env.local` (not committed):
 
-> Read CLAUDE.md. Do Day 1 and Day 2: a parts page grouped by slot (using `jsonCatalog` from
-> `lib/advisor/agent.ts` for now), and `app/api/chat/route.ts` + a simple chat page that runs
-> `advisorTurn`. `presentBuild` should store the build in memory and return it in the API
-> response so the page can render it as a cart beside the chat. Don't modify `lib/compat/`
-> without updating its tests.
+```
+ANTHROPIC_API_KEY=...              # turns on the advisor chat and the detailed AI guide
+NEXT_PUBLIC_SUPABASE_URL=...       # without these two, projects are kept in memory
+SUPABASE_SERVICE_ROLE_KEY=...
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+```
+
+Everything except the chat and the AI guide works without an Anthropic key.
+
+Database: in the Supabase SQL editor run `supabase/schema.sql`, then `supabase/seed.sql`. Regenerate the seed with `node scripts/build-seed.mjs` when `data/*.json` changes.
+
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts`
+
+## Deploy
+
+Import the GitHub repo on vercel.com and add the same variables under Project Settings, Environment Variables. Every push gets its own preview link.
 
 ## Before real users see it
 
-- Replace `buy_url` search links with verified product (or affiliate) links.
-- Re-check prices and specs marked "approximate" in `data/parts.json`, especially the Jetson's
-  input voltage range and generic AliExpress motors.
-- The checker uses rules of thumb (see constants at the top of `lib/compat/checkBuild.ts`).
-  Tune them as you test real builds.
+- Part pictures are drawn illustrations. Add a photo by setting `"image_url"` on a part in `data/parts.json` (only images you have the rights to).
+- Prices and specs in `data/parts.json` are approximate, and "Find at" links are shop searches until they're replaced with product or affiliate links.
+- Add a usage limit on `/api/chat` and `/api/guide` before the link goes public, since both spend Anthropic credit.

@@ -2,17 +2,17 @@ import type { Requirements, Slot } from "./compat/types";
 
 export const SLOT_LABELS: Record<Slot, string> = {
   chassis: "Chassis",
-  drive_motor: "Drive motors",
+  drive_motor: "Motors",
   wheels: "Wheels",
   caster: "Caster",
   motor_driver: "Motor driver",
   controller: "Controller",
-  compute: "Compute",
+  compute: "Computer",
   battery: "Battery",
-  regulator: "Regulator",
+  regulator: "5 V supply",
   lidar: "Lidar",
   camera: "Camera",
-  imu: "IMU",
+  imu: "Motion sensor",
   distance_sensor: "Distance sensor",
 };
 

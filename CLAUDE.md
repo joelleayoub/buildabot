@@ -28,18 +28,25 @@ generation are explicitly out of scope until real users have tested this version
 - Env: `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
   `SUPABASE_SERVICE_ROLE_KEY`
 
-## Files already in this kit
+## Where things are
 | Path | What it is |
 |---|---|
-| `data/parts.json` | ~45 rover parts with specs, slot, compatibility fields, approx price |
-| `data/reference_designs.json` | Open-source rover designs to show as references |
-| `supabase/schema.sql` | Tables: parts, reference_designs, projects, messages |
-| `scripts/build-seed.mjs` | Turns the JSON into `supabase/seed.sql` |
-| `lib/compat/types.ts` | Part / Build types |
-| `lib/compat/checkBuild.ts` | Deterministic compatibility checker (no AI) |
-| `lib/compat/checkBuild.test.ts` | Tests. Run `npx tsx lib/compat/checkBuild.test.ts` |
-| `lib/advisor/system-prompt.md` | The advisor's system prompt |
-| `lib/advisor/tools.ts` | Tool definitions + handlers for the Claude API tool-use loop |
+| `app/page.tsx` | Home: the Showroom flow (`components/studio/`), rendered client-only |
+| `components/studio/Studio.tsx` | Flow state; saves to `/api/projects`, chat via `/api/chat`, AI guide via `/api/guide`, share links |
+| `components/studio/` | One file per group of steps, plus `ChatDrawer.tsx` ("Ask buildabot") and shared `ui.tsx` |
+| `components/RobotViewer.tsx` | Live 3D rover built from the parts in the bag (react-three-fiber) |
+| `components/PartArt.tsx` | Per-part illustrations; uses `image_url` on a part when present |
+| `lib/flow.ts` | Robot types, use cases, environments, experience levels, answers to requirements |
+| `lib/recommend.ts` | Deterministic recommender: answers to the best compatible build |
+| `lib/swap.ts` | Swapping a part re-plans the parts that depend on it so the build stays compatible |
+| `lib/wiring.ts`, `lib/quickGuide.ts` | Wiring plan and step-by-step checklist generated from the build (no AI) |
+| `lib/slots.ts` | Part labels, display order and colour families, shared by every page |
+| `app/parts`, `app/b/[slug]` | Parts catalog and read-only shared build pages (`components/SiteHeader.tsx`) |
+| `lib/advisor/` | Advisor prompt, tools, agent loop, project store (Supabase or memory), AI guide |
+| `lib/compat/` | Compatibility checker and tests |
+| `data/parts.json`, `data/reference_designs.json` | Catalog |
+
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts`
 
 ## Rules for the codebase
 - **The AI never invents parts.** It can only recommend parts returned by `search_parts`.
@@ -53,6 +60,8 @@ generation are explicitly out of scope until real users have tested this version
   `lib/copy.test.ts` enforces this.
 - Keep the advisor loop server-side (`app/api/chat/route.ts`), stream text to the client.
 - Persist each project (requirements, chosen build, messages) so users can come back.
+- The flow works without the AI: recommender, swaps, wiring and checklist are deterministic. The AI advisor explains, suggests and writes the detailed guide.
+- Home page design language is "Showroom": white store, studio-grey stage, one signal blue (`--blue`). Tokens are in `app/globals.css`.
 
 ## Build order (7 days)
 - **Day 1**: `create-next-app`, Supabase project, run `schema.sql`, seed parts. Page listing parts by slot (sanity check).

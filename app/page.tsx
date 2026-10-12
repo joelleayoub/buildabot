@@ -1,8 +1,5 @@
-import { Workspace } from "@/components/Workspace";
-import { jsonCatalog } from "@/lib/advisor/agent";
-import { SAMPLE_BUILDS } from "@/lib/sampleBuilds";
+import StudioClient from "@/components/studio/StudioClient";
 
-export default async function Home() {
-  const parts = await jsonCatalog.parts();
-  return <Workspace parts={parts} samples={SAMPLE_BUILDS} />;
+export default function Home() {
+  return <StudioClient />;
 }
