@@ -156,7 +156,7 @@ export async function runAdvisorTool(name: string, input: Input, catalog: Catalo
       const byId = Object.fromEntries((await catalog.parts()).map((p) => [p.id, p]));
       const report = checkBuild(input.items as BuildItem[], byId, input.requirements as Requirements);
       if (!report.ok) {
-        return { presented: false, reason: "Build has errors — fix them with check_build first.", report };
+        return { presented: false, reason: "Build has errors. Fix them with check_build first.", report };
       }
       await session.presentBuild({ items: input.items, summary: input.summary, report });
       return { presented: true, totals: report.totals, warnings: report.issues.filter((i) => i.severity === "warning") };

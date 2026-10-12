@@ -11,12 +11,12 @@ export interface TranscriptMessage {
   designs?: ReferenceDesign[];
 }
 
-const CART_NOTE = /^\[Cart update — the user edited the build in the UI\. It now contains: (\[.*?\])\]\n\n/;
+const CART_NOTE = /^\[Cart update: the user edited the build in the UI\. It now contains: (\[.*?\])\]\n\n/;
 
 /** Prefix for a user message, telling the advisor about parts the user swapped in the cart. */
 export function cartNote(items: BuildItem[]): string {
   const cart = items.map(({ part_id, quantity }) => ({ part_id, quantity }));
-  return `[Cart update — the user edited the build in the UI. It now contains: ${JSON.stringify(cart)}]\n\n`;
+  return `[Cart update: the user edited the build in the UI. It now contains: ${JSON.stringify(cart)}]\n\n`;
 }
 
 /** Reference designs the advisor looked up in the given messages. */

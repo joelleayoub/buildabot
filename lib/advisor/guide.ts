@@ -43,6 +43,7 @@ Rules:
 - Take voltages, currents and interfaces from the specs given; if a pin assignment or detail is
   not in the specs, say "check the board's pinout" rather than guessing a specific pin number.
 - Explain each technical term in a few words the first time it appears.
+- Never use em dashes. Use commas, colons or separate sentences.
 - Be concrete and brief. No introduction before the title and no closing remarks.`;
 
 export async function generateGuide(items: BuildItem[], partsById: Record<string, Part>, requirements: Requirements, report: BuildReport): Promise<string> {

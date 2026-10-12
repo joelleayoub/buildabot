@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { jsonCatalog } from "@/lib/advisor/agent";
 import type { Part, Slot } from "@/lib/compat/types";
-import { SLOT_LABELS, SLOT_ORDER } from "@/lib/slots";
+import { SlotBadge } from "@/components/SlotIcon";
+import { groupColor, SLOT_GROUP, SLOT_LABELS, SLOT_ORDER } from "@/lib/slots";
 
-export const metadata: Metadata = { title: "Parts catalog — BuildABot" };
+export const metadata: Metadata = { title: "Parts catalog | BuildABot" };
 
 function formatCompat(compat: Part["compat"]) {
   return Object.entries(compat)
@@ -34,8 +35,9 @@ export default async function PartsPage() {
           <a
             key={slot}
             href={`#${slot}`}
-            className="rounded-full border border-zinc-200 px-3 py-1 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
+            className="inline-flex items-center gap-1.5 rounded-full border border-zinc-200 py-1 pl-1 pr-3 hover:bg-zinc-100 dark:border-zinc-800 dark:hover:bg-zinc-900"
           >
+            <SlotBadge slot={slot} size="sm" />
             {SLOT_LABELS[slot] ?? slot} <span className="text-zinc-500">{bySlot.get(slot)?.length ?? 0}</span>
           </a>
         ))}
@@ -45,15 +47,22 @@ export default async function PartsPage() {
         const list = bySlot.get(slot) ?? [];
         return (
           <section key={slot} id={slot} className="mt-10 scroll-mt-6">
-            <h2 className="text-xl font-semibold">
-              {SLOT_LABELS[slot] ?? slot} <span className="text-sm font-normal text-zinc-500">({list.length})</span>
+            <h2 className="flex items-center gap-3 text-xl font-semibold">
+              <SlotBadge slot={slot} size="lg" />
+              <span>
+                {SLOT_LABELS[slot] ?? slot} <span className="text-sm font-normal text-zinc-500">({list.length})</span>
+              </span>
             </h2>
             {list.length === 0 ? (
               <p className="mt-3 text-sm text-red-600">No parts in this slot.</p>
             ) : (
               <ul className="mt-3 grid gap-3 sm:grid-cols-2">
                 {list.map((p) => (
-                  <li key={p.id} className="flex flex-col rounded-lg border border-zinc-200 p-4 dark:border-zinc-800">
+                  <li
+                    key={p.id}
+                    className="flex flex-col rounded-xl border border-zinc-200 border-l-4 p-4 dark:border-zinc-800"
+                    style={{ borderLeftColor: groupColor(SLOT_GROUP[p.slot]) }}
+                  >
                     <div className="flex items-start justify-between gap-3">
                       <h3 className="font-medium leading-snug">{p.name}</h3>
                       <span className="shrink-0 font-mono text-sm">~${p.price_usd_approx}</span>

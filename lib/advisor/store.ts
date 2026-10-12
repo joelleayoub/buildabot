@@ -1,5 +1,5 @@
 // Project persistence. Server-only: uses the Supabase service-role key, which bypasses row level
-// security, so never import this from a client component. There is no login yet — knowing a
+// security, so never import this from a client component. There is no login yet: knowing a
 // project's (random) id is what grants access to it. Falls back to memory when Supabase isn't
 // configured, so local dev works without a database.
 

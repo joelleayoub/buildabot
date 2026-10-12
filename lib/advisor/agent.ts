@@ -34,7 +34,7 @@ export async function advisorTurn(history: Anthropic.MessageParam[], catalog: Ca
     history.push({ role: "assistant", content: res.content });
 
     if (res.stop_reason === "refusal") {
-      return "Sorry — I can't help with that request. Could you describe the rover you'd like to build?";
+      return "Sorry, I can't help with that request. Could you describe the rover you'd like to build?";
     }
     if (res.stop_reason !== "tool_use") {
       return res.content.filter((b): b is Anthropic.TextBlock => b.type === "text").map((b) => b.text).join("\n");
@@ -52,10 +52,10 @@ export async function advisorTurn(history: Anthropic.MessageParam[], catalog: Ca
     }
     history.push({ role: "user", content: results });
   }
-  return "Sorry — I got stuck putting that build together. Could you rephrase or simplify the request?";
+  return "Sorry, I got stuck putting that build together. Could you rephrase or simplify the request?";
 }
 
-/** Catalog backed by the JSON files in /data — handy for local dev before Supabase is wired up. */
+/** Catalog backed by the JSON files in /data, handy for local dev before Supabase is wired up. */
 export const jsonCatalog: Catalog = {
   async parts() {
     return JSON.parse(readFileSync(join(process.cwd(), "data/parts.json"), "utf8"));

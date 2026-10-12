@@ -3,11 +3,22 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --accent: #4f46e5;
+  --accent-fg: #ffffff;
+  --accent-soft: #eef2ff;
+  /* part families */
+  --g-body: #475569;
+  --g-power: #b45309;
+  --g-brain: #4f46e5;
+  --g-sense: #047857;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
@@ -16,6 +27,13 @@
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --accent: #818cf8;
+    --accent-fg: #0a0a0a;
+    --accent-soft: #1e1b4b;
+    --g-body: #94a3b8;
+    --g-power: #fbbf24;
+    --g-brain: #a5b4fc;
+    --g-sense: #6ee7b7;
   }
 }
 

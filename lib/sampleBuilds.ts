@@ -1,5 +1,5 @@
 // Ready-made builds users can load into the cart without talking to the advisor.
-// Both are covered by lib/sampleBuilds.test.ts — they must pass checkBuild with no errors.
+// Both are covered by lib/sampleBuilds.test.ts: they must pass checkBuild with no errors.
 
 import type { BuildItem, Requirements } from "./compat/types";
 
@@ -26,7 +26,7 @@ export const SAMPLE_BUILDS: SampleBuild[] = [
       { part_id: "driver-tb6612fng", quantity: 1, reason: "Efficient driver sized for small TT motors." },
       { part_id: "ctrl-arduino-uno-r4-minima", quantity: 1, reason: "Beginner board with the most tutorials; runs straight from the battery." },
       { part_id: "dist-hc-sr04", quantity: 1, reason: "Simple ultrasonic sensor to detect obstacles ahead." },
-      { part_id: "batt-aa-nimh-6x", quantity: 1, reason: "Safe rechargeable AA cells — no special charger." },
+      { part_id: "batt-aa-nimh-6x", quantity: 1, reason: "Safe rechargeable AA cells, no special charger." },
     ],
   },
   {

@@ -65,7 +65,7 @@ export function checkBuild(
     add({ severity: "error", code: "MISSING_BRAIN", message: "Nothing is controlling the motors.", fix: "Add a microcontroller (controller) and/or a computer (compute)." });
   }
   for (const slot of ["chassis", "battery", "controller", "compute", "regulator"] as Slot[]) {
-    if (bySlot(slot).length > 1) add({ severity: "warning", code: "DUPLICATE_SLOT", message: `More than one ${slot} selected — usually only one is needed.`, part_ids: bySlot(slot).map((l) => l.part.id) });
+    if (bySlot(slot).length > 1) add({ severity: "warning", code: "DUPLICATE_SLOT", message: `More than one ${slot} selected. Usually only one is needed.`, part_ids: bySlot(slot).map((l) => l.part.id) });
   }
   if (new Set(motors.map((m) => m.part.id)).size > 1) {
     add({ severity: "warning", code: "MIXED_MOTORS", message: "Different motor models drive at different speeds, so the robot won't drive straight.", fix: "Use the same motor on every wheel." });
@@ -81,7 +81,7 @@ export function checkBuild(
     }
     const mounts = cc?.motor_mounts ?? 0;
     if (motorUnits < mounts) add({ severity: "error", code: "TOO_FEW_MOTORS", message: `The chassis has ${mounts} motor mounts but only ${motorUnits} motor(s) are in the build.`, fix: `Set motor quantity to ${mounts}.` });
-    if (motorUnits > mounts) add({ severity: "warning", code: "TOO_MANY_MOTORS", message: `${motorUnits} motors for ${mounts} mounts — the extras won't fit.` });
+    if (motorUnits > mounts) add({ severity: "warning", code: "TOO_MANY_MOTORS", message: `${motorUnits} motors for ${mounts} mounts, so the extras won't fit.` });
   }
 
   const wheelUnits = unitsOf("wheels");
@@ -107,7 +107,7 @@ export function checkBuild(
   if (driver && battery) {
     const dc = driver.part.compat;
     if (vMax > (dc.motor_v_max ?? Infinity)) {
-      add({ severity: "error", code: "DRIVER_OVERVOLTAGE", message: `A full battery reaches ${vMax} V but ${driver.part.name} is rated to ${dc.motor_v_max} V — it can be destroyed.`, part_ids: [driver.part.id, battery.part.id], fix: "Use a lower-voltage battery or a driver rated higher." });
+      add({ severity: "error", code: "DRIVER_OVERVOLTAGE", message: `A full battery reaches ${vMax} V but ${driver.part.name} is rated to ${dc.motor_v_max} V, so it can be destroyed.`, part_ids: [driver.part.id, battery.part.id], fix: "Use a lower-voltage battery or a driver rated higher." });
     }
     if (vNom < (dc.motor_v_min ?? 0)) {
       add({ severity: "error", code: "DRIVER_UNDERVOLTAGE", message: `${driver.part.name} needs at least ${dc.motor_v_min} V; the battery is ${vNom} V.`, part_ids: [driver.part.id, battery.part.id] });
@@ -129,7 +129,7 @@ export function checkBuild(
     if (cont < runningLoad) {
       add({ severity: "error", code: "DRIVER_TOO_WEAK", message: `Each driver channel must supply ~${runningLoad.toFixed(1)} A while driving and accelerating, but ${driver.part.name} handles ${cont} A.`, part_ids: [driver.part.id, motor.part.id], fix: "Pick a driver with higher continuous current." });
     } else if (cont < stallLoad) {
-      add({ severity: "warning", code: "DRIVER_STALL_MARGIN", message: `If a wheel gets stuck, motors can pull ${stallLoad.toFixed(1)} A per channel — above the driver's ${cont} A rating. Normal driving is fine.`, part_ids: [driver.part.id], fix: "Accelerate gently in code (ramp PWM) or choose a stronger driver." });
+      add({ severity: "warning", code: "DRIVER_STALL_MARGIN", message: `If a wheel gets stuck, motors can pull ${stallLoad.toFixed(1)} A per channel, above the driver's ${cont} A rating. Normal driving is fine.`, part_ids: [driver.part.id], fix: "Accelerate gently in code (ramp PWM) or choose a stronger driver." });
     }
     if (motorsPerChannel > 1) {
       add({ severity: "info", code: "MOTORS_PAIRED", message: `${motorsPerChannel} motors share each driver channel (left side together, right side together). That's normal for skid-steer.` });
@@ -141,9 +141,9 @@ export function checkBuild(
     const ratio = vMax / (motor.part.compat.nominal_v ?? vMax);
     if (ratio > 1.5) {
       const duty = Math.round((100 * (motor.part.compat.nominal_v ?? 0)) / vMax);
-      add({ severity: "warning", code: "MOTOR_OVERVOLTAGE", message: `The battery (${vMax} V full) is well above the motors' ${motor.part.compat.nominal_v} V rating — they'll run hot and wear fast.`, fix: `Cap PWM at ~${duty}% in firmware, or use a lower-voltage battery.` });
+      add({ severity: "warning", code: "MOTOR_OVERVOLTAGE", message: `The battery (${vMax} V full) is well above the motors' ${motor.part.compat.nominal_v} V rating, so they'll run hot and wear fast.`, fix: `Cap PWM at ~${duty}% in firmware, or use a lower-voltage battery.` });
     } else if (vNom / (motor.part.compat.nominal_v ?? vNom) < 0.7) {
-      add({ severity: "warning", code: "MOTOR_UNDERVOLTAGE", message: `The battery (${vNom} V) is well below the motors' ${motor.part.compat.nominal_v} V rating — the robot will be slow and weak.` });
+      add({ severity: "warning", code: "MOTOR_UNDERVOLTAGE", message: `The battery (${vNom} V) is well below the motors' ${motor.part.compat.nominal_v} V rating, so the robot will be slow and weak.` });
     }
   }
 
@@ -169,7 +169,7 @@ export function checkBuild(
     if (lidar && !lidar.part.compat.ros2_driver) add({ severity: "warning", code: "NO_ROS2_DRIVER", message: `${lidar.part.name} has no well-known ROS 2 driver.` });
     if (motor && !motor.part.compat.has_encoder) add({ severity: "error", code: "NAV_NEEDS_ENCODERS", message: "Navigation needs wheel encoders so the robot knows how far it moved.", part_ids: [motor.part.id], fix: "Pick motors with encoders." });
     if (compute && !controller) add({ severity: "warning", code: "NAV_NO_MICROCONTROLLER", message: "Linux isn't real-time; reading encoders and driving motors directly from the computer is unreliable.", fix: "Add a microcontroller (Pico 2, ESP32, Teensy) for motor control." });
-    if (!one("imu")) add({ severity: "info", code: "NAV_IMU_RECOMMENDED", message: "An IMU improves odometry when turning — cheap upgrade." });
+    if (!one("imu")) add({ severity: "info", code: "NAV_IMU_RECOMMENDED", message: "An IMU improves odometry when turning. It's a cheap upgrade." });
   }
   if (requirements.autonomy === "obstacle_avoidance" && !lidar && cameras.length === 0 && !one("distance_sensor")) {
     add({ severity: "error", code: "AVOID_NEEDS_SENSOR", message: "Obstacle avoidance needs at least one distance sensor, camera or lidar." });
@@ -185,7 +185,7 @@ export function checkBuild(
   for (const p of peripherals) {
     const iface = p.part.compat.interface;
     const hosts = [controller, compute].filter(Boolean) as Line[];
-    if (iface === "csi" && !compute?.part.compat.has_csi) add({ severity: "error", code: "CSI_NEEDS_PI", message: `${p.part.name} plugs into a camera (CSI) port — add a Raspberry Pi or Jetson.`, part_ids: [p.part.id] });
+    if (iface === "csi" && !compute?.part.compat.has_csi) add({ severity: "error", code: "CSI_NEEDS_PI", message: `${p.part.name} plugs into a camera (CSI) port. Add a Raspberry Pi or Jetson.`, part_ids: [p.part.id] });
     if (iface === "i2c" && !hosts.some((h) => h.part.compat.has_i2c)) add({ severity: "error", code: "NO_I2C_HOST", message: `Nothing in the build can read ${p.part.name} (I2C).`, part_ids: [p.part.id] });
     if (iface === "uart" && !hosts.some((h) => h.part.compat.has_uart)) add({ severity: "error", code: "NO_UART_HOST", message: `Nothing in the build can read ${p.part.name} (UART).`, part_ids: [p.part.id] });
     if ((iface === "gpio" || iface === "uart") && p.part.compat.sensor_logic_v === 5) {
@@ -236,7 +236,7 @@ export function checkBuild(
       if (emptyV < (rc.input_v_min ?? 0)) add({ severity: "error", code: "REG_UNDERVOLTAGE", message: `${regulator.part.name} needs at least ${rc.input_v_min} V input; the battery drops to ~${emptyV.toFixed(1)} V.`, part_ids: [regulator.part.id], fix: "Use a higher-voltage battery." });
       const out = rc.output_a ?? 0;
       if (out < fiveTyp) add({ severity: "error", code: "REG_TOO_WEAK", message: `5 V loads draw ~${fiveTyp.toFixed(1)} A but ${regulator.part.name} supplies ${out} A.`, part_ids: [regulator.part.id], fix: "Use a regulator rated for at least the peak current (e.g. 5 A)." });
-      else if (out < fivePeak) add({ severity: "warning", code: "REG_PEAK_MARGIN", message: `Peak 5 V draw (~${fivePeak.toFixed(1)} A) exceeds ${regulator.part.name}'s ${out} A — the computer may reboot under load.`, part_ids: [regulator.part.id], fix: "Pick a regulator with more headroom." });
+      else if (out < fivePeak) add({ severity: "warning", code: "REG_PEAK_MARGIN", message: `Peak 5 V draw (~${fivePeak.toFixed(1)} A) exceeds ${regulator.part.name}'s ${out} A, so the computer may reboot under load.`, part_ids: [regulator.part.id], fix: "Pick a regulator with more headroom." });
     }
   }
 
@@ -248,7 +248,7 @@ export function checkBuild(
     const running = motorStallTotal * RUNNING_CURRENT_FRACTION + fiveBatteryA + otherBatteryA;
     const peak = motorStallTotal + fiveBatteryA + otherBatteryA;
     if (maxA < running) add({ severity: "error", code: "BATTERY_CURRENT", message: `The robot draws ~${running.toFixed(1)} A while driving; the battery is rated for ${maxA} A.`, part_ids: [battery.part.id] });
-    else if (maxA < peak) add({ severity: "warning", code: "BATTERY_PEAK", message: `Worst case (wheels stuck) the robot could pull ~${peak.toFixed(1)} A — above the battery's ${maxA} A limit, so its protection may cut power.`, part_ids: [battery.part.id], fix: "Ramp motor speed in code, or use a battery with a higher current rating." });
+    else if (maxA < peak) add({ severity: "warning", code: "BATTERY_PEAK", message: `Worst case (wheels stuck) the robot could pull ~${peak.toFixed(1)} A, above the battery's ${maxA} A limit, so its protection may cut power.`, part_ids: [battery.part.id], fix: "Ramp motor speed in code, or use a battery with a higher current rating." });
     if (bc?.chemistry === "LiPo") add({ severity: "info", code: "LIPO_SAFETY", message: "LiPo batteries need a balance charger, a fireproof charging bag and a low-voltage alarm." });
   }
 
