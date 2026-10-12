@@ -53,3 +53,20 @@ export const SLOT_GROUP: Record<Slot, SlotGroup> = {
 };
 
 export const groupColor = (group: SlotGroup) => `var(--g-${group})`;
+
+/** One-line, beginner-friendly explanation of what each kind of part does. */
+export const SLOT_EXPLAIN: Record<Slot, string> = {
+  chassis: "The frame everything bolts onto.",
+  drive_motor: "Turn the wheels. Motors with encoders also count how far each wheel turned.",
+  wheels: "Grip the floor. Bigger wheels roll over cables and rug edges more easily.",
+  caster: "A free-rolling ball that keeps a two-wheel robot level.",
+  motor_driver: "Takes small signals from the controller and switches the big battery current to the motors.",
+  controller: "A small microcontroller that runs your code in real time: motors, sensors and timing.",
+  compute: "A small Linux computer for the heavy thinking: maps, cameras and navigation.",
+  battery: "Stores the energy. Its voltage has to suit the motors and the driver.",
+  regulator: "Turns the battery voltage into a steady 5 V for the electronics.",
+  lidar: "Spins a laser to measure distances all around, so the robot can map the room.",
+  camera: "The robot's eyes. Depth cameras also measure how far away things are.",
+  imu: "Senses turning and tilting, like the motion sensor in your phone.",
+  distance_sensor: "Measures the distance to whatever is in front, so the robot can stop in time.",
+};

@@ -11,6 +11,8 @@ import type { BuildItem, Requirements, Slot } from "@/lib/compat/types";
 import { type Answers, type UseCaseId, SLOT_LABELS, findUseCase, requirementsFrom, USE_CASES } from "@/lib/flow";
 import { type Locks, normaliseBuild, reasonFor, recommend } from "@/lib/recommend";
 import { trySwap } from "@/lib/swap";
+import type { CustomPart } from "@/lib/cad/spec";
+import CadPanel from "./CadPanel";
 import ChatDrawer, { type ChatMessage } from "./ChatDrawer";
 import Header from "./Header";
 import StepBuild from "./StepBuild";
@@ -27,6 +29,8 @@ interface Flow {
   step: number;
   maxStep: number;
   answers: Answers;
+  /** 3D-printable parts the user designed. Kept in this browser for now. */
+  customParts?: CustomPart[];
 }
 
 type Result<T> = { ok: true; data: T } | { ok: false; status: number; error: ApiError };
@@ -84,6 +88,8 @@ export default function Studio() {
   const [step, setStep] = useState(savedFlow?.step ?? 0);
   const [maxStep, setMaxStep] = useState(savedFlow?.maxStep ?? 0);
   const [answers, setAnswers] = useState<Answers>({ ...DEFAULT_ANSWERS, ...savedFlow?.answers });
+  const [customParts, setCustomParts] = useState<CustomPart[]>(savedFlow?.customParts ?? []);
+  const [cad, setCad] = useState<{ part: CustomPart | null } | null>(null);
   const [items, setItems] = useState<BuildItem[]>([]);
   const [selected, setSelected] = useState<Slot>("chassis");
   const [chatOpen, setChatOpen] = useState(false);
@@ -166,8 +172,8 @@ export default function Studio() {
   }, [savedFlow]);
 
   useEffect(() => {
-    if (ready) write(FLOW_KEY, JSON.stringify({ step, maxStep, answers } satisfies Flow));
-  }, [ready, step, maxStep, answers]);
+    if (ready) write(FLOW_KEY, JSON.stringify({ step, maxStep, answers, customParts } satisfies Flow));
+  }, [ready, step, maxStep, answers, customParts]);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -307,6 +313,7 @@ export default function Studio() {
     setAiGuide(null);
     setShareSlug(null);
     setAnswers(DEFAULT_ANSWERS);
+    setCustomParts([]);
     setStep(0);
     setMaxStep(0);
   };
@@ -315,13 +322,24 @@ export default function Studio() {
 
   return (
     <div className="min-h-dvh bg-paper text-ink" style={{ colorScheme: "light" }}>
-      <Header step={step} maxStep={maxStep} onStep={go} bagCount={items.length} onChat={() => setChatOpen(true)} />
+      <Header step={step} maxStep={maxStep} onStep={go} bagCount={items.length + customParts.length} onChat={() => setChatOpen(true)} />
       <main>
         {step === 0 && <StepRobotType onPick={(id) => (setAnswers({ ...answers, robotType: id }), go(1))} />}
         {step === 1 && <StepUseCase answers={answers} setAnswers={setAnswers} onBack={() => go(0)} onNext={() => go(2)} />}
         {step === 2 && <StepStartFrom answers={answers} recommended={recommended} onStart={startFrom} onBack={() => go(1)} />}
         {step === 3 && items.length > 0 && (
-          <StepBuild answers={answers} items={items} report={report} selected={selected} onSelect={setSelected} onSwap={swap} onBack={() => go(2)} onNext={() => go(4)} />
+          <StepBuild
+            answers={answers}
+            items={items}
+            report={report}
+            selected={selected}
+            onSelect={setSelected}
+            onSwap={swap}
+            customParts={customParts}
+            onDesign={(part) => setCad({ part })}
+            onBack={() => go(2)}
+            onNext={() => go(4)}
+          />
         )}
         {step === 4 && <StepWiring items={items} onBack={() => go(3)} onNext={() => go(5)} />}
         {step === 5 && (
@@ -333,6 +351,8 @@ export default function Studio() {
             onShare={share}
             onStartOver={startOver}
             onRetailerClick={(id) => track("link_clicked", { part: id })}
+            customParts={customParts}
+            onDesign={(part) => setCad({ part })}
             onBack={() => go(4)}
             onNext={() => go(6)}
             onEdit={() => go(3)}
@@ -365,6 +385,22 @@ export default function Studio() {
             </button>
           )}
         </div>
+      )}
+
+      {cad && (
+        <CadPanel
+          initial={cad.part}
+          onClose={() => setCad(null)}
+          onSave={(part) => {
+            setCustomParts((list) => (list.some((x) => x.id === part.id) ? list.map((x) => (x.id === part.id ? part : x)) : [...list, part]));
+            setCad(null);
+            setToast({ text: `${part.design.name} is in your bag. Download its STL from the cart any time.` });
+          }}
+          onDelete={(id) => {
+            setCustomParts((list) => list.filter((x) => x.id !== id));
+            setCad(null);
+          }}
+        />
       )}
 
       <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} messages={messages} busy={chatBusy} onSend={sendChat} />

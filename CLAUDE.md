@@ -40,13 +40,17 @@ generation are explicitly out of scope until real users have tested this version
 | `lib/recommend.ts` | Deterministic recommender: answers to the best compatible build |
 | `lib/swap.ts` | Swapping a part re-plans the parts that depend on it so the build stays compatible |
 | `lib/wiring.ts`, `lib/quickGuide.ts` | Wiring plan and step-by-step checklist generated from the build (no AI) |
-| `lib/slots.ts` | Part labels, display order and colour families, shared by every page |
+| `lib/slots.ts` | Part labels, beginner explanations (`SLOT_EXPLAIN`), display order and colour families |
+| `lib/cad/` | 3D-printable part templates (`spec.ts`), offline text parser (`parse.ts`), CSG geometry and STL export (`geometry.ts`) |
+| `app/api/cad` | Text-to-CAD with Claude: description to template + parameters (falls back to `parse.ts` without a key) |
+| `components/studio/CadPanel.tsx` | "Design a part": describe, adjust, preview, download STL, get it printed |
+| `lib/print.ts`, `data/print_providers.json`, `app/api/print/nearby` | Print services sorted by distance or price tier; nearby makerspaces from OpenStreetMap |
 | `app/parts`, `app/b/[slug]` | Parts catalog and read-only shared build pages (`components/SiteHeader.tsx`) |
 | `lib/advisor/` | Advisor prompt, tools, agent loop, project store (Supabase or memory), AI guide |
 | `lib/compat/` | Compatibility checker and tests |
 | `data/parts.json`, `data/reference_designs.json` | Catalog |
 
-Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts`
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts`
 
 ## Rules for the codebase
 - **The AI never invents parts.** It can only recommend parts returned by `search_parts`.
@@ -61,6 +65,8 @@ Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts`
 - Keep the advisor loop server-side (`app/api/chat/route.ts`), stream text to the client.
 - Persist each project (requirements, chosen build, messages) so users can come back.
 - The flow works without the AI: recommender, swaps, wiring and checklist are deterministic. The AI advisor explains, suggests and writes the detailed guide.
+- Printable parts export as STL only. G-code depends on the user's printer, so the slicer makes it; never generate G-code.
+- Print provider prices are tiers, not quotes. Never invent prices or delivery dates for a service.
 - Home page design language is "Showroom": white store, studio-grey stage, one signal blue (`--blue`). Tokens are in `app/globals.css`.
 
 ## Build order (7 days)

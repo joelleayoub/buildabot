@@ -1,6 +1,6 @@
 # buildabot
 
-Answer a few questions and get a robot build where every part works together. You see it in 3D, then get a wiring diagram, a parts list with shop links, a share link and a step-by-step build guide. An AI advisor ("Ask buildabot") can explain parts, change the build and write a detailed guide.
+Answer a few questions and get a robot build where every part works together. You see it in 3D (point at any part to see what it does), then get a wiring diagram, a parts list with shop links, a share link and a step-by-step build guide. You can also design 3D-printable parts (mounting plates, sensor brackets, battery trays, risers) by describing them, download the STL, and find a makerspace or print service near you. An AI advisor ("Ask buildabot") can explain parts, change the build, write a detailed guide and turn part descriptions into designs.
 
 ## Run it
 
@@ -22,7 +22,9 @@ Everything except the chat and the AI guide works without an Anthropic key.
 
 Database: in the Supabase SQL editor run `supabase/schema.sql`, then `supabase/seed.sql`. Regenerate the seed with `node scripts/build-seed.mjs` when `data/*.json` changes.
 
-Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts`
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts`
+
+Location search uses OpenStreetMap's free Nominatim and Overpass services. Set `OSM_CONTACT` (an email or URL) in production so they can reach you, as their usage policy asks.
 
 ## Deploy
 

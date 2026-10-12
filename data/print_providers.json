@@ -1,0 +1,68 @@
+[
+  {
+    "id": "jlc3dp",
+    "name": "JLC3DP",
+    "url": "https://jlc3dp.com/",
+    "kind": "service",
+    "hubs": [{ "city": "Shenzhen", "country": "China", "lat": 22.543, "lon": 114.058 }],
+    "price_tier": 1,
+    "notes": "Usually among the cheapest for small plastic parts. Ships worldwide from China, so delivery takes longer."
+  },
+  {
+    "id": "pcbway",
+    "name": "PCBWay 3D printing",
+    "url": "https://www.pcbway.com/",
+    "kind": "service",
+    "hubs": [{ "city": "Shenzhen", "country": "China", "lat": 22.543, "lon": 114.058 }],
+    "price_tier": 1,
+    "notes": "Low prices and handy if you also order a circuit board from them. Ships worldwide from China."
+  },
+  {
+    "id": "craftcloud",
+    "name": "Craftcloud",
+    "url": "https://craftcloud3d.com/",
+    "kind": "marketplace",
+    "hubs": [],
+    "price_tier": 1,
+    "notes": "Compares quotes from many print services at once, so it's a quick way to find the cheapest option for your country."
+  },
+  {
+    "id": "treatstock",
+    "name": "Treatstock",
+    "url": "https://www.treatstock.com/",
+    "kind": "marketplace",
+    "hubs": [],
+    "price_tier": 2,
+    "notes": "A marketplace of independent printers, some of them local, so shipping can be short."
+  },
+  {
+    "id": "protolabs",
+    "name": "Protolabs Network",
+    "url": "https://www.hubs.com/",
+    "kind": "service",
+    "hubs": [{ "city": "Amsterdam", "country": "Netherlands", "lat": 52.372, "lon": 4.894 }],
+    "price_tier": 3,
+    "notes": "Formerly Hubs. Professional quality and engineering materials, priced for businesses."
+  },
+  {
+    "id": "xometry",
+    "name": "Xometry",
+    "url": "https://www.xometry.com/",
+    "kind": "service",
+    "hubs": [
+      { "city": "Gaithersburg", "country": "United States", "lat": 39.143, "lon": -77.201 },
+      { "city": "Munich", "country": "Germany", "lat": 48.137, "lon": 11.576 }
+    ],
+    "price_tier": 3,
+    "notes": "Industrial printing with instant quotes. Best for strong or precise parts, not the cheapest for hobby parts."
+  },
+  {
+    "id": "sculpteo",
+    "name": "Sculpteo",
+    "url": "https://www.sculpteo.com/",
+    "kind": "service",
+    "hubs": [{ "city": "Paris", "country": "France", "lat": 48.857, "lon": 2.352 }],
+    "price_tier": 3,
+    "notes": "Paris-based service with a wide choice of materials, including nylon that is tougher than PLA."
+  }
+]

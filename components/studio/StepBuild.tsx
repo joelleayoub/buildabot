@@ -6,6 +6,7 @@ import { PARTS, PARTS_BY_ID, money, partsInSlot } from "@/lib/catalog";
 import type { BuildItem, BuildReport, Slot } from "@/lib/compat/types";
 import { type Answers, ENVIRONMENTS, SLOT_LABELS, SLOT_ORDER, findUseCase } from "@/lib/flow";
 import { trySwap } from "@/lib/swap";
+import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { AdviceBox, Button, FitBadge, IssueList } from "./ui";
 
 const RobotViewer = dynamic(() => import("@/components/RobotViewer"), {
@@ -30,6 +31,8 @@ export default function StepBuild({
   selected,
   onSelect,
   onSwap,
+  customParts,
+  onDesign,
   onBack,
   onNext,
 }: {
@@ -39,6 +42,8 @@ export default function StepBuild({
   selected: Slot;
   onSelect: (s: Slot) => void;
   onSwap: (slot: Slot, partId: string | null) => void;
+  customParts: CustomPart[];
+  onDesign: (part: CustomPart | null) => void;
   onBack: () => void;
   onNext: () => void;
 }) {
@@ -92,8 +97,8 @@ export default function StepBuild({
             </dl>
           </div>
           <div className="relative h-[320px] sm:h-[420px] lg:h-auto lg:min-h-0 lg:flex-1">
-            <RobotViewer items={items} byId={PARTS_BY_ID} highlight={selected} />
-            <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-paper/80 px-3 py-1 text-xs text-mute">Drag to look around</p>
+            <RobotViewer items={items} byId={PARTS_BY_ID} highlight={selected} onSelect={onSelect} />
+            <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-paper/80 px-3 py-1 text-xs text-mute">Drag to look around. Point at a part to see what it is.</p>
           </div>
           <div className="scrollbar-thin flex gap-2 overflow-x-auto p-3 sm:p-4" role="tablist" aria-label="Parts on your robot">
             {inBuild.map((s) => {
@@ -118,6 +123,23 @@ export default function StepBuild({
                 </button>
               );
             })}
+            {customParts.map((cp) => (
+              <button key={cp.id} onClick={() => onDesign(cp)} className="w-[104px] shrink-0 rounded-2xl border-2 border-transparent bg-paper p-2 text-left transition hover:border-line" title={cp.design.name}>
+                <div className="grid aspect-[4/3] place-items-center rounded-lg bg-blue-soft text-[0.7rem] font-semibold text-blue">3D print</div>
+                <div className="mt-1.5 flex items-baseline justify-between gap-1">
+                  <span className="truncate text-xs font-semibold">{cp.design.name || TEMPLATES[cp.design.template].name}</span>
+                </div>
+              </button>
+            ))}
+            <button
+              onClick={() => onDesign(null)}
+              className="grid w-[104px] shrink-0 place-items-center rounded-2xl border-2 border-dashed border-blue/40 p-2 text-center text-xs font-semibold text-blue transition hover:border-blue"
+            >
+              <span>
+                <span className="block text-xl leading-none">+</span>
+                Design a part
+              </span>
+            </button>
             {addable.map((s) => (
               <button
                 key={s}

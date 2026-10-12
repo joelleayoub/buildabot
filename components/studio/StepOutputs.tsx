@@ -10,6 +10,8 @@ import { Guide } from "@/components/Guide";
 import { buildGuide, guideToMarkdown } from "@/lib/quickGuide";
 import { planWiring, type Wire, type WireKind, type WireNode } from "@/lib/wiring";
 import { Button, IssueList, StepHeading } from "./ui";
+import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
+import { downloadStl } from "./CadPanel";
 
 const KIND: Record<WireKind, { color: string; label: string; dash?: string }> = {
   power: { color: "#d2372c", label: "Power" },
@@ -185,6 +187,8 @@ export function StepCart({
   onShare,
   onStartOver,
   onRetailerClick,
+  customParts,
+  onDesign,
   onBack,
   onNext,
   onEdit,
@@ -196,6 +200,8 @@ export function StepCart({
   onShare: () => void;
   onStartOver: () => void;
   onRetailerClick: (partId: string) => void;
+  customParts: CustomPart[];
+  onDesign: (part: CustomPart | null) => void;
   onBack: () => void;
   onNext: () => void;
   onEdit: () => void;
@@ -248,6 +254,36 @@ export function StepCart({
               </div>
             </li>
           ))}
+          <li className="py-5">
+            <div className="flex flex-wrap items-baseline justify-between gap-2">
+              <h2 className="font-bold">3D-printed parts</h2>
+              <button onClick={() => onDesign(null)} className="text-sm font-semibold text-blue hover:underline">
+                Design a part
+              </button>
+            </div>
+            {customParts.length === 0 ? (
+              <p className="mt-1 text-sm text-mute">Need a mount, bracket or battery tray that doesn&apos;t exist? Describe it and download a printable file.</p>
+            ) : (
+              <ul className="mt-3 space-y-2">
+                {customParts.map((cp) => (
+                  <li key={cp.id} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line px-4 py-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold">{cp.design.name}</p>
+                      <p className="text-xs text-mute">{TEMPLATES[cp.design.template].name}, printed in PLA</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button className="h-9 px-4" onClick={() => downloadStl(cp.design)}>
+                        Download STL
+                      </Button>
+                      <Button variant="ghost" className="h-9 px-3" onClick={() => onDesign(cp)}>
+                        Edit or print
+                      </Button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
         </ul>
         <aside className="h-fit rounded-3xl bg-stage-2 p-6 lg:sticky lg:top-24">
           <BuildStats items={items} byId={PARTS_BY_ID} report={report} />
