@@ -62,7 +62,15 @@ export function trySwap(parts: Part[], answers: Answers, current: BuildItem[], s
     return { items, report: rec.report, changed };
   }
 
-  // No compatible plan with this part: apply the raw swap so the user sees why.
+  // No fully compatible plan: take the least-bad one, so the message names the real blocker.
+  const closest = recommend(parts, answers, locks, { allowErrors: true });
+  if (closest) {
+    const items = closest.items.map((i) => ({ ...i, reason: current.find((c) => c.part_id === i.part_id)?.reason ?? reasonFor(byId[i.part_id], answers, uc) }));
+    const changed = items.map((i) => slotOf(i)!).filter((s) => s !== slot && before.get(s) !== items.find((i) => slotOf(i) === s)?.part_id);
+    return { items, report: closest.report, changed };
+  }
+
+  // Nothing at all: apply the raw swap so the user sees why.
   const raw = normaliseBuild(
     [...current.filter((i) => slotOf(i) !== slot), { part_id: partId, quantity: 1, reason: reasonFor(byId[partId], answers, uc) }],
     byId,

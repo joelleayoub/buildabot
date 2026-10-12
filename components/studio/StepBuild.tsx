@@ -98,9 +98,25 @@ export default function StepBuild({
           </div>
           <div className="relative h-[320px] sm:h-[420px] lg:h-auto lg:min-h-0 lg:flex-1">
             <RobotViewer items={items} byId={PARTS_BY_ID} highlight={selected} onSelect={onSelect} />
+            <button
+              onClick={() => onDesign(null)}
+              className="absolute right-3 top-3 z-10 flex h-10 items-center gap-2 rounded-full bg-paper px-4 text-sm font-semibold text-ink shadow-sm ring-1 ring-line transition hover:ring-ink"
+            >
+              <span className="grid h-5 w-5 place-items-center rounded-full bg-blue text-xs text-white">+</span>
+              Design a custom part
+            </button>
             <p className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-paper/80 px-3 py-1 text-xs text-mute">Drag to look around. Point at a part to see what it is.</p>
           </div>
           <div className="scrollbar-thin flex gap-2 overflow-x-auto p-3 sm:p-4" role="tablist" aria-label="Parts on your robot">
+            <button
+              onClick={() => onDesign(null)}
+              className="grid w-[104px] shrink-0 place-items-center rounded-2xl border-2 border-dashed border-blue/40 p-2 text-center text-xs font-semibold text-blue transition hover:border-blue"
+            >
+              <span>
+                <span className="block text-xl leading-none">+</span>
+                Design a part
+              </span>
+            </button>
             {inBuild.map((s) => {
               const it = items.find((i) => slotOf(i) === s)!;
               const p = PARTS_BY_ID[it.part_id];
@@ -131,15 +147,6 @@ export default function StepBuild({
                 </div>
               </button>
             ))}
-            <button
-              onClick={() => onDesign(null)}
-              className="grid w-[104px] shrink-0 place-items-center rounded-2xl border-2 border-dashed border-blue/40 p-2 text-center text-xs font-semibold text-blue transition hover:border-blue"
-            >
-              <span>
-                <span className="block text-xl leading-none">+</span>
-                Design a part
-              </span>
-            </button>
             {addable.map((s) => (
               <button
                 key={s}
@@ -208,6 +215,14 @@ export default function StepBuild({
               </li>
             ))}
           </ul>
+
+          <button onClick={() => onDesign(null)} className="mt-4 flex w-full items-center gap-4 rounded-3xl border border-dashed border-blue/50 bg-blue-soft/50 p-4 text-left transition hover:border-blue">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-blue text-lg text-white">+</span>
+            <span>
+              <span className="block font-semibold">Need a part that doesn&apos;t exist?</span>
+              <span className="block text-sm text-mute">Describe a mount, bracket or battery tray and I&apos;ll design it for 3D printing.</span>
+            </span>
+          </button>
 
           <div className="mt-6">
             <h3 className="mb-2 text-sm font-semibold">Compatibility</h3>

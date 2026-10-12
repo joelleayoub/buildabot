@@ -35,7 +35,8 @@ generation are explicitly out of scope until real users have tested this version
 | `components/studio/Studio.tsx` | Flow state; saves to `/api/projects`, chat via `/api/chat`, AI guide via `/api/guide`, share links |
 | `components/studio/` | One file per group of steps, plus `ChatDrawer.tsx` ("Ask buildabot") and shared `ui.tsx` |
 | `components/RobotViewer.tsx` | Live 3D rover built from the parts in the bag (react-three-fiber) |
-| `components/PartArt.tsx` | Per-part illustrations; uses `image_url` on a part when present |
+| `components/PartArt.tsx` | Part pictures: `image_url` from `parts.json` (studio renders in `public/parts/`), with drawn fallbacks |
+| `scripts/render-part-shots.mjs`, `app/dev/shot` | Re-render `public/parts/*.png` from the 3D models (dev only). Replace with real photos when licensed ones are available |
 | `lib/flow.ts` | Robot types, use cases, environments, experience levels, answers to requirements |
 | `lib/recommend.ts` | Deterministic recommender: answers to the best compatible build |
 | `lib/swap.ts` | Swapping a part re-plans the parts that depend on it so the build stays compatible |

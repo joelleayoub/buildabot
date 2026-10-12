@@ -20,7 +20,8 @@
       "max_payload_kg": 1,
       "includes_wheels": true,
       "includes_caster": true
-    }
+    },
+    "image_url": "/parts/chassis-2wd-tt-acrylic.png"
   },
   {
     "id": "chassis-4wd-tt-aluminum",
@@ -43,7 +44,8 @@
       "max_payload_kg": 2,
       "includes_wheels": true,
       "includes_caster": false
-    }
+    },
+    "image_url": "/parts/chassis-4wd-tt-aluminum.png"
   },
   {
     "id": "chassis-2wd-37d-plate",
@@ -67,7 +69,8 @@
       "max_payload_kg": 5,
       "includes_wheels": false,
       "includes_caster": false
-    }
+    },
+    "image_url": "/parts/chassis-2wd-37d-plate.png"
   },
   {
     "id": "chassis-4wd-25d-aluminum",
@@ -90,7 +93,8 @@
       "max_payload_kg": 3,
       "includes_wheels": false,
       "includes_caster": false
-    }
+    },
+    "image_url": "/parts/chassis-4wd-25d-aluminum.png"
   },
   {
     "id": "motor-tt-basic",
@@ -114,7 +118,8 @@
       "stall_torque_kgcm": 0.8,
       "has_encoder": false,
       "shaft": "TT"
-    }
+    },
+    "image_url": "/parts/motor-tt-basic.png"
   },
   {
     "id": "motor-tt-encoder",
@@ -138,7 +143,8 @@
       "stall_torque_kgcm": 0.8,
       "has_encoder": true,
       "shaft": "TT"
-    }
+    },
+    "image_url": "/parts/motor-tt-encoder.png"
   },
   {
     "id": "motor-pololu-25d-12v-mp-20",
@@ -162,7 +168,8 @@
       "stall_torque_kgcm": 4,
       "has_encoder": true,
       "shaft": "4mm"
-    }
+    },
+    "image_url": "/parts/motor-pololu-25d-12v-mp-20.png"
   },
   {
     "id": "motor-jgb37-520-12v-encoder",
@@ -187,7 +194,8 @@
       "stall_torque_kgcm": 10,
       "has_encoder": true,
       "shaft": "6mm"
-    }
+    },
+    "image_url": "/parts/motor-jgb37-520-12v-encoder.png"
   },
   {
     "id": "motor-pololu-37d-12v-30",
@@ -212,7 +220,8 @@
       "stall_torque_kgcm": 14,
       "has_encoder": true,
       "shaft": "6mm"
-    }
+    },
+    "image_url": "/parts/motor-pololu-37d-12v-30.png"
   },
   {
     "id": "wheels-tt-65mm",
@@ -230,7 +239,8 @@
     "compat": {
       "wheel_shaft": "TT",
       "wheel_diameter_mm": 65
-    }
+    },
+    "image_url": "/parts/wheels-tt-65mm.png"
   },
   {
     "id": "wheels-70mm-4mm-hub",
@@ -246,7 +256,8 @@
     "compat": {
       "wheel_shaft": "4mm",
       "wheel_diameter_mm": 70
-    }
+    },
+    "image_url": "/parts/wheels-70mm-4mm-hub.png"
   },
   {
     "id": "wheels-100mm-6mm-hub",
@@ -264,7 +275,8 @@
     "compat": {
       "wheel_shaft": "6mm",
       "wheel_diameter_mm": 100
-    }
+    },
+    "image_url": "/parts/wheels-100mm-6mm-hub.png"
   },
   {
     "id": "caster-ball-metal",
@@ -279,7 +291,8 @@
     "tags": [
       "2wd"
     ],
-    "compat": {}
+    "compat": {},
+    "image_url": "/parts/caster-ball-metal.png"
   },
   {
     "id": "driver-l298n",
@@ -305,7 +318,8 @@
         5
       ],
       "voltage_drop_v": 2
-    }
+    },
+    "image_url": "/parts/driver-l298n.png"
   },
   {
     "id": "driver-tb6612fng",
@@ -330,7 +344,8 @@
         3.3,
         5
       ]
-    }
+    },
+    "image_url": "/parts/driver-tb6612fng.png"
   },
   {
     "id": "driver-cytron-mdd3a",
@@ -355,7 +370,8 @@
         3.3,
         5
       ]
-    }
+    },
+    "image_url": "/parts/driver-cytron-mdd3a.png"
   },
   {
     "id": "driver-cytron-mdd10a",
@@ -380,7 +396,8 @@
         3.3,
         5
       ]
-    }
+    },
+    "image_url": "/parts/driver-cytron-mdd10a.png"
   },
   {
     "id": "ctrl-arduino-uno-r4-minima",
@@ -403,7 +420,8 @@
       "vin_max": 24,
       "battery_load_w": 0.5,
       "onboard_5v_out_a": 0.4
-    }
+    },
+    "image_url": "/parts/ctrl-arduino-uno-r4-minima.png"
   },
   {
     "id": "ctrl-esp32-devkitc",
@@ -428,7 +446,8 @@
         "typical_a": 0.15,
         "peak_a": 0.4
       }
-    }
+    },
+    "image_url": "/parts/ctrl-esp32-devkitc.png"
   },
   {
     "id": "ctrl-pico-2",
@@ -453,7 +472,8 @@
         "typical_a": 0.05,
         "peak_a": 0.1
       }
-    }
+    },
+    "image_url": "/parts/ctrl-pico-2.png"
   },
   {
     "id": "ctrl-teensy-41",
@@ -478,7 +498,8 @@
         "typical_a": 0.1,
         "peak_a": 0.2
       }
-    }
+    },
+    "image_url": "/parts/ctrl-teensy-41.png"
   },
   {
     "id": "compute-rpi5-8gb",
@@ -506,7 +527,8 @@
         "typical_a": 1.5,
         "peak_a": 3.5
       }
-    }
+    },
+    "image_url": "/parts/compute-rpi5-8gb.png"
   },
   {
     "id": "compute-rpi4-4gb",
@@ -533,7 +555,8 @@
         "typical_a": 1.2,
         "peak_a": 3
       }
-    }
+    },
+    "image_url": "/parts/compute-rpi4-4gb.png"
   },
   {
     "id": "compute-rpi-zero2w",
@@ -560,7 +583,8 @@
         "typical_a": 0.4,
         "peak_a": 1.2
       }
-    }
+    },
+    "image_url": "/parts/compute-rpi-zero2w.png"
   },
   {
     "id": "compute-jetson-orin-nano-super",
@@ -587,7 +611,8 @@
       "vin_min": 9,
       "vin_max": 20,
       "battery_load_w": 15
-    }
+    },
+    "image_url": "/parts/compute-jetson-orin-nano-super.png"
   },
   {
     "id": "batt-aa-nimh-6x",
@@ -609,7 +634,8 @@
       "capacity_wh": 14.4,
       "max_continuous_a": 4,
       "chemistry": "NiMH"
-    }
+    },
+    "image_url": "/parts/batt-aa-nimh-6x.png"
   },
   {
     "id": "batt-2s-lipo-2200",
@@ -630,7 +656,8 @@
       "capacity_wh": 16.3,
       "max_continuous_a": 55,
       "chemistry": "LiPo"
-    }
+    },
+    "image_url": "/parts/batt-2s-lipo-2200.png"
   },
   {
     "id": "batt-3s-lipo-2200",
@@ -652,7 +679,8 @@
       "capacity_wh": 24.4,
       "max_continuous_a": 55,
       "chemistry": "LiPo"
-    }
+    },
+    "image_url": "/parts/batt-3s-lipo-2200.png"
   },
   {
     "id": "batt-3s-liion-18650-bms",
@@ -675,7 +703,8 @@
       "capacity_wh": 28.9,
       "max_continuous_a": 10,
       "chemistry": "Li-ion"
-    }
+    },
+    "image_url": "/parts/batt-3s-liion-18650-bms.png"
   },
   {
     "id": "batt-4s-liion-5200-bms",
@@ -696,7 +725,8 @@
       "capacity_wh": 77,
       "max_continuous_a": 15,
       "chemistry": "Li-ion"
-    }
+    },
+    "image_url": "/parts/batt-4s-liion-5200-bms.png"
   },
   {
     "id": "reg-lm2596-3a",
@@ -716,7 +746,8 @@
       "input_v_max": 40,
       "output_v": 5,
       "output_a": 2
-    }
+    },
+    "image_url": "/parts/reg-lm2596-3a.png"
   },
   {
     "id": "reg-xl4015-5a",
@@ -736,7 +767,8 @@
       "input_v_max": 38,
       "output_v": 5,
       "output_a": 3.5
-    }
+    },
+    "image_url": "/parts/reg-xl4015-5a.png"
   },
   {
     "id": "reg-pololu-d36v50f5",
@@ -757,7 +789,8 @@
       "input_v_max": 50,
       "output_v": 5,
       "output_a": 5.5
-    }
+    },
+    "image_url": "/parts/reg-pololu-d36v50f5.png"
   },
   {
     "id": "lidar-rplidar-a1m8",
@@ -780,7 +813,8 @@
         "typical_a": 0.5,
         "peak_a": 0.8
       }
-    }
+    },
+    "image_url": "/parts/lidar-rplidar-a1m8.png"
   },
   {
     "id": "lidar-rplidar-c1",
@@ -804,7 +838,8 @@
         "typical_a": 0.25,
         "peak_a": 0.5
       }
-    }
+    },
+    "image_url": "/parts/lidar-rplidar-c1.png"
   },
   {
     "id": "lidar-ld19",
@@ -829,7 +864,8 @@
         "typical_a": 0.3,
         "peak_a": 0.5
       }
-    }
+    },
+    "image_url": "/parts/lidar-ld19.png"
   },
   {
     "id": "cam-rpi-camera-3",
@@ -851,7 +887,8 @@
         "typical_a": 0.2,
         "peak_a": 0.3
       }
-    }
+    },
+    "image_url": "/parts/cam-rpi-camera-3.png"
   },
   {
     "id": "cam-oak-d-lite",
@@ -875,7 +912,8 @@
         "typical_a": 0.6,
         "peak_a": 1
       }
-    }
+    },
+    "image_url": "/parts/cam-oak-d-lite.png"
   },
   {
     "id": "cam-realsense-d435i",
@@ -899,7 +937,8 @@
         "typical_a": 0.7,
         "peak_a": 1.5
       }
-    }
+    },
+    "image_url": "/parts/cam-realsense-d435i.png"
   },
   {
     "id": "imu-mpu6050",
@@ -921,7 +960,8 @@
         "typical_a": 0.01,
         "peak_a": 0.01
       }
-    }
+    },
+    "image_url": "/parts/imu-mpu6050.png"
   },
   {
     "id": "imu-bno085",
@@ -944,7 +984,8 @@
         "typical_a": 0.02,
         "peak_a": 0.03
       }
-    }
+    },
+    "image_url": "/parts/imu-bno085.png"
   },
   {
     "id": "dist-hc-sr04",
@@ -967,7 +1008,8 @@
         "typical_a": 0.015,
         "peak_a": 0.02
       }
-    }
+    },
+    "image_url": "/parts/dist-hc-sr04.png"
   },
   {
     "id": "dist-vl53l1x",
@@ -990,6 +1032,7 @@
         "typical_a": 0.02,
         "peak_a": 0.04
       }
-    }
+    },
+    "image_url": "/parts/dist-vl53l1x.png"
   }
 ]

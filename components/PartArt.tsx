@@ -308,7 +308,7 @@ function Art({ p }: { p: Part }) {
 }
 
 export default function PartArt({ part, className }: { part: Part; className?: string }) {
-  const img = (part as Part & { image_url?: string }).image_url;
+  const img = part.image_url;
   if (img) {
     // eslint-disable-next-line @next/next/no-img-element
     return <img src={img} alt={part.name} className={`h-full w-full object-contain ${className ?? ""}`} />;

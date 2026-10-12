@@ -98,6 +98,7 @@ export interface Part {
   pack_size: number; // units per purchase (e.g. wheels come in pairs)
   mass_g: number;
   buy_url: string; // retailer search link until verified product/affiliate links exist
+  image_url?: string; // product image; studio renders in public/parts until real photos are added
   tags: string[];
   compat: PartCompat;
 }

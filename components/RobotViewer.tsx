@@ -2,7 +2,7 @@
 // Live 3D model of the rover, assembled from the parts in the build. 1 unit = 10 cm.
 // Hover a part to see what it is; click it to choose a different one.
 import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
-import { ContactShadows, Environment, Lightformer, OrbitControls, RoundedBox } from "@react-three/drei";
+import { Bounds, Center, ContactShadows, Environment, Lightformer, OrbitControls, RoundedBox } from "@react-three/drei";
 import { createContext, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CatmullRomCurve3, LatheGeometry, Vector2, Vector3, type Group } from "three";
 import type { BuildItem, Part, Slot } from "@/lib/compat/types";
@@ -277,7 +277,7 @@ function Wire({ pts, color, r = 0.011 }: { pts: [number, number, number][]; colo
   );
 }
 
-function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Record<string, Part>; onHover: (s: Slot | null) => void; onPick: (s: Slot) => void }) {
+function Rover({ items, byId, onHover, onPick, only }: { items: BuildItem[]; byId: Record<string, Part>; onHover: (s: Slot | null) => void; onPick: (s: Slot) => void; only?: Slot }) {
   const get = (s: Slot) => items.map((i) => byId[i.part_id]).find((p) => p?.slot === s);
   const chassis = get("chassis");
   const wheels = get("wheels");
@@ -293,15 +293,17 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
   const distance = get("distance_sensor");
   const imu = get("imu");
   const caster = get("caster") || chassis?.compat.includes_caster;
-  const P = (slot: Slot, node: ReactNode) => (
+  const P = (slot: Slot, node: ReactNode) =>
+    only && only !== slot ? null : (
     <Pick slot={slot} onHover={onHover} onPick={onPick}>
       {node}
     </Pick>
   );
 
   const zW = lay.W / 2 + lay.ww / 2 + 0.04;
-  const wheelX = lay.mounts === 4 ? [lay.L * 0.32, -lay.L * 0.32] : [lay.L * 0.18];
-  const hub = motor?.compat.motor_form_factor === "TT" || !wheels ? "#f2c230" : "#c5c9cf";
+  const wheelX = only ? [lay.L * 0.18] : lay.mounts === 4 ? [lay.L * 0.32, -lay.L * 0.32] : [lay.L * 0.18];
+  const sides = only ? [1] : [1, -1];
+  const hub = motor?.compat.motor_form_factor === "TT" || !wheels || wheels.compat.wheel_shaft === "TT" ? "#f2c230" : "#c5c9cf";
   const top = lay.deck2 + 0.02;
   const low = lay.deck1 + 0.02;
 
@@ -336,7 +338,7 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
       )}
 
       {wheelX.flatMap((x) =>
-        [1, -1].map((side) => (
+        sides.map((side) => (
           <group key={`${x}${side}`}>
             {motor && P("drive_motor", <Motor part={motor} side={side} pos={[x, lay.r, side * motorZ]} />)}
             {P("wheels", <Wheel pos={[x, lay.r, side * zW]} lay={lay} hub={hub} />)}
@@ -345,6 +347,7 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
       )}
 
       {caster &&
+        (!only || only === "caster") &&
         P(
           get("caster") ? "caster" : "chassis",
           <group position={[-lay.L * 0.4, 0, 0]}>
@@ -352,10 +355,27 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
               <sphereGeometry args={[0.11, 32, 16]} />
               <Mat color="#d6d9de" metal={1} rough={0.12} />
             </mesh>
-            <mesh position={[0, (lay.deck1 + 0.18) / 2, 0]}>
-              <cylinderGeometry args={[0.07, 0.12, lay.deck1 - 0.15, 20]} />
+            {/* housing that cups the ball, then a post up to the deck */}
+            <mesh position={[0, 0.17, 0]}>
+              <cylinderGeometry args={[0.12, 0.135, 0.1, 28]} />
               <Mat color="#2a2c30" metal={0.3} rough={0.5} />
             </mesh>
+            <mesh position={[0, 0.225, 0]}>
+              <boxGeometry args={[0.36, 0.02, 0.14]} />
+              <Mat color="#2a2c30" metal={0.3} rough={0.5} />
+            </mesh>
+            {[-0.13, 0.13].map((x) => (
+              <mesh key={x} position={[x, 0.238, 0]}>
+                <cylinderGeometry args={[0.018, 0.018, 0.01, 12]} />
+                <Mat color="#cfd3d9" metal={0.95} rough={0.2} glow={false} />
+              </mesh>
+            ))}
+            {!only && lay.deck1 > 0.25 && (
+              <mesh position={[0, (lay.deck1 + 0.24) / 2, 0]}>
+                <cylinderGeometry args={[0.025, 0.025, lay.deck1 - 0.24, 10]} />
+                <Mat color="#c9a24a" metal={0.9} rough={0.3} />
+              </mesh>
+            )}
           </group>,
         )}
 
@@ -408,8 +428,29 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
           <group position={[lay.L / 2 - 0.02, lay.deck1 + 0.18, 0]} rotation={[0, 0, Math.PI / 2]}>
             <mesh castShadow>
               <boxGeometry args={[0.2, 0.016, distance.compat.interface === "gpio" ? 0.45 : 0.14]} />
-              <Mat color="#2f5fb3" />
+              <Mat color={distance.compat.interface === "gpio" ? "#2f5fb3" : "#1f6f3a"} />
             </mesh>
+            {distance.compat.interface !== "gpio" && (
+              <>
+                {/* laser module with its two little windows, plus header pins along the bottom */}
+                <mesh position={[0.02, -0.018, 0]}>
+                  <boxGeometry args={[0.05, 0.02, 0.07]} />
+                  <meshStandardMaterial color="#111214" roughness={0.3} />
+                </mesh>
+                {[-0.015, 0.015].map((z) => (
+                  <mesh key={z} position={[0.02, -0.029, z]} rotation-x={Math.PI}>
+                    <circleGeometry args={[0.008, 16]} />
+                    <meshStandardMaterial color={z < 0 ? "#3d57f7" : "#601010"} roughness={0.1} />
+                  </mesh>
+                ))}
+                {Array.from({ length: 6 }, (_, i) => (
+                  <mesh key={i} position={[-0.085, -0.015, -0.05 + i * 0.02]}>
+                    <boxGeometry args={[0.012, 0.03, 0.012]} />
+                    <meshStandardMaterial color="#d8b04a" metalness={0.9} roughness={0.3} />
+                  </mesh>
+                ))}
+              </>
+            )}
             {distance.compat.interface === "gpio" &&
               [-0.12, 0.12].map((z) => (
                 <group key={z} position={[0, -0.06, z]}>
@@ -507,6 +548,8 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
         )}
 
       {/* wiring: red is power, black is ground, blue is signal */}
+      {!only && (
+        <>
       {battery && driver && (
         <>
           <Wire color="#c62f25" pts={[[bPos[0] + bSize[0] / 2 - 0.05, bTop, 0.08], [bPos[0] + bSize[0] / 2 + 0.15, bTop + 0.08, 0.1], [dPos[0] - 0.2, low + 0.12, 0.08]]} />
@@ -536,7 +579,38 @@ function Rover({ items, byId, onHover, onPick }: { items: BuildItem[]; byId: Rec
         <Wire color="#2a44f5" r={0.007} pts={[[ctlPos[0] + 0.1, (compute ? low : top) + 0.1, ctlPos[2]], [(ctlPos[0] + dPos[0]) / 2, low + 0.2, -0.25], [dPos[0] - 0.05, low + 0.1, -0.12]]} />
       )}
       {lidar && compute && <Wire color="#202226" r={0.015} pts={[[lPos[0] - 0.2, top + 0.05, 0.15], [(lPos[0] + cPos[0]) / 2, top + 0.18, 0.28], [cPos[0] + 0.34, top + 0.14, 0.16]]} />}
+        </>
+      )}
     </group>
+  );
+}
+
+/** One part on its own in a studio, used to render product images (see scripts/render-part-shots.mjs). */
+export function ProductShot({ part }: { part: Part }) {
+  // Give lone parts sensible neighbours: wheels need a motor shaft size, motors a chassis type.
+  const items: BuildItem[] = [{ part_id: part.id, quantity: 1 }];
+  const byId: Record<string, Part> = { [part.id]: part };
+  const noop = () => {};
+  return (
+    <Canvas shadows="percentage" dpr={2} camera={{ position: [3.2, 2.1, 3.4], fov: 28 }} gl={{ antialias: true, preserveDrawingBuffer: true, alpha: true }}>
+      <ambientLight intensity={0.35} />
+      <directionalLight position={[4, 7, 3]} intensity={1.7} castShadow shadow-mapSize={[2048, 2048]} shadow-bias={-0.0004} />
+      <directionalLight position={[-4, 3, -3]} intensity={0.4} color="#dfe5ff" />
+      <Environment resolution={256}>
+        <Lightformer form="rect" intensity={2.4} position={[0, 5, 0]} rotation-x={Math.PI / 2} scale={[8, 8, 1]} />
+        <Lightformer form="rect" intensity={1.3} position={[-5, 2, 1]} rotation-y={Math.PI / 2} scale={[6, 3, 1]} />
+        <Lightformer form="rect" intensity={0.9} position={[5, 2, -2]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} color="#dfe5ff" />
+        <Lightformer form="ring" intensity={0.6} position={[0, 1, 6]} scale={3} />
+      </Environment>
+      <HighlightCtx.Provider value={{}}>
+        <Bounds fit clip margin={1.15}>
+          <Center bottom>
+            <Rover items={items} byId={byId} onHover={noop} onPick={noop} only={part.slot} />
+          </Center>
+        </Bounds>
+      </HighlightCtx.Provider>
+      <ContactShadows position={[0, 0, 0]} opacity={0.45} scale={8} blur={2.4} far={2} />
+    </Canvas>
   );
 }
 

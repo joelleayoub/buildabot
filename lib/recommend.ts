@@ -68,7 +68,11 @@ function score(report: BuildReport, items: BuildItem[], byId: Record<string, Par
   return s;
 }
 
-export function recommend(parts: Part[], answers: Answers, locks: Locks = {}): Recommendation | null {
+/**
+ * Best build for the answers. With `allowErrors`, returns the least-bad plan even if nothing is
+ * fully compatible, so the UI can show the real blocker (for example a chassis that can't carry the load).
+ */
+export function recommend(parts: Part[], answers: Answers, locks: Locks = {}, opts: { allowErrors?: boolean } = {}): Recommendation | null {
   const uc = findUseCase(answers.useCase) ?? USE_CASES[0];
   const requirements = requirementsFrom(answers);
   const byId = Object.fromEntries(parts.map((p) => [p.id, p]));
@@ -115,8 +119,8 @@ export function recommend(parts: Part[], answers: Answers, locks: Locks = {}): R
         const chosen = [chassis, motor, caster, ...combo, ...extraLocked].filter(Boolean) as Part[];
         const items: BuildItem[] = chosen.map((p) => ({ part_id: p.id, quantity: quantityFor(p, chassis) }));
         const report = checkBuild(items, byId, requirements);
-        if (!report.ok) continue;
-        const s = score(report, items, byId, answers, uc);
+        if (!report.ok && !opts.allowErrors) continue;
+        const s = score(report, items, byId, answers, uc) + report.issues.filter((i) => i.severity === "error").length * 10000;
         if (!best || s < best.s) best = { s, rec: { items, report, requirements } };
       }
     }
