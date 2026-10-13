@@ -109,6 +109,7 @@ function NumberField({ label, unit, value, onChange, min, max, step, help }: { l
             const v = parseFloat(e.target.value);
             if (Number.isFinite(v)) onChange(Math.min(max, Math.max(min, v)));
           }}
+          aria-label={label}
           className="num w-full bg-transparent text-[0.95rem] outline-none"
         />
         <span className="ml-2 text-sm text-mute">{unit}</span>
@@ -212,6 +213,7 @@ export default function ArmAdvisor() {
   const [source, setSource] = useState<"ai" | "offline" | null>(null);
   const [family, setFamily] = useState<Family | null>(null);
   const [hover, setHover] = useState<string | undefined>();
+  const [guessed, setGuessed] = useState<string[]>([]);
 
   const plan = useMemo(() => (task ? planArm(task) : null), [task]);
   const shown = plan ? (plan.families.find((f) => f.family === family) ?? plan.chosen ?? plan.families[0]) : null;
@@ -228,6 +230,7 @@ export default function ArmAdvisor() {
     setText(d);
     setFamily(null);
     const offline = parseTask(d);
+    setGuessed([offline.object_g === undefined && "the weight", offline.reach_cm === undefined && "the reach"].filter(Boolean) as string[]);
     setTask(offline);
     setAssumptions([]);
     setSource("offline");
@@ -242,6 +245,7 @@ export default function ArmAdvisor() {
         setTask(ai);
         setAssumptions(notes);
         setSource("ai");
+        setGuessed([]);
         save({ text: d, task: ai, assumptions: notes });
       }
     } catch {
@@ -337,6 +341,11 @@ export default function ArmAdvisor() {
                 <h2 className="text-xl font-bold">What I understood</h2>
                 <p className="text-sm text-mute">Change anything; the sizing updates instantly.</p>
               </div>
+              {guessed.length > 0 && (
+                <p className="mt-3 rounded-xl bg-warn-soft px-3.5 py-2 text-sm text-warn">
+                  I couldn&apos;t find {guessed.join(" or ")} in your description, so I used typical values. Change them below to match your task.
+                </p>
+              )}
               {assumptions.length > 0 && (
                 <ul className="mt-3 space-y-1 text-sm text-mute">
                   {assumptions.map((a) => (
@@ -471,7 +480,7 @@ export default function ArmAdvisor() {
             {shown && (
               <section className="mt-14">
                 <div className="flex items-baseline justify-between border-b border-ink pb-2">
-                  <h2 className="text-2xl font-bold tracking-tight">Parts list: {shown.label.toLowerCase()}</h2>
+                  <h2 className="text-2xl font-bold tracking-tight">Parts list: {shown.label}</h2>
                   <span className="num text-lg font-bold">{money(shown.cost_usd)}</span>
                 </div>
                 <ul className="divide-y divide-line">

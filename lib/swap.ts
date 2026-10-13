@@ -47,7 +47,10 @@ export function trySwap(parts: Part[], answers: Answers, current: BuildItem[], s
   }
   locks[slot] = partId;
 
-  const rec = recommend(parts, answers, locks);
+  // A plan that quietly leaves out the part the user picked isn't an answer to their click.
+  const keeps = (r: { items: BuildItem[] } | null) => !!r && r.items.some((i) => i.part_id === partId);
+  const fitting = recommend(parts, answers, locks);
+  const rec = keeps(fitting) ? fitting : null;
   const before = new Map(current.map((i) => [slotOf(i), i.part_id]));
   if (rec) {
     // Keep the user's reasons for untouched parts; explain the new ones.
@@ -63,7 +66,8 @@ export function trySwap(parts: Part[], answers: Answers, current: BuildItem[], s
   }
 
   // No fully compatible plan: take the least-bad one, so the message names the real blocker.
-  const closest = recommend(parts, answers, locks, { allowErrors: true });
+  const closestPlan = recommend(parts, answers, locks, { allowErrors: true });
+  const closest = keeps(closestPlan) ? closestPlan : null;
   if (closest) {
     const items = closest.items.map((i) => ({ ...i, reason: current.find((c) => c.part_id === i.part_id)?.reason ?? reasonFor(byId[i.part_id], answers, uc) }));
     const changed = items.map((i) => slotOf(i)!).filter((s) => s !== slot && before.get(s) !== items.find((i) => slotOf(i) === s)?.part_id);

@@ -5,6 +5,7 @@ import PartArt from "@/components/PartArt";
 import { PARTS, PARTS_BY_ID, money, partsInSlot } from "@/lib/catalog";
 import type { BuildItem, BuildReport, Slot } from "@/lib/compat/types";
 import { type Answers, ENVIRONMENTS, SLOT_LABELS, SLOT_ORDER, findUseCase } from "@/lib/flow";
+import { slotNoun } from "@/lib/slots";
 import { trySwap } from "@/lib/swap";
 import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { AdviceBox, Button, FitBadge, IssueList } from "./ui";
@@ -23,6 +24,15 @@ const SLOT_ADVICE: Partial<Record<Slot, string>> = {
   distance_sensor: "A cheap way to stop before walls. Put one at the front, or two angled left and right.",
   imu: "A motion sensor tracks turns, which keeps maps straight and helps it drive in a line.",
 };
+
+/** "Fits if I also change: battery, and add: computer" from the slots a swap would touch. */
+function alsoText(changed: Slot[], items: BuildItem[]): string {
+  if (!changed.length) return "Fits with everything else";
+  const onBot = new Set(items.map((i) => PARTS_BY_ID[i.part_id]?.slot));
+  const change = changed.filter((c) => onBot.has(c)).map(slotNoun);
+  const add = changed.filter((c) => !onBot.has(c)).map(slotNoun);
+  return `Fits if I also ${[change.length && `change: ${change.join(", ")}`, add.length && `add: ${add.join(", ")}`].filter(Boolean).join(", and ")}`;
+}
 
 export default function StepBuild({
   answers,
@@ -165,7 +175,7 @@ export default function StepBuild({
         {/* chooser */}
         <div className="flex min-w-0 flex-col">
           <p className="text-sm font-medium text-blue">Step 4 of 7</p>
-          <h2 className="mt-1 text-[1.9rem] font-bold leading-tight tracking-[-0.02em]">{current ? `Choose your ${SLOT_LABELS[selected].toLowerCase()}` : `Add a ${SLOT_LABELS[selected].toLowerCase()}`}</h2>
+          <h2 className="mt-1 text-[1.9rem] font-bold leading-tight tracking-[-0.02em]">{current ? `Choose your ${slotNoun(selected)}` : `Add a ${slotNoun(selected)}`}</h2>
           {advice && (
             <div className="mt-4">
               <AdviceBox>{advice}</AdviceBox>
@@ -187,9 +197,13 @@ export default function StepBuild({
                   <p className="mt-1 line-clamp-2 text-sm leading-snug text-mute">{p.description}</p>
                   <div className="mt-2">
                     {isCur ? (
-                      <FitBadge ok text="Fits with everything else" />
+                      (() => {
+                        // The part on the bot can itself be the problem (after a swap that didn't fit).
+                        const own = errors.find((e) => e.part_ids?.includes(p.id));
+                        return own ? <FitBadge ok={false} text={own.message} /> : <FitBadge ok text={errors.length ? "This part is fine; the issue is elsewhere in the build" : "Fits with everything else"} />;
+                      })()
                     ) : ok ? (
-                      <FitBadge ok text={changed.length ? `Fits if I also change: ${changed.map((c) => SLOT_LABELS[c].toLowerCase()).join(", ")}` : "Fits with everything else"} />
+                      <FitBadge ok text={alsoText(changed, items)} />
                     ) : (
                       <FitBadge ok={false} text={why || "Doesn't fit this build"} />
                     )}

@@ -240,6 +240,11 @@ export function StepStartFrom({
                 <dd className="text-xl font-bold">{recommended.report.totals.est_runtime_min ? `${Math.round(recommended.report.totals.est_runtime_min)} min` : "–"}</dd>
               </div>
             </dl>
+            {recommended.report.issues.some((i) => i.code === "OVER_BUDGET") && (
+              <p className="mt-4 rounded-xl bg-warn-soft px-3.5 py-2 text-sm text-warn">
+                This is the lowest-cost build I can find that does the job, at about {money(recommended.report.totals.price_usd_approx)}: over your {money(recommended.requirements.budget_usd ?? 0)} budget. A simpler job costs less.
+              </p>
+            )}
             <div className="mt-auto pt-6">
               <Button variant="primary" onClick={() => onStart(null)}>
                 Start from this build

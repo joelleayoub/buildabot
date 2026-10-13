@@ -151,6 +151,9 @@ export function buildGuide(items: BuildItem[], byId: Record<string, Part>, answe
   if (imu) soft.push({ title: "Read the motion sensor", body: "Install the Adafruit BNO08x library and print the heading. Rotate the robot by hand: the heading should follow." });
   const all: Slot[] = [...new Set(parts.map((p) => p.slot))];
   const lit = (...slots: Slot[]): GuideVisual => ({ kind: "assembly", show: all, highlight: slots });
+  if (!controller && !compute) {
+    soft.push({ title: "Add a controller first", body: "This build has no controller or computer, so nothing can run code yet. Go back to the Build step and add one: the guide then fills in the wiring and software for it.", visual: lit() });
+  }
   for (const st of soft) {
     if (st.visual) continue;
     const t = st.title.toLowerCase();

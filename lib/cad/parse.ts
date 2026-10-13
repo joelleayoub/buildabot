@@ -39,6 +39,11 @@ export function parseDescription(text: string): ParseResult {
   const template = pickTemplate(t);
   const p: Record<string, unknown> = {};
   const understood: string[] = [`A ${TEMPLATES[template].name.toLowerCase()}.`];
+  // Say so plainly when the request isn't one of the shapes this can make.
+  const unsupported = t.match(/\b(gears?|pulleys?|sprockets?|wheels?|hubs?|springs?|hinges?|threads?|threaded|screws?|enclosures?|cases?|lids?|knobs?|propellers?|grippers?|claws?|fingers?)\b/);
+  const named = has(t, "plate", "mount", "base", "deck", "tray", "battery", "box", "holder", "cradle", "riser", "tower", "raise", "platform", "lidar", "elevat", "leg", "bracket", "ultrasonic", "sr04", "upright", "l-shape", "l shape", "arduino", "raspberry", " pi", "rpi");
+  if (unsupported) understood.unshift(`I can't make ${unsupported[1].replace(/s$/, "")}s yet, so this is the closest shape I have. Download one from Printables or Thingiverse, or design it in a CAD app.`);
+  else if (!named) understood.unshift("I didn't recognise a part in that, so I started from a mounting plate. Try a plate, a bracket, a battery tray or a riser, with sizes in mm.");
   const d = dims(t);
   const thick = measure(t, "thick", "thickness");
   const tall = measure(t, "tall", "high", "height", "above", "up");

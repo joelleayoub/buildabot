@@ -41,7 +41,8 @@ Import the GitHub repo on vercel.com and add the same variables under Project Se
 
 `docs/USER_TEST.md` has the deploy checklist, the session script and the SQL to read results.
 `node scripts/smoke.mjs https://your-app.vercel.app` walks the whole rover flow and fails on any
-error. Testers send feedback with the Feedback tab on every page; it lands in the Supabase
+error. `node scripts/e2e-matrix.mjs <url>` runs it for 18 different users (about 30 minutes) and
+`node scripts/e2e-extras.mjs <url>` checks the catalog, part designer and arm advisor. Testers send feedback with the Feedback tab on every page; it lands in the Supabase
 `feedback` table, next to the analytics `events`.
 
 ## Arm advisor (preview)

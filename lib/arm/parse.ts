@@ -43,31 +43,51 @@ function perMinute(text: string): number | undefined {
 
 const has = (text: string, re: RegExp) => re.test(text);
 
+/** Typical weights of things people name, for when the description gives no number (grams). */
+const TYPICAL_G: [RegExp, number][] = [
+  [/\b(pins?|screws?|nuts?|bolts?|resistors?|components?|beads?)\b/, 2],
+  [/\b(jenga|dice|die|sweets?|candy|candies|strawberr\w*|grapes?|lego)\b/, 15],
+  [/\b(chess|checkers?|pieces?|cards?|coins?|blocks?|cubes?)\b/, 25],
+  [/\b(eggs?|pancakes?|socks?|tomato\w*|pens?|markers?)\b/, 60],
+  [/\b(phones?|books?|shirts?|towels?|laundry|cloth\w*|fruit|apples?|oranges?)\b/, 200],
+  [/\b(cups?|mugs?|glass(?:es)?|scoops?)\b/, 300],
+  [/\b(cans?|tins?|tools?|spanners?|wrenches?|hammers?)\b/, 400],
+  [/\b(bottles?|jars?|watering can|pots?)\b/, 600],
+  [/\b(boxes?|parcels?|packages?|crates?)\b/, 1000],
+];
+
 export function parseTask(description: string): Partial<ArmTask> {
   const t = description.toLowerCase();
   const out: Partial<ArmTask> = { description };
 
   let motion: Motion = "pick_place";
   if (has(t, /\b(draw|drawing|write|writing|plot|sketch|laser|engrav|pen)\w*/)) motion = "draw";
-  else if (has(t, /\b(pour|stir|cook|liquid|cup of|coffee|tea|drink|sauce)\w*/)) motion = "pour";
+  else if (has(t, /\b(pour|stir|cook|liquid|cup of|coffee|tea|drink|sauce|scoop|water(?:ing)? (?:the |my )?plants?)\w*/)) motion = "pour";
   else if (has(t, /\b(assembl|screw|insert|plug|solder|fit into)\w*/)) motion = "assemble";
   else if (has(t, /\b(inspect|camera|photo|scan|check|film|picture)\w*/)) motion = "inspect";
   else if (has(t, /\b(sort|separate|by colou?r|by size|recycl)\w*/)) motion = "sort";
   out.motion = motion;
 
   let object: ObjectKind = "rigid";
-  if (has(t, /\b(fruit|egg|tomato|food|bread|soft|fragile|plant|flower|cake|strawberr|grape)\w*/)) object = "soft";
+  if (motion === "pour") object = "rigid"; // it holds the container, not what's in it
+  else if (has(t, /\b(fruit|egg|tomato|food|bread|soft|fragile|flower|cake|strawberr|grape)\w*/)) object = "soft";
   else if (has(t, /\b(card|paper|sheet|tile|phone|book|envelope|letter|wafer|plate|panel|flat)\w*/)) object = "flat";
   else if (has(t, /\b(toy|tool|sock|cloth|laundry|irregular|odd|random|mixed|lego)\w*/)) object = "irregular";
   out.object = object;
 
   let orientation: Orientation = "none";
-  if (motion === "pour" || has(t, /\b(tilt|angle|sideways|upside|flip|any direction|hand it|hand over)\w*/)) orientation = "full";
+  if (motion === "pour" || has(t, /\b(tilt|angle|sideways|upside|flip|any direction|hand (?:it|me|over|them))\w*/)) orientation = "full";
   else if (motion === "assemble" || has(t, /\b(rotate|turn|orient|face|align|spin)\w*/)) orientation = "turn";
   out.orientation = orientation;
 
   const g = grams(t);
   if (g !== undefined) out.object_g = Math.max(1, Math.round(g));
+  else if (motion === "draw") out.object_g = 50; // a pen or a small laser module
+  else if (motion === "inspect") out.object_g = 100; // a small camera
+  else {
+    const typical = TYPICAL_G.find(([re]) => re.test(t));
+    if (typical) out.object_g = typical[1];
+  }
   const r = reach(t);
   if (r !== undefined) out.reach_cm = Math.min(200, Math.max(5, Math.round(r)));
   const l = lift(t);
@@ -83,7 +103,7 @@ export function parseTask(description: string): Partial<ArmTask> {
     out.flat_work = false;
     out.lift_cm ??= 30;
   }
-  if (has(t, /\b(near|next to|with|around|beside)\s+(me|people|us|colleagues|workers|kids|children|staff)\b|\b(kitchen|office|classroom|shop floor)\b/)) out.near_people = true;
+  if (has(t, /\b(near|next to|with|around|beside)\s+(me|people|us|colleagues|workers|kids|children|staff)\b|\b(kitchen|office|classroom|shop floor)\b|\b(hand|give|pass|bring)\s+(me|us|it to)\b/)) out.near_people = true;
   if (has(t, /\b(all day|24\/7|production|factory|shift|every day|daily|warehouse|line)\b/)) out.hours_per_day = 8;
   const hours = t.match(/(\d+)\s*hours?\s*(?:a|per)\s*day/);
   if (hours) out.hours_per_day = Math.min(24, parseInt(hours[1], 10));

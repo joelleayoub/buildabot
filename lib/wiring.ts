@@ -122,6 +122,10 @@ export function planWiring(items: BuildItem[], byId: Record<string, Part>): Wiri
     const id = `sensor${i}`;
     const iface = s.compat.interface;
     const host = iface === "usb" || iface === "csi" ? "compute" : controller ? "controller" : "compute";
+    if ((host === "compute" && !compute) || (host === "controller" && !controller)) {
+      notes.push(`The ${s.name.split(" (")[0]} needs ${iface === "usb" || iface === "csi" ? "a computer" : "a controller"} to plug into. Add one in the Build step.`);
+      return;
+    }
     if (iface === "usb") add({ from: id, to: "compute", kind: "data", label: s.name.split(" (")[0], pins: "USB cable to a blue USB 3 port" });
     else if (iface === "csi") add({ from: id, to: "compute", kind: "data", label: s.name.split(" (")[0], pins: "Ribbon cable into the CAM/DISP port (contacts facing the board)" });
     else if (iface === "i2c")

@@ -70,3 +70,6 @@ export const SLOT_EXPLAIN: Record<Slot, string> = {
   imu: "Senses turning and tilting, like the motion sensor in your phone.",
   distance_sensor: "Measures the distance to whatever is in front, so the robot can stop in time.",
 };
+
+/** A slot label inside a sentence: "motor driver", but "5 V supply" keeps its capital V. */
+export const slotNoun = (s: Slot) => SLOT_LABELS[s].replace(/^[A-Z](?=[a-z])/, (c) => c.toLowerCase());

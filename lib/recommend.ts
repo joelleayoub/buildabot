@@ -108,11 +108,13 @@ export function recommend(parts: Part[], answers: Answers, locks: Locks = {}, op
   for (const chassis of chassisList) {
     const motors = inSlot("drive_motor").filter((m) => m.compat.motor_form_factor === chassis.compat.motor_form_factor);
     for (const motor of motors) {
-      const wheelOptions: (Part | null)[] = chassis.compat.includes_wheels
+      // Kit wheels are used unless the user picked other wheels on purpose.
+      const wheelOptions: (Part | null)[] = chassis.compat.includes_wheels && !locks.wheels
         ? [null]
         : inSlot("wheels").filter((w) => w.compat.wheel_shaft === motor.compat.shaft);
       if (!wheelOptions.length) continue;
-      const caster = chassis.compat.motor_mounts === 2 && !chassis.compat.includes_caster ? byId["caster-ball-metal"] : null;
+      const needsCaster = chassis.compat.motor_mounts === 2 && !chassis.compat.includes_caster;
+      const caster = locks.caster && byId[locks.caster] ? byId[locks.caster] : needsCaster ? byId["caster-ball-metal"] : null;
       if (uc.autonomy === "mapping_navigation" && !motor.compat.has_encoder) continue;
 
       for (const combo of cartesian<Part | null>([wheelOptions, drivers, batteries, controllers, computes, regulators, ...sensorChoices])) {

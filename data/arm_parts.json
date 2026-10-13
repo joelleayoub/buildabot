@@ -285,6 +285,19 @@
   ]
  },
  {
+  "id": "tool-holder-printed",
+  "kind": "gripper",
+  "name": "Printed tool holder (pen, laser or camera)",
+  "brand": "DIY (3D printed)",
+  "price_usd_approx": 3,
+  "mass_g": 40,
+  "description": "A printed clamp that holds a pen, a small laser module or a camera at the end of the arm. Design it in the part designer or download one with your reference design.",
+  "buy_url": "https://www.printables.com/search/models?q=pen%20plotter%20holder",
+  "max_object_g": 300,
+  "length_cm": 6,
+  "grips": []
+ },
+ {
   "id": "ctrl-pca9685",
   "kind": "electronics",
   "family": "pwm",

@@ -50,11 +50,23 @@ export function CodeBlock({ code, filename }: { code: string; filename: string }
   );
 }
 
+/** Why there's no pin map: no brain at all, or a board this doesn't have pin data for yet. */
+function NoHost({ items, what }: { items: BuildItem[]; what: string }) {
+  const brain = items.map((i) => PARTS_BY_ID[i.part_id]).find((p) => p?.slot === "controller" || p?.slot === "compute");
+  return (
+    <p className="rounded-2xl bg-stage-2 p-5 text-mute">
+      {brain
+        ? `${what} are made for Arduino-type boards and the Raspberry Pi. For the ${brain.name.split(" (")[0]}, follow your reference design's own wiring and software, or add a microcontroller in the Build step.`
+        : `Add a microcontroller or a Raspberry Pi in the Build step to get ${what.toLowerCase()}.`}
+    </p>
+  );
+}
+
 export function PinMapPanel({ items }: { items: BuildItem[] }) {
   const plan = useMemo(() => planPins(items, PARTS_BY_ID), [items]);
   const fw = useMemo(() => generateFirmware(items, PARTS_BY_ID), [items]);
   if (!plan) {
-    return <p className="rounded-2xl bg-stage-2 p-5 text-mute">Add a microcontroller or a Raspberry Pi in the Build step to get a pin map and starter code.</p>;
+    return <NoHost items={items} what="Pin maps and starter code" />;
   }
   return (
     <div className="space-y-8">
@@ -185,7 +197,7 @@ export function PcbPanel({ items }: { items: BuildItem[] }) {
   const board = useMemo(() => designCarrierBoard(items, PARTS_BY_ID), [items]);
   const [focus, setFocus] = useState<string | null>(null);
   if (!board) {
-    return <p className="rounded-2xl bg-stage-2 p-5 text-mute">Add a microcontroller or a Raspberry Pi in the Build step to design a carrier board.</p>;
+    return <NoHost items={items} what="Custom carrier boards" />;
   }
   return (
     <div className="space-y-6">

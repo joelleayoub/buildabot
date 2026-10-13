@@ -5,10 +5,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ApiError, ChatRequest, ChatResponse, GuideRequest, GuideResponse, ProjectResponse, SaveProjectRequest, ShareResponse } from "@/lib/advisor/api";
 import type { ReferenceDesign } from "@/lib/advisor/tools";
 import { track } from "@/lib/analytics";
-import { DESIGNS, PARTS, PARTS_BY_ID } from "@/lib/catalog";
+import { DESIGNS, PARTS, PARTS_BY_ID, money } from "@/lib/catalog";
 import { checkBuild } from "@/lib/compat/checkBuild";
 import type { BuildItem, Requirements, Slot } from "@/lib/compat/types";
 import { type Answers, type UseCaseId, SLOT_LABELS, findUseCase, requirementsFrom, USE_CASES } from "@/lib/flow";
+import { slotNoun } from "@/lib/slots";
 import { type Locks, normaliseBuild, reasonFor, recommend } from "@/lib/recommend";
 import { trySwap } from "@/lib/swap";
 import type { CustomPart } from "@/lib/cad/spec";
@@ -181,7 +182,8 @@ export default function Studio() {
 
   useEffect(() => {
     if (!toast) return;
-    const t = setTimeout(() => setToast(null), 9000);
+    // Long enough to read and reach Undo, even on a slow laptop.
+    const t = setTimeout(() => setToast(null), toast.undo ? 15000 : 7000);
     return () => clearTimeout(t);
   }, [toast]);
 
@@ -214,7 +216,8 @@ export default function Studio() {
         }
       }
       if (attempt) rec = attempt;
-      note = `Started from ${d.name}.` + (dropped.length ? ` I changed the ${dropped.map((s) => SLOT_LABELS[s].toLowerCase()).join(", ")} to fit your answers.` : "");
+      note = `Started from ${d.name}.` + (dropped.length ? ` I changed the ${dropped.map((s) => slotNoun(s)).join(", ")} to fit your answers.` : "");
+      if (rec?.report.issues.some((i) => i.code === "OVER_BUDGET")) note += ` It comes to about ${money(rec.report.totals.price_usd_approx)}, over your ${money(rec.requirements.budget_usd ?? 0)} budget.`;
     }
     if (!rec) return;
     track("started", { via: designId ? "reference" : "recommended" });
@@ -232,8 +235,16 @@ export default function Studio() {
     track("part_swapped", { slot });
     const name = partId ? PARTS_BY_ID[partId].name : SLOT_LABELS[slot];
     const verb = partId === null ? "Removed" : prev.some((i) => PARTS_BY_ID[i.part_id]?.slot === slot) ? "Swapped in" : "Added";
-    const also = r.changed.length ? ` Also changed the ${r.changed.map((c) => SLOT_LABELS[c].toLowerCase()).join(", ")} so everything still fits.` : "";
-    const bad = r.report.ok ? "" : " This part needs other changes: see Compatibility.";
+    const had = (c: Slot) => prev.some((i) => PARTS_BY_ID[i.part_id]?.slot === c);
+    const has = (c: Slot) => r.items.some((i) => PARTS_BY_ID[i.part_id]?.slot === c);
+    const list = (cs: Slot[]) => cs.map((c) => slotNoun(c)).join(", ");
+    const added = r.changed.filter((c) => !had(c));
+    const removed = r.changed.filter((c) => had(c) && !has(c));
+    const changed = r.changed.filter((c) => had(c) && has(c));
+    const parts = [changed.length && `changed the ${list(changed)}`, added.length && `added a ${list(added)}`, removed.length && `removed the ${list(removed)}`].filter(Boolean);
+    const also = parts.length ? ` Also ${parts.join(" and ")}${r.report.ok ? " so everything still fits" : ""}.` : "";
+    const firstError = r.report.issues.find((i) => i.severity === "error");
+    const bad = firstError ? ` It still doesn't fit: ${firstError.message} Undo, or pick another part.` : "";
     setToast({ text: `${verb} ${name}.${also}${bad}`, undo: prev });
   };
 

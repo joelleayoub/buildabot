@@ -13,24 +13,27 @@ export const KIND: Record<WireKind, { color: string; label: string; dash?: strin
 const NW = 190;
 const NH = 62;
 
-function positions(nodes: WireNode[]): Record<string, { x: number; y: number }> {
+function positions(nodes: WireNode[], wires: Wire[]): Record<string, { x: number; y: number }> {
   const pos: Record<string, { x: number; y: number }> = {};
   const has = (id: string) => nodes.some((n) => n.id === id);
   pos.battery = { x: 20, y: 430 };
   pos.regulator = { x: 20, y: 120 };
   pos.driver = { x: 290, y: 430 };
   pos.controller = { x: 290, y: has("compute") ? 270 : 220 };
-  pos.compute = { x: 560, y: 120 };
+  pos.compute = { x: 560, y: 60 };
   pos.motors_left = { x: 560, y: 390 };
   pos.motors_right = { x: 560, y: 480 };
   const sensors = nodes.filter((n) => n.id.startsWith("sensor"));
-  sensors.forEach((n, i) => (pos[n.id] = { x: 830, y: 60 + i * 100 }));
+  // Sensors that plug into the computer go at the top, next to it; ones wired to the controller go
+  // lower, so their wires pass under the computer's box instead of through it.
+  const toCompute = (id: string) => wires.some((w) => (w.from === id && w.to === "compute") || (w.to === id && w.from === "compute"));
+  [...sensors].sort((a, b) => Number(toCompute(b.id)) - Number(toCompute(a.id))).forEach((n, i) => (pos[n.id] = { x: 830, y: 40 + i * 96 }));
   return pos;
 }
 
 /** With zoom, the view closes in on the two boards the highlighted wire joins. */
 export function WiringDiagram({ nodes, wires, highlight, zoom }: { nodes: WireNode[]; wires: Wire[]; highlight?: number; zoom?: boolean }) {
-  const pos = positions(nodes);
+  const pos = positions(nodes, wires);
   const pairCount: Record<string, number> = {};
   let viewBox = "0 0 1040 570";
   const hw = zoom && highlight ? wires.find((w) => w.n === highlight) : undefined;

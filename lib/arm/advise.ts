@@ -124,7 +124,9 @@ export function rankMachines(t: ArmTask): MachineOption[] {
 // ---------------------------------------------------------------- gripper and geometry
 
 export function pickGripper(t: ArmTask): ArmPart {
-  const grippers = ARM_PARTS.filter((p) => p.kind === "gripper");
+  // Drawing, engraving and filming hold a tool, not an object.
+  if (t.motion === "draw" || t.motion === "inspect") return ARM_PARTS_BY_ID["tool-holder-printed"];
+  const grippers = ARM_PARTS.filter((p) => p.kind === "gripper" && p.grips!.length > 0);
   // Suction can't hold things that get tilted sideways.
   const right = grippers.filter((g) => g.grips!.includes(t.object) && (g.id !== "grip-suction" || t.orientation !== "full"));
   const pool = right.length ? right : grippers;
@@ -340,7 +342,15 @@ export function planArm(task: Partial<ArmTask>): ArmPlan {
   families.sort((a, b) => Number(b.feasible) - Number(a.feasible) || (a.feasible ? a.cost_usd - b.cost_usd : a.problems.length - b.problems.length || a.cost_usd - b.cost_usd));
   const chosen = families.find((f) => f.feasible) ?? null;
   const top = machines[0].type;
-  const { verdict, reasons } = judge(t, chosen, top);
+  const judged = judge(t, chosen, top);
+  let verdict = judged.verdict;
+  const reasons = judged.reasons;
+  // Some jobs are hard because of the software, not the motors.
+  if (/\b(fold|laundry|cloth|towel|shirt|knot|sew)\w*/.test(t.description.toLowerCase())) {
+    if (verdict === "diy") reasons.length = 0;
+    reasons.unshift("Handling cloth (folding, hanging) is still a research problem: it usually needs two arms, cameras and a lot of software. The arm below can move it, but start with something rigid.");
+    if (verdict === "diy") verdict = "diy_with_care";
+  }
   const fam = chosen?.family === "pwm" ? "pwm" : chosen?.family === "stepper" ? "stepper" : "bus";
   const designs = [...ARM_DESIGNS]
     .map((d) => ({ d, s: (d.type === top ? 20 : d.type === machines[1].type ? 8 : d.type === "articulated" ? 3 : 0) + (d.family === fam ? 4 : 0) + (d.light === t.object_g <= 300 ? 2 : 0) + (d.difficulty === "beginner" ? 1 : 0) }))
@@ -357,6 +367,10 @@ export function planArm(task: Partial<ArmTask>): ArmPlan {
   if (top !== "articulated") notes.push(`The motor sizes below are for a jointed arm. Detailed sizing for a ${MACHINE_NOUN[top]} is coming next; start from its reference design.`);
   if (gripper.max_object_g! < t.object_g) notes.push(`No gripper in the catalog is rated for ${t.object_g} g of this kind of object; the strongest one is shown.`);
   if (gripper.id === "grip-suction") notes.push("Suction needs flat, smooth, clean surfaces. Test it on your real objects first.");
+  const d = t.description.toLowerCase();
+
+  if (t.motion === "sort" || /\b(conveyor|pile|bin|random|anywhere|find|detect|recogni[sz]e|jenga|chess|strawberr|fruit|weed)\w*/.test(d))
+    notes.push("This sizes the arm. Finding objects that aren't always in the same place (on a conveyor, in a pile, on a board) also needs a camera and vision software, such as OpenCV or a LeRobot policy.");
   notes.push("Torques assume the arm stretched out flat, the worst case. Motors are only counted at about half their rated torque so they stay cool.");
   return { task: t, machines, geometry, gripper, families, chosen, verdict, verdict_reasons: reasons, designs, notes };
 }
