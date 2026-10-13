@@ -51,6 +51,7 @@ preview at `/arm`: it sizes an arm for a task but has no cart, wiring or guide y
 | `scripts/smoke.mjs`, `docs/USER_TEST.md` | End-to-end check of the definition of done (works on the deployed URL) and the 5-user test plan |
 | `lib/workflow.test.ts` | Every answer combination and every part swap through recommend, check, swap, wiring, pins, code, board and guide |
 | `scripts/e2e-matrix.mjs`, `scripts/e2e-extras.mjs` | Browser runs: 18 rover users (use cases, floors, budgets, reference starts, phone), and the catalog, part designer and arm advisor |
+| `lib/extras.ts`, `data/extras.json`, `components/studio/Extras.tsx` | Screws, wire, connectors, chargers, safety items and tools each build needs, with "need to buy" ticks in the cart, on share pages and in the guide's tools step |
 | `lib/slots.ts` | Part labels, beginner explanations (`SLOT_EXPLAIN`), display order and colour families |
 | `lib/cad/` | 3D-printable part templates (`spec.ts`), offline text parser (`parse.ts`), CSG geometry and STL export (`geometry.ts`) |
 | `app/api/cad` | Text-to-CAD with Claude: description to template + parameters (falls back to `parse.ts` without a key) |

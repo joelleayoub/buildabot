@@ -12,6 +12,7 @@ import { generateFirmware } from "./electronics/firmware";
 import { planPins } from "./electronics/pins";
 import { ENVIRONMENTS, EXPERIENCE, USE_CASES, type Answers, requirementsFrom } from "./flow";
 import { buildGuide, guideToMarkdown } from "./quickGuide";
+import { defaultNeeded, extrasFor, extrasTotal } from "./extras";
 import { recommend, type Locks } from "./recommend";
 import { trySwap } from "./swap";
 import { planWiring } from "./wiring";
@@ -55,6 +56,16 @@ function checkDownstream(items: BuildItem[], answers: Answers, label: string) {
     for (const net of board.nets) assert.ok(board.components.flatMap((c) => c.pins).filter((p) => p.net === net).length >= 2, `${label}: net ${net} goes nowhere`);
     assert.ok(!BROKEN.test(toKicadNetlist(board) + toBomCsv(board) + board.notes.join(" ")), `${label}: board export`);
   }
+
+  const extras = extrasFor(items, PARTS_BY_ID);
+  const ids = extras.map((e) => e.item.id);
+  assert.equal(new Set(ids).size, ids.length, `${label}: an extra listed twice`);
+  for (const e of extras) assert.ok(e.why.length > 10 && !BROKEN.test(e.why + e.item.name) && e.qty >= 1 && /^https:\/\//.test(e.item.buy_url), `${label}: extra ${e.item.id}`);
+  for (const must of ["tool-screwdrivers", "tool-multimeter", "tool-stripper", "sup-standoffs-m3", "sup-wire", "sup-switch", "sup-fuse"]) assert.ok(ids.includes(must), `${label}: no ${must}`);
+  const chem = items.map((i) => PARTS_BY_ID[i.part_id]).find((p) => p.slot === "battery")?.compat.chemistry;
+  if (chem === "LiPo") assert.ok(ids.includes("safe-lipo-bag") && ids.includes("chg-lipo"), `${label}: LiPo without bag or balance charger`);
+  if (items.some((i) => PARTS_BY_ID[i.part_id].id.startsWith("compute-rpi"))) assert.ok(ids.includes("sup-microsd-32"), `${label}: Pi without a microSD card`);
+  assert.ok(Number.isFinite(extrasTotal(extras, defaultNeeded(extras))), `${label}: extras total`);
 
   const sections = buildGuide(items, PARTS_BY_ID, answers);
   assert.ok(sections.length >= 3, `${label}: guide has ${sections.length} sections`);

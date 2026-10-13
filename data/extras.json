@@ -1,0 +1,226 @@
+[
+ {
+  "id": "sup-standoffs-m3",
+  "kind": "supply",
+  "icon": "screws",
+  "name": "M3 nylon standoffs, screws and nuts kit",
+  "price_usd_approx": 10,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=M3%20nylon%20standoff%20screw%20nut%20kit"
+ },
+ {
+  "id": "sup-standoffs-m25",
+  "kind": "supply",
+  "icon": "screws",
+  "name": "M2.5 standoffs and screws for the Raspberry Pi",
+  "price_usd_approx": 8,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=M2.5%20standoff%20screw%20kit%20raspberry%20pi"
+ },
+ {
+  "id": "sup-jumpers",
+  "kind": "supply",
+  "icon": "wires",
+  "name": "Dupont jumper wires (male-male, male-female, female-female)",
+  "price_usd_approx": 7,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=dupont%20jumper%20wire%20120pcs"
+ },
+ {
+  "id": "sup-wire",
+  "kind": "supply",
+  "icon": "wires",
+  "name": "20 AWG silicone wire, red and black",
+  "price_usd_approx": 9,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=20AWG%20silicone%20wire%20red%20black"
+ },
+ {
+  "id": "sup-switch",
+  "kind": "supply",
+  "icon": "fuse",
+  "name": "Power switch rated 10 A (rocker or toggle)",
+  "price_usd_approx": 4,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=rocker%20switch%2010A%2012V"
+ },
+ {
+  "id": "sup-fuse",
+  "kind": "supply",
+  "icon": "fuse",
+  "name": "Inline blade fuse holder with fuses",
+  "price_usd_approx": 6,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=inline%20blade%20fuse%20holder%2014AWG"
+ },
+ {
+  "id": "sup-xt60",
+  "kind": "supply",
+  "icon": "fuse",
+  "name": "XT60 connector pair with leads",
+  "price_usd_approx": 7,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=XT60%20connector%20pair%20with%2014AWG%20leads"
+ },
+ {
+  "id": "sup-heatshrink",
+  "kind": "supply",
+  "icon": "solder",
+  "name": "Heat-shrink tubing assortment",
+  "price_usd_approx": 6,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=heat%20shrink%20tubing%20assortment%20kit"
+ },
+ {
+  "id": "sup-mounting",
+  "kind": "supply",
+  "icon": "ties",
+  "name": "Zip ties, a Velcro battery strap and foam mounting tape",
+  "price_usd_approx": 9,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=velcro%20battery%20strap%20zip%20ties%20foam%20tape"
+ },
+ {
+  "id": "sup-microsd-32",
+  "kind": "supply",
+  "icon": "card",
+  "name": "microSD card, 32 GB (A1 or A2)",
+  "price_usd_approx": 9,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=microSD%20card%2032GB%20A1"
+ },
+ {
+  "id": "sup-microsd-64",
+  "kind": "supply",
+  "icon": "card",
+  "name": "microSD card, 64 GB (A2)",
+  "price_usd_approx": 12,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=microSD%20card%2064GB%20A2"
+ },
+ {
+  "id": "sup-usb",
+  "kind": "supply",
+  "icon": "usb",
+  "name": "USB data cable that fits your board",
+  "price_usd_approx": 5,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=USB%20data%20cable%20micro%20USB%20type%20C"
+ },
+ {
+  "id": "sup-pi5-cooler",
+  "kind": "supply",
+  "icon": "fan",
+  "name": "Raspberry Pi 5 Active Cooler",
+  "price_usd_approx": 5,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=Raspberry%20Pi%205%20Active%20Cooler"
+ },
+ {
+  "id": "sup-headers",
+  "kind": "supply",
+  "icon": "solder",
+  "name": "Male header pin strips (2.54 mm)",
+  "price_usd_approx": 4,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=2.54mm%20male%20header%20pin%20strip%2040%20pin"
+ },
+ {
+  "id": "sup-resistors",
+  "kind": "supply",
+  "icon": "resistor",
+  "name": "Resistor kit (includes 1 kΩ and 2 kΩ)",
+  "price_usd_approx": 6,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=resistor%20assortment%20kit%201/4W"
+ },
+ {
+  "id": "sup-breadboard",
+  "kind": "supply",
+  "icon": "board",
+  "name": "Half-size breadboard",
+  "price_usd_approx": 4,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=half%20size%20breadboard%20400"
+ },
+ {
+  "id": "safe-lipo-bag",
+  "kind": "safety",
+  "icon": "shield",
+  "name": "Fireproof LiPo charging bag",
+  "price_usd_approx": 10,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=lipo%20safe%20bag%20fireproof"
+ },
+ {
+  "id": "safe-lipo-alarm",
+  "kind": "safety",
+  "icon": "shield",
+  "name": "LiPo low-voltage alarm",
+  "price_usd_approx": 4,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=lipo%20low%20voltage%20alarm%20buzzer%201-8S"
+ },
+ {
+  "id": "chg-nimh",
+  "kind": "tool",
+  "icon": "charger",
+  "name": "AA NiMH smart charger",
+  "price_usd_approx": 20,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=AA%20NiMH%20smart%20charger"
+ },
+ {
+  "id": "chg-lipo",
+  "kind": "tool",
+  "icon": "charger",
+  "name": "LiPo balance charger (2S to 4S)",
+  "price_usd_approx": 30,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=lipo%20balance%20charger%202S%204S"
+ },
+ {
+  "id": "chg-liion",
+  "kind": "tool",
+  "icon": "charger",
+  "name": "Li-ion pack charger",
+  "price_usd_approx": 15,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=li-ion%20battery%20pack%20charger"
+ },
+ {
+  "id": "tool-screwdrivers",
+  "kind": "tool",
+  "icon": "screwdriver",
+  "name": "Precision screwdriver set (Phillips PH0, PH1 and small flat)",
+  "price_usd_approx": 12,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=precision%20screwdriver%20set"
+ },
+ {
+  "id": "tool-multimeter",
+  "kind": "tool",
+  "icon": "multimeter",
+  "name": "Digital multimeter",
+  "price_usd_approx": 15,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=digital%20multimeter"
+ },
+ {
+  "id": "tool-stripper",
+  "kind": "tool",
+  "icon": "pliers",
+  "name": "Wire stripper and cutter",
+  "price_usd_approx": 10,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=wire%20stripper%20cutter"
+ },
+ {
+  "id": "tool-soldering",
+  "kind": "tool",
+  "icon": "solder",
+  "name": "Soldering iron kit with solder",
+  "price_usd_approx": 25,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=soldering%20iron%20kit%20temperature%20control"
+ },
+ {
+  "id": "tool-hex",
+  "kind": "tool",
+  "icon": "hex",
+  "name": "Hex key set (1.5 to 3 mm)",
+  "price_usd_approx": 7,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=hex%20key%20set%20metric%201.5%202%202.5%203mm"
+ },
+ {
+  "id": "tool-pliers",
+  "kind": "tool",
+  "icon": "pliers",
+  "name": "Needle-nose pliers",
+  "price_usd_approx": 7,
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=needle%20nose%20pliers%20small"
+ },
+ {
+  "id": "tool-computer",
+  "kind": "tool",
+  "icon": "laptop",
+  "name": "A laptop or desktop computer with a USB port",
+  "price_usd_approx": 0,
+  "buy_url": "https://www.arduino.cc/en/software"
+ }
+]

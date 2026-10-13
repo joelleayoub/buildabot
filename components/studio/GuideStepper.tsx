@@ -7,7 +7,8 @@ import { useEffect, useMemo, useState } from "react";
 import PartArt from "@/components/PartArt";
 import { PARTS_BY_ID } from "@/lib/catalog";
 import type { BuildItem } from "@/lib/compat/types";
-import type { GuideSection, GuideStep, ToolIcon } from "@/lib/quickGuide";
+import type { GuideSection, GuideStep } from "@/lib/quickGuide";
+import { ToolIcon } from "@/components/ToolIcon";
 import { SLOT_LABELS } from "@/lib/slots";
 import { planWiring } from "@/lib/wiring";
 import { CodeBlock } from "./Electronics";
@@ -15,32 +16,6 @@ import { KIND, WiringDiagram } from "./WiringDiagram";
 import { Button } from "./ui";
 
 const RobotViewer = dynamic(() => import("@/components/RobotViewer"), { ssr: false, loading: () => <div className="grid h-full place-items-center text-sm text-mute">Loading 3D view…</div> });
-
-const TOOL_ICON: Record<ToolIcon, React.ReactNode> = {
-  screwdriver: <path d="M14 3l7 7-3 3-7-7zM11 6l-7 11 3 3 11-7" />,
-  multimeter: (
-    <>
-      <rect x="6" y="2" width="12" height="20" rx="2" />
-      <rect x="8.5" y="5" width="7" height="4" rx="0.5" />
-      <circle cx="12" cy="15" r="2.5" />
-    </>
-  ),
-  wires: <path d="M3 7c6 0 6 10 12 10h6M3 17c6 0 6-10 12-10h6" />,
-  ties: <path d="M4 12a8 8 0 1 0 8-8M12 4h8v3h-8" />,
-  solder: <path d="M3 21l6-6M9 15l8-8 3 3-8 8zM17 7l3-3" />,
-  charger: (
-    <>
-      <rect x="4" y="6" width="14" height="12" rx="2" />
-      <path d="M18 10h2v4h-2M11 8l-2 4h4l-2 4" />
-    </>
-  ),
-  fuse: (
-    <>
-      <rect x="6" y="9" width="12" height="6" rx="1" />
-      <path d="M2 12h4M18 12h4M9 12h6" />
-    </>
-  ),
-};
 
 interface Flat extends GuideStep {
   section: string;
@@ -116,9 +91,7 @@ function Visual({ step, items }: { step: Flat; items: BuildItem[] }) {
       {v.tools.map((t) => (
         <div key={t.name} className="flex items-center gap-3 rounded-2xl bg-paper p-3">
           <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-blue-soft text-blue">
-            <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth={1.7} strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              {TOOL_ICON[t.icon]}
-            </svg>
+            <ToolIcon icon={t.icon} />
           </span>
           <span className="text-sm leading-snug">{t.name}</span>
         </div>

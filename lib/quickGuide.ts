@@ -3,8 +3,9 @@ import type { BuildItem, Part, Slot } from "./compat/types";
 import { type Answers, findUseCase } from "./flow";
 import { generateFirmware } from "./electronics/firmware";
 import { planWiring } from "./wiring";
+import { type ExtraIcon, extrasFor } from "./extras";
 
-export type ToolIcon = "screwdriver" | "multimeter" | "wires" | "ties" | "solder" | "charger" | "fuse";
+export type ToolIcon = ExtraIcon;
 
 /** What the guide shows next to a step. */
 export type GuideVisual =
@@ -42,20 +43,9 @@ export function buildGuide(items: BuildItem[], byId: Record<string, Part>, answe
   const imu = get("imu");
   const uc = findUseCase(answers.useCase);
   const usesRos = !!compute?.compat.ros2 && uc?.needsCompute;
-  const solder = parts.some((p) => ["imu", "distance_sensor"].includes(p.slot) && p.compat.interface === "i2c") || !!motor?.compat.has_encoder || !!regulator;
 
-  const toolList: { name: string; icon: ToolIcon }[] = [
-    { name: "Small Phillips and flat screwdrivers", icon: "screwdriver" },
-    { name: "Multimeter (any cheap one) for checking voltages", icon: "multimeter" },
-    { name: "Jumper wires (male–female and female–female), and 18–20 AWG wire for power", icon: "wires" },
-    { name: "Zip ties or double-sided foam tape", icon: "ties" },
-    { name: solder ? "Soldering iron and solder, for header pins and power leads" : "No soldering needed if you buy boards with headers already fitted", icon: "solder" },
-    {
-      name: battery?.compat.chemistry === "LiPo" ? "LiPo balance charger, fireproof charging bag and a low-voltage alarm" : battery?.compat.chemistry === "Li-ion" ? `A ${battery.compat.battery_max_v} V Li-ion charger matching the pack` : "AA NiMH charger",
-      icon: "charger",
-    },
-    { name: "An inline fuse (5–10 A) and a rocker switch for the battery lead", icon: "fuse" },
-  ];
+  const extras = extrasFor(items, byId);
+  const toolList: { name: string; icon: ToolIcon }[] = extras.filter((e) => !e.optional).map((e) => ({ name: `${e.qty > 1 ? `${e.qty} × ` : ""}${e.item.name}`, icon: e.item.icon }));
   const tools = toolList.map((t) => t.name);
   const idOf = (...slots: Slot[]) => parts.filter((p) => slots.includes(p.slot)).map((p) => p.id);
   // Cumulative assembly: each step shows everything fitted so far.
@@ -72,7 +62,7 @@ export function buildGuide(items: BuildItem[], byId: Record<string, Part>, answe
     time: "15 min",
     steps: [
       { title: "Check the box", body: `Lay out every part from your bag and tick it off against the cart. You should have ${parts.length} different parts.`, visual: { kind: "parts", ids: parts.map((p) => p.id) } },
-      { title: "Gather your tools", body: tools.map((t) => `• ${t}`).join("\n"), visual: { kind: "tools", tools: toolList } },
+      { title: "Gather your tools and supplies", body: `These aren't in the parts list: screws, wire, a charger and the tools to put it together. The Cart step lists them with prices; tick off what you already have.\n${tools.map((t) => `• ${t}`).join("\n")}`, visual: { kind: "tools", tools: toolList } },
       { title: "Charge the battery", body: `Start charging the ${battery?.name ?? "battery"} now so it's ready for the first drive.`, visual: { kind: "parts", ids: idOf("battery") }, parts: idOf("battery") },
     ],
   });

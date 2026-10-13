@@ -17,6 +17,7 @@ import { Button, IssueList, StepHeading } from "./ui";
 import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { downloadStl } from "./CadPanel";
 import { PcbPanel, PinMapPanel } from "./Electronics";
+import { ExtrasList, useExtras } from "./Extras";
 
 export function StepWiring({ items, onBack, onNext }: { items: BuildItem[]; onBack: () => void; onNext: () => void }) {
   const plan = useMemo(() => planWiring(items, PARTS_BY_ID), [items]);
@@ -151,12 +152,18 @@ export function StepCart({
   onEdit: () => void;
 }) {
   const [copied, setCopied] = useState(false);
+  const extras = useExtras(items);
   const lines = SLOT_ORDER.flatMap((s) => items.filter((i) => PARTS_BY_ID[i.part_id]?.slot === s)).map((i) => ({ item: i, part: PARTS_BY_ID[i.part_id] }));
   const shops = new Set(lines.map((l) => retailerName(l.part.buy_url)));
   const csv = () => {
     const rows = [["Part", "Slot", "Qty (packs)", "Approx unit price (USD)", "Approx line total (USD)", "Where to buy"]];
     for (const { item, part } of lines) rows.push([part.name, SLOT_LABELS[part.slot], String(item.quantity), String(part.price_usd_approx), String(part.price_usd_approx * item.quantity), part.buy_url]);
-    rows.push(["Total", "", "", "", String(report.totals.price_usd_approx), ""]);
+    rows.push(["Parts total", "", "", "", String(report.totals.price_usd_approx), ""]);
+    rows.push([]);
+    rows.push(["Also needed", "Type", "Qty", "Approx unit price (USD)", "Still to buy?", "Where to buy"]);
+    for (const e of extras.extras) rows.push([e.item.name, e.item.kind, String(e.qty), String(e.item.price_usd_approx), extras.needed.has(e.item.id) ? "yes" : "already have", e.item.buy_url]);
+    rows.push(["Supplies and tools to buy", "", "", "", String(extras.total), ""]);
+    rows.push(["Everything", "", "", "", String(Math.round(report.totals.price_usd_approx + extras.total)), ""]);
     download("buildabot-parts.csv", rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
   };
   const copy = async () => {
@@ -228,9 +235,30 @@ export function StepCart({
               </ul>
             )}
           </li>
+          <li className="py-6">
+            <ExtrasList {...extras} onLinkClick={(id) => onRetailerClick(`extra:${id}`)} />
+          </li>
         </ul>
         <aside className="h-fit rounded-3xl bg-stage-2 p-6 lg:sticky lg:top-24">
           <BuildStats items={items} byId={PARTS_BY_ID} report={report} />
+          <dl className="mt-4 space-y-1.5 border-t border-line pt-4 text-sm">
+            <div className="flex justify-between">
+              <dt className="text-mute">Parts</dt>
+              <dd className="num">~{money(report.totals.price_usd_approx)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-mute">Screws, wire and supplies</dt>
+              <dd className="num">~{money(extras.supplies)}</dd>
+            </div>
+            <div className="flex justify-between">
+              <dt className="text-mute">Tools and charger (once)</dt>
+              <dd className="num">~{money(extras.tools)}</dd>
+            </div>
+            <div className="flex justify-between text-base font-bold">
+              <dt>Everything</dt>
+              <dd className="num">~{money(report.totals.price_usd_approx + extras.total)}</dd>
+            </div>
+          </dl>
           <p className="mt-1 text-xs text-mute">Shipping and tax not included.</p>
           <div className="mt-5 grid gap-2">
             <Button variant="dark" onClick={onNext}>

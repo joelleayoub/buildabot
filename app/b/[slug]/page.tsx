@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BuildIssues, BuildStats } from "@/components/BuildStats";
 import { Guide } from "@/components/Guide";
+import { defaultNeeded, extrasFor, extrasTotal } from "@/lib/extras";
 import { RoverDiagram } from "@/components/RoverDiagram";
 import { SlotBadge } from "@/components/SlotIcon";
 import { jsonCatalog } from "@/lib/advisor/agent";
@@ -23,6 +24,7 @@ async function SharedBuild({ params }: { params: Promise<{ slug: string }> }) {
   const byId = Object.fromEntries(parts.map((p) => [p.id, p]));
   const requirements = shared.requirements ?? { autonomy: "remote_control" as const };
   const report = checkBuild(shared.items, byId, requirements);
+  const extras = extrasFor(shared.items, byId);
   const lines = shared.items.flatMap((item) => (byId[item.part_id] ? [{ item, part: byId[item.part_id] }] : []));
 
   return (
@@ -63,6 +65,21 @@ async function SharedBuild({ params }: { params: Promise<{ slug: string }> }) {
               </li>
             )),
         )}
+      </ul>
+
+      <h2 className="mt-10 text-lg font-semibold">Also needed to build it</h2>
+      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Screws, wire, a charger and tools. About ${extrasTotal(extras, defaultNeeded(extras))} if you have none of them.</p>
+      <ul className="mt-3 grid gap-x-6 gap-y-1.5 text-sm sm:grid-cols-2">
+        {extras.map((e) => (
+          <li key={e.item.id} className="flex justify-between gap-3 border-b border-zinc-100 py-1.5 dark:border-zinc-800">
+            <span>
+              {e.qty > 1 ? `${e.qty} × ` : ""}
+              {e.item.name}
+              {e.optional ? " (optional)" : ""}
+            </span>
+            <span className="shrink-0 font-mono">{e.item.price_usd_approx ? `~$${e.item.price_usd_approx * e.qty}` : "you likely have one"}</span>
+          </li>
+        ))}
       </ul>
 
       {shared.guide && (
