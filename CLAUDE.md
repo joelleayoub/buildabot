@@ -6,8 +6,9 @@ they can buy + a step-by-step build guide**. An AI advisor asks about the use ca
 trade-offs, shows open-source reference designs, and assembles a build from a curated parts
 database. Every build is checked by a deterministic compatibility checker before it's shown.
 
-**MVP scope (1 week): wheeled indoor rovers only.** Arms, legs, humanoids, custom CAD and PCB
-generation are explicitly out of scope until real users have tested this version.
+**MVP scope (1 week): wheeled indoor rovers only.** Arms, legs and humanoids are out of scope for
+the build flow until real users have tested this version. The one exception is the arm advisor
+preview at `/arm`: it sizes an arm for a task but has no cart, wiring or guide yet.
 
 ## The core loop
 1. User describes the robot ("a rover that maps my apartment and follows me").
@@ -44,6 +45,10 @@ generation are explicitly out of scope until real users have tested this version
 | `lib/electronics/` | Pin plan per controller (`pins.ts`), starter firmware for Arduino/ESP32/Pico/Teensy or Python for a Pi (`firmware.ts`), carrier PCB with KiCad netlist and BOM export (`board.ts`) |
 | `components/studio/Electronics.tsx` | Pin map, firmware and custom PCB panels shown in the Wiring step |
 | `components/studio/GuideStepper.tsx`, `WiringDiagram.tsx` | Picture guide: one step at a time with the 3D robot built up so far, the highlighted wire, or the code to upload |
+| `app/arm`, `components/arm/`, `lib/arm/` | Arm advisor preview: task to machine type (`rankMachines`), joint torques and motors per family (`sizeFamily`), build or buy verdict, parts list. `data/arm_parts.json`, `data/arm_designs.json` |
+| `app/api/arm` | Claude reads the task description into numbers (falls back to `lib/arm/parse.ts` without a key) |
+| `lib/telemetry.ts`, `app/api/events`, `app/api/feedback`, `components/FeedbackButton.tsx` | Analytics events and in-app feedback, stored in Supabase `events` and `feedback` (memory without a database) |
+| `scripts/smoke.mjs`, `docs/USER_TEST.md` | End-to-end check of the definition of done (works on the deployed URL) and the 5-user test plan |
 | `lib/slots.ts` | Part labels, beginner explanations (`SLOT_EXPLAIN`), display order and colour families |
 | `lib/cad/` | 3D-printable part templates (`spec.ts`), offline text parser (`parse.ts`), CSG geometry and STL export (`geometry.ts`) |
 | `app/api/cad` | Text-to-CAD with Claude: description to template + parameters (falls back to `parse.ts` without a key) |
@@ -54,7 +59,7 @@ generation are explicitly out of scope until real users have tested this version
 | `lib/compat/` | Compatibility checker and tests |
 | `data/parts.json`, `data/reference_designs.json` | Catalog |
 
-Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/electronics/*.test.ts`
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/electronics/*.test.ts lib/arm/*.test.ts`
 
 ## Rules for the codebase
 - **The AI never invents parts.** It can only recommend parts returned by `search_parts`.
@@ -69,6 +74,7 @@ Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/
 - Keep the advisor loop server-side (`app/api/chat/route.ts`), stream text to the client.
 - Persist each project (requirements, chosen build, messages) so users can come back.
 - The flow works without the AI: recommender, swaps, wiring and checklist are deterministic. The AI advisor explains, suggests and writes the detailed guide.
+- **The AI never sizes arm motors.** `/api/arm` only turns text into an `ArmTask`; `lib/arm/advise.ts` decides torques, motors, feasibility and the build or buy verdict. Never quote prices for ready-made cobots.
 - The carrier PCB is a netlist, not a routed board. Never claim it is ready to order without the KiCad routing and DRC steps.
 - Printable parts export as STL only. G-code depends on the user's printer, so the slicer makes it; never generate G-code.
 - Print provider prices are tiers, not quotes. Never invent prices or delivery dates for a service.

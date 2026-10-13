@@ -74,3 +74,29 @@ drop policy if exists "shared projects readable" on projects;
 create policy "own messages" on messages
   for all using (exists (select 1 from projects p where p.id = project_id and p.user_id = auth.uid()))
   with check (exists (select 1 from projects p where p.id = project_id and p.user_id = auth.uid()));
+
+-- User test telemetry. Written server-side with the service-role key (lib/telemetry.ts); no
+-- public policies, so the browser can't read them. Read them in the Supabase table editor.
+create table if not exists events (
+  id          bigint generated always as identity primary key,
+  session     text not null,
+  event       text not null,
+  props       jsonb not null default '{}'::jsonb,
+  path        text not null default '',
+  created_at  timestamptz not null default now()
+);
+create index if not exists events_session_idx on events (session, id);
+
+create table if not exists feedback (
+  id          bigint generated always as identity primary key,
+  session     text not null,
+  rating      smallint check (rating between 1 and 5),
+  goal        text not null default '',
+  message     text not null default '',
+  path        text not null default '',
+  step        text not null default '',
+  created_at  timestamptz not null default now()
+);
+
+alter table events enable row level security;
+alter table feedback enable row level security;

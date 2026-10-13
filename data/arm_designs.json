@@ -1,0 +1,124 @@
+[
+ {
+  "id": "ref-so101",
+  "name": "SO-101 (LeRobot)",
+  "url": "https://github.com/TheRobotStudio/SO-ARM100",
+  "type": "articulated",
+  "dof": 6,
+  "family": "bus",
+  "summary": "Printed desk arm with six Feetech STS3215 bus servos. Comes as a leader and follower pair, so you can teach it by moving the leader arm, then train it with Hugging Face LeRobot.",
+  "best_for": [
+   "learning AI and imitation",
+   "light pick and place",
+   "first arm"
+  ],
+  "difficulty": "beginner",
+  "light": true
+ },
+ {
+  "id": "ref-thor",
+  "name": "Thor",
+  "url": "https://github.com/AngelLM/Thor",
+  "type": "articulated",
+  "dof": 6,
+  "family": "stepper",
+  "summary": "Fully 3D-printable 6-axis arm driven by stepper motors, with an open-source controller and GUI.",
+  "best_for": [
+   "printable stepper arm",
+   "learning kinematics"
+  ],
+  "difficulty": "intermediate",
+  "light": false
+ },
+ {
+  "id": "ref-parol6",
+  "name": "PAROL6",
+  "url": "https://github.com/PCrnjak/PAROL6-Desktop-robot-arm",
+  "type": "articulated",
+  "dof": 6,
+  "family": "stepper",
+  "summary": "Desktop arm built like a small industrial robot: steppers with gearboxes, printed parts, its own control board and commander software.",
+  "best_for": [
+   "repeatable desk tasks",
+   "industrial-style learning"
+  ],
+  "difficulty": "advanced",
+  "light": false
+ },
+ {
+  "id": "ref-ar4",
+  "name": "AR4 (Annin Robotics)",
+  "url": "https://www.anninrobotics.com/",
+  "type": "articulated",
+  "dof": 6,
+  "family": "stepper",
+  "summary": "Larger 6-axis arm with steppers, aluminium and printed parts, a Teensy controller and a ROS 2 driver. Sold as kits or plans.",
+  "best_for": [
+   "heavier desk tasks",
+   "ROS 2 and MoveIt"
+  ],
+  "difficulty": "advanced",
+  "light": false
+ },
+ {
+  "id": "ref-moveo",
+  "name": "BCN3D Moveo",
+  "url": "https://github.com/BCN3D/BCN3D-Moveo",
+  "type": "articulated",
+  "dof": 5,
+  "family": "stepper",
+  "summary": "5-axis printable arm made for schools, with NEMA 17 steppers and the Arduino-based electronics used in many 3D printers.",
+  "best_for": [
+   "classrooms",
+   "printer-style electronics"
+  ],
+  "difficulty": "intermediate",
+  "light": false
+ },
+ {
+  "id": "ref-scara-htm",
+  "name": "Arduino SCARA robot (How To Mechatronics)",
+  "url": "https://howtomechatronics.com/projects/scara-robot-how-to-build-your-own-arduino-based-robot/",
+  "type": "scara",
+  "dof": 4,
+  "family": "stepper",
+  "summary": "Step-by-step SCARA build with NEMA 17 steppers, belts, printed parts and an Arduino, with a full video walkthrough.",
+  "best_for": [
+   "flat pick and place",
+   "sorting on a table"
+  ],
+  "difficulty": "intermediate",
+  "light": false
+ },
+ {
+  "id": "ref-awesome-plotters",
+  "name": "Awesome plotters (open-source pen plotters)",
+  "url": "https://github.com/beardicus/awesome-plotters",
+  "type": "gantry",
+  "dof": 3,
+  "family": "stepper",
+  "summary": "A curated list of open-source pen plotter and drawing machine builds, software and communities. Most are a small XYZ gantry with two steppers and a servo pen lift.",
+  "best_for": [
+   "drawing and writing",
+   "laser and pen work",
+   "precise flat jobs"
+  ],
+  "difficulty": "beginner",
+  "light": true
+ },
+ {
+  "id": "ref-delta-x-s",
+  "name": "Delta X S",
+  "url": "https://hackaday.io/project/192791-delta-x-s-industrial-delta-robot-for-makers",
+  "type": "delta",
+  "dof": 4,
+  "family": "stepper",
+  "summary": "Open-source delta robot for makers, built for fast pick and place of light objects, with its own controller and software.",
+  "best_for": [
+   "fast light picks",
+   "sorting on a conveyor"
+  ],
+  "difficulty": "advanced",
+  "light": true
+ }
+]

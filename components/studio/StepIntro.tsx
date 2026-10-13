@@ -3,6 +3,7 @@
 import { PARTS_BY_ID, DESIGNS, money } from "@/lib/catalog";
 import { ENVIRONMENTS, EXPERIENCE, ROBOT_TYPES, USE_CASES, type Answers, type RobotTypeId, findUseCase } from "@/lib/flow";
 import type { Recommendation } from "@/lib/recommend";
+import Link from "next/link";
 import PartArt from "@/components/PartArt";
 import { AdviceBox, Button, StepHeading } from "./ui";
 
@@ -69,26 +70,40 @@ export function StepRobotType({ onPick }: { onPick: (id: RobotTypeId) => void })
         Pick a body type. I&apos;ll ask what it&apos;s for, suggest proven designs, and put together a parts list that works together.
       </StepHeading>
       <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {ROBOT_TYPES.map((t) => (
-          <button
-            key={t.id}
-            disabled={!t.available}
-            onClick={() => onPick(t.id)}
-            className={`group flex flex-col overflow-hidden rounded-3xl border text-left transition ${t.available ? "border-line hover:border-ink" : "border-line opacity-70"}`}
-          >
-            <div className="aspect-[4/3] bg-stage-2 p-6">
-              <TypeArt id={t.id} />
-            </div>
-            <div className="flex flex-1 flex-col gap-1 p-5">
-              <div className="flex items-center justify-between">
-                <span className="text-lg font-bold">{t.name}</span>
-                {!t.available && <span className="rounded-full bg-stage px-2.5 py-0.5 text-xs font-medium text-mute">Coming later</span>}
+        {ROBOT_TYPES.map((t) => {
+          // The arm builder isn't here yet, but the arm advisor (/arm) sizes one for a task.
+          const preview = t.id === "arm";
+          const inner = (
+            <>
+              <div className="aspect-[4/3] bg-stage-2 p-6">
+                <TypeArt id={t.id} />
               </div>
-              <p className="text-sm leading-relaxed text-mute">{t.blurb}</p>
-              {t.available && <span className="mt-3 text-sm font-semibold text-blue">Start with a rover</span>}
-            </div>
-          </button>
-        ))}
+              <div className="flex flex-1 flex-col gap-1 p-5">
+                <div className="flex items-center justify-between">
+                  <span className="text-lg font-bold">{t.name}</span>
+                  {preview ? (
+                    <span className="rounded-full bg-blue-soft px-2.5 py-0.5 text-xs font-semibold text-blue">Preview</span>
+                  ) : (
+                    !t.available && <span className="rounded-full bg-stage px-2.5 py-0.5 text-xs font-medium text-mute">Coming later</span>
+                  )}
+                </div>
+                <p className="text-sm leading-relaxed text-mute">{t.blurb}</p>
+                {t.available && <span className="mt-3 text-sm font-semibold text-blue">Start with a rover</span>}
+                {preview && <span className="mt-3 text-sm font-semibold text-blue">Size an arm for a task</span>}
+              </div>
+            </>
+          );
+          const cls = "group flex flex-col overflow-hidden rounded-3xl border text-left transition";
+          return preview ? (
+            <Link key={t.id} href="/arm" className={`${cls} border-line hover:border-ink`}>
+              {inner}
+            </Link>
+          ) : (
+            <button key={t.id} disabled={!t.available} onClick={() => onPick(t.id)} className={`${cls} ${t.available ? "border-line hover:border-ink" : "border-line opacity-70"}`}>
+              {inner}
+            </button>
+          );
+        })}
       </div>
     </section>
   );

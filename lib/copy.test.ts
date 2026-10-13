@@ -17,7 +17,7 @@ function files(dir: string): string[] {
 }
 
 test("no em dashes in source, data or docs", () => {
-  const scanned = [...["app", "components", "lib", "data", "scripts", "supabase"].flatMap(files), "CLAUDE.md", "README.md"];
+  const scanned = [...["app", "components", "lib", "data", "scripts", "supabase", "docs"].flatMap(files), "CLAUDE.md", "README.md"];
   const offenders = scanned.filter((f) => readFileSync(join(root, f), "utf8").includes(EM_DASH));
   assert.deepEqual(offenders, []);
 });

@@ -1,6 +1,7 @@
 "use client";
 // Steps 5–7: wiring diagram, cart, build guide.
 import { useMemo, useState } from "react";
+import { track } from "@/lib/analytics";
 import PartArt from "@/components/PartArt";
 import { PARTS_BY_ID, money, retailerName } from "@/lib/catalog";
 import type { BuildItem, BuildReport } from "@/lib/compat/types";
@@ -333,7 +334,7 @@ export function StepGuide({
       ) : view === "quick" ? (
         <>
           <div className="mt-4 flex flex-wrap gap-2 print:hidden">
-            <Button onClick={() => download("buildabot-checklist.md", guideToMarkdown(title, sections), "text/markdown")}>Download checklist</Button>
+            <Button onClick={() => (download("buildabot-checklist.md", guideToMarkdown(title, sections), "text/markdown"), track("guide_downloaded", { steps: sections.reduce((n, s) => n + s.steps.length, 0) }))}>Download checklist</Button>
             <Button variant="ghost" onClick={() => window.print()}>
               Print
             </Button>
