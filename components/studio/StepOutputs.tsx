@@ -18,6 +18,8 @@ import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { downloadStl } from "./CadPanel";
 import { PcbPanel, PinMapPanel } from "./Electronics";
 import { ExtrasList, useExtras } from "./Extras";
+import { extraLine, OrderPlan, partLine, ShopLinkButton, useOrderPlan } from "./OrderPlan";
+import { countryName } from "@/lib/shops";
 
 export function StepWiring({ items, onBack, onNext }: { items: BuildItem[]; onBack: () => void; onNext: () => void }) {
   const plan = useMemo(() => planWiring(items, PARTS_BY_ID), [items]);
@@ -154,14 +156,26 @@ export function StepCart({
   const [copied, setCopied] = useState(false);
   const extras = useExtras(items);
   const lines = SLOT_ORDER.flatMap((s) => items.filter((i) => PARTS_BY_ID[i.part_id]?.slot === s)).map((i) => ({ item: i, part: PARTS_BY_ID[i.part_id] }));
-  const shops = new Set(lines.map((l) => retailerName(l.part.buy_url)));
+  const orderLines = useMemo(
+    () => [...lines.map((l) => partLine(l.part, l.item.quantity)), ...extras.extras.filter((e) => extras.needed.has(e.item.id) && e.item.price_usd_approx > 0).map(extraLine)],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [items, extras.extras, extras.needed],
+  );
+  const plan = useOrderPlan(orderLines);
+  const planFor = (key: string) => plan.resolved.find((r) => r.key === key);
   const csv = () => {
-    const rows = [["Part", "Slot", "Qty (packs)", "Approx unit price (USD)", "Approx line total (USD)", "Where to buy"]];
-    for (const { item, part } of lines) rows.push([part.name, SLOT_LABELS[part.slot], String(item.quantity), String(part.price_usd_approx), String(part.price_usd_approx * item.quantity), part.buy_url]);
+    const rows = [["Part", "Slot", "Qty (packs)", "Approx unit price (USD)", "Approx line total (USD)", "Shop", "Where to buy", "Search for"]];
+    for (const { item, part } of lines) {
+      const r = planFor(part.id);
+      rows.push([part.name, SLOT_LABELS[part.slot], String(item.quantity), String(part.price_usd_approx), String(part.price_usd_approx * item.quantity), r?.shopName ?? retailerName(part.buy_url), r?.link.url ?? part.buy_url, r && !r.link.direct ? r.link.term : ""]);
+    }
     rows.push(["Parts total", "", "", "", String(report.totals.price_usd_approx), ""]);
     rows.push([]);
-    rows.push(["Also needed", "Type", "Qty", "Approx unit price (USD)", "Still to buy?", "Where to buy"]);
-    for (const e of extras.extras) rows.push([e.item.name, e.item.kind, String(e.qty), String(e.item.price_usd_approx), extras.needed.has(e.item.id) ? "yes" : "already have", e.item.buy_url]);
+    rows.push(["Also needed", "Type", "Qty", "Approx unit price (USD)", "Still to buy?", "Shop", "Where to buy", "Search for"]);
+    for (const e of extras.extras) {
+      const r = planFor(e.item.id);
+      rows.push([e.item.name, e.item.kind, String(e.qty), String(e.item.price_usd_approx), extras.needed.has(e.item.id) ? "yes" : "already have", r?.shopName ?? retailerName(e.item.buy_url), r?.link.url ?? e.item.buy_url, r && !r.link.direct ? r.link.term : ""]);
+    }
     rows.push(["Supplies and tools to buy", "", "", "", String(extras.total), ""]);
     rows.push(["Everything", "", "", "", String(Math.round(report.totals.price_usd_approx + extras.total)), ""]);
     download("buildabot-parts.csv", rows.map((r) => r.map((c) => `"${c.replace(/"/g, '""')}"`).join(",")).join("\n"), "text/csv");
@@ -179,7 +193,10 @@ export function StepCart({
   return (
     <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-14">
       <StepHeading kicker="Step 6 of 7" title="Your bag">
-        {lines.length} parts from {shops.size} shop{shops.size > 1 ? "s" : ""}. Prices are estimates, so check each shop before you order.
+        {lines.length} parts, plus the screws and tools to build it. Prices are estimates, so check each shop before you order.{" "}
+        <a href="#order" className="font-semibold text-blue hover:underline">
+          {plan.cc ? `Shops picked for ${countryName(plan.cc)}` : "Add your location to see shops that deliver to you"}
+        </a>
       </StepHeading>
       <div className="mt-8 grid gap-8 lg:grid-cols-[1fr_360px]">
         <ul className="divide-y divide-line border-y border-line">
@@ -191,9 +208,13 @@ export function StepCart({
               <div className="min-w-0 flex-1">
                 <p className="text-xs text-mute">{SLOT_LABELS[part.slot]}</p>
                 <p className="font-semibold leading-snug">{part.name}</p>
-                <a href={part.buy_url} target="_blank" rel="noreferrer" onClick={() => onRetailerClick(part.id)} className="text-sm font-semibold text-blue hover:underline">
-                  Find at {retailerName(part.buy_url)}
-                </a>
+                {planFor(part.id) ? (
+                  <ShopLinkButton name={planFor(part.id)!.shopName} link={planFor(part.id)!.link} onClick={() => onRetailerClick(part.id)} />
+                ) : (
+                  <a href={part.buy_url} target="_blank" rel="noreferrer" onClick={() => onRetailerClick(part.id)} className="text-sm font-semibold text-blue hover:underline">
+                    Find at {retailerName(part.buy_url)}
+                  </a>
+                )}
               </div>
               <div className="num text-right">
                 <p className="font-bold">~{money(part.price_usd_approx * item.quantity)}</p>
@@ -236,7 +257,17 @@ export function StepCart({
             )}
           </li>
           <li className="py-6">
-            <ExtrasList {...extras} onLinkClick={(id) => onRetailerClick(`extra:${id}`)} />
+            <ExtrasList
+              {...extras}
+              onLinkClick={(id) => onRetailerClick(`extra:${id}`)}
+              renderLink={(id) => {
+                const r = planFor(id);
+                return r ? <ShopLinkButton name={r.shopName} link={r.link} onClick={() => onRetailerClick(`extra:${id}`)} /> : null;
+              }}
+            />
+          </li>
+          <li id="order" className="scroll-mt-24 py-6">
+            <OrderPlan plan={plan} parts={lines.map((l) => l.part)} onLinkClick={(key) => onRetailerClick(key)} />
           </li>
         </ul>
         <aside className="h-fit rounded-3xl bg-stage-2 p-6 lg:sticky lg:top-24">

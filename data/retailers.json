@@ -1,0 +1,1700 @@
+[
+ {
+  "id": "aliexpress",
+  "name": "AliExpress",
+  "home": "https://www.aliexpress.com/",
+  "search": "https://www.aliexpress.com/wholesale?SearchText={q}",
+  "kind": "marketplace",
+  "based": "China",
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Cheapest for generic parts. Ships from China, so it is usually the slowest. Check the seller's rating.",
+  "local": [],
+  "brands": []
+ },
+ {
+  "id": "pololu",
+  "name": "Pololu",
+  "home": "https://www.pololu.com/",
+  "search": "https://www.pololu.com/search?query={q}",
+  "kind": "specialist",
+  "based": "United States",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies"
+  ],
+  "note": "Motors, drivers and regulators. Ships worldwide from the US, and has local distributors.",
+  "brands": [],
+  "slots": [
+   "drive_motor",
+   "motor_driver",
+   "regulator",
+   "wheels",
+   "caster",
+   "distance_sensor",
+   "imu",
+   "chassis"
+  ]
+ },
+ {
+  "id": "adafruit",
+  "name": "Adafruit",
+  "home": "https://www.adafruit.com/",
+  "search": "https://www.adafruit.com/search?q={q}",
+  "kind": "specialist",
+  "based": "United States",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Sensors and boards with good tutorials. Ships internationally from New York.",
+  "brands": []
+ },
+ {
+  "id": "sparkfun",
+  "name": "SparkFun",
+  "home": "https://www.sparkfun.com/",
+  "kind": "specialist",
+  "based": "United States",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Boards, sensors and tools. Ships internationally from Colorado.",
+  "brands": []
+ },
+ {
+  "id": "robotshop",
+  "name": "RobotShop",
+  "home": "https://www.robotshop.com/",
+  "kind": "specialist",
+  "based": "Canada",
+  "local": [
+   "CA",
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Robot kits and parts from many brands, with regional sites.",
+  "brands": []
+ },
+ {
+  "id": "cytron",
+  "name": "Cytron",
+  "home": "https://www.cytron.io/",
+  "search": "https://www.cytron.io/search?q={q}",
+  "kind": "specialist",
+  "based": "Malaysia",
+  "local": [
+   "MY"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies"
+  ],
+  "note": "Maker of the MDD motor drivers. Ships worldwide from Malaysia.",
+  "brands": [],
+  "slots": [
+   "motor_driver",
+   "controller",
+   "compute",
+   "distance_sensor",
+   "imu",
+   "drive_motor",
+   "regulator"
+  ]
+ },
+ {
+  "id": "seeed",
+  "name": "Seeed Studio",
+  "home": "https://www.seeedstudio.com/",
+  "kind": "specialist",
+  "based": "China",
+  "local": [
+   "CN"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies"
+  ],
+  "note": "Boards, sensors and kits. Ships worldwide from China.",
+  "brands": []
+ },
+ {
+  "id": "waveshare",
+  "name": "Waveshare",
+  "home": "https://www.waveshare.com/",
+  "kind": "specialist",
+  "based": "China",
+  "local": [
+   "CN"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts"
+  ],
+  "note": "Displays, HATs and servo drivers. Ships worldwide from China.",
+  "brands": [],
+  "slots": [
+   "compute",
+   "controller",
+   "camera",
+   "lidar",
+   "imu",
+   "motor_driver",
+   "regulator"
+  ]
+ },
+ {
+  "id": "dfrobot",
+  "name": "DFRobot",
+  "home": "https://www.dfrobot.com/",
+  "kind": "specialist",
+  "based": "China",
+  "local": [
+   "CN"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies"
+  ],
+  "note": "Sensors, motors and robot kits. Ships worldwide from China.",
+  "brands": []
+ },
+ {
+  "id": "digikey",
+  "name": "DigiKey",
+  "home": "https://www.digikey.com/",
+  "search": "https://www.digikey.com/en/products/result?keywords={q}",
+  "kind": "distributor",
+  "based": "United States",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Huge stock of genuine parts. Free shipping above a minimum order in many countries; import duties may apply.",
+  "brands": []
+ },
+ {
+  "id": "mouser",
+  "name": "Mouser",
+  "home": "https://www.mouser.com/",
+  "search": "https://www.mouser.com/c/?q={q}",
+  "kind": "distributor",
+  "based": "United States",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Genuine parts with fast international courier shipping; best for bigger orders.",
+  "brands": []
+ },
+ {
+  "id": "rs",
+  "name": "RS",
+  "home": "https://www.rs-online.com/",
+  "kind": "distributor",
+  "based": "United Kingdom",
+  "local": [
+   "GB"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Industrial distributor with country sites in many regions, including South Africa.",
+  "brands": []
+ },
+ {
+  "id": "farnell",
+  "name": "Farnell / element14",
+  "home": "https://www.farnell.com/",
+  "kind": "distributor",
+  "based": "United Kingdom",
+  "local": [
+   "GB"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Distributor with local sites across Europe and Asia Pacific (Newark in the Americas).",
+  "brands": []
+ },
+ {
+  "id": "thepihut",
+  "name": "The Pi Hut",
+  "home": "https://thepihut.com/",
+  "search": "https://thepihut.com/search?q={q}",
+  "kind": "specialist",
+  "based": "United Kingdom",
+  "local": [
+   "GB"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi and maker parts. Ships worldwide from the UK.",
+  "brands": []
+ },
+ {
+  "id": "pimoroni",
+  "name": "Pimoroni",
+  "home": "https://shop.pimoroni.com/",
+  "search": "https://shop.pimoroni.com/search?q={q}",
+  "kind": "specialist",
+  "based": "United Kingdom",
+  "local": [
+   "GB"
+  ],
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi, Pico and sensor boards. Ships worldwide from the UK.",
+  "brands": []
+ },
+ {
+  "id": "botland",
+  "name": "Botland",
+  "home": "https://botland.store/",
+  "kind": "specialist",
+  "based": "Poland",
+  "local": [
+   "PL"
+  ],
+  "sells_to": [
+   "AT",
+   "BE",
+   "BG",
+   "HR",
+   "CY",
+   "CZ",
+   "DK",
+   "EE",
+   "FI",
+   "FR",
+   "DE",
+   "GR",
+   "HU",
+   "IE",
+   "IT",
+   "LV",
+   "LT",
+   "LU",
+   "MT",
+   "NL",
+   "PL",
+   "PT",
+   "RO",
+   "SK",
+   "SI",
+   "ES",
+   "SE",
+   "CH",
+   "NO",
+   "GB"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Large robotics store shipping across Europe.",
+  "brands": []
+ },
+ {
+  "id": "kiwi",
+  "name": "Kiwi Electronics",
+  "home": "https://www.kiwi-electronics.com/",
+  "kind": "specialist",
+  "based": "Netherlands",
+  "local": [
+   "NL",
+   "BE"
+  ],
+  "sells_to": [
+   "AT",
+   "BE",
+   "BG",
+   "HR",
+   "CY",
+   "CZ",
+   "DK",
+   "EE",
+   "FI",
+   "FR",
+   "DE",
+   "GR",
+   "HU",
+   "IE",
+   "IT",
+   "LV",
+   "LT",
+   "LU",
+   "MT",
+   "NL",
+   "PL",
+   "PT",
+   "RO",
+   "SK",
+   "SI",
+   "ES",
+   "SE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi and maker parts, ships across the EU.",
+  "brands": []
+ },
+ {
+  "id": "berrybase",
+  "name": "BerryBase",
+  "home": "https://www.berrybase.de/",
+  "kind": "specialist",
+  "based": "Germany",
+  "local": [
+   "DE",
+   "AT"
+  ],
+  "sells_to": [
+   "AT",
+   "BE",
+   "BG",
+   "HR",
+   "CY",
+   "CZ",
+   "DK",
+   "EE",
+   "FI",
+   "FR",
+   "DE",
+   "GR",
+   "HU",
+   "IE",
+   "IT",
+   "LV",
+   "LT",
+   "LU",
+   "MT",
+   "NL",
+   "PL",
+   "PT",
+   "RO",
+   "SK",
+   "SI",
+   "ES",
+   "SE",
+   "CH"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi, Arduino and parts, ships across Europe.",
+  "brands": []
+ },
+ {
+  "id": "reichelt",
+  "name": "reichelt elektronik",
+  "home": "https://www.reichelt.com/",
+  "kind": "distributor",
+  "based": "Germany",
+  "local": [
+   "DE",
+   "AT"
+  ],
+  "sells_to": [
+   "AT",
+   "BE",
+   "BG",
+   "HR",
+   "CY",
+   "CZ",
+   "DK",
+   "EE",
+   "FI",
+   "FR",
+   "DE",
+   "GR",
+   "HU",
+   "IE",
+   "IT",
+   "LV",
+   "LT",
+   "LU",
+   "MT",
+   "NL",
+   "PL",
+   "PT",
+   "RO",
+   "SK",
+   "SI",
+   "ES",
+   "SE",
+   "CH"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Electronics distributor with screws, wire and tools as well.",
+  "brands": []
+ },
+ {
+  "id": "kubii",
+  "name": "Kubii",
+  "home": "https://www.kubii.com/",
+  "kind": "specialist",
+  "based": "France",
+  "local": [
+   "FR"
+  ],
+  "sells_to": [
+   "AT",
+   "BE",
+   "BG",
+   "HR",
+   "CY",
+   "CZ",
+   "DK",
+   "EE",
+   "FI",
+   "FR",
+   "DE",
+   "GR",
+   "HU",
+   "IE",
+   "IT",
+   "LV",
+   "LT",
+   "LU",
+   "MT",
+   "NL",
+   "PL",
+   "PT",
+   "RO",
+   "SK",
+   "SI",
+   "ES",
+   "SE"
+  ],
+  "carries": [
+   "parts",
+   "supplies"
+  ],
+  "note": "Raspberry Pi and maker parts in France and Europe.",
+  "brands": []
+ },
+ {
+  "id": "robu",
+  "name": "Robu.in",
+  "home": "https://robu.in/",
+  "search": "https://robu.in/?s={q}&post_type=product",
+  "kind": "specialist",
+  "based": "India",
+  "local": [
+   "IN"
+  ],
+  "sells_to": [
+   "IN"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Large robotics store in India.",
+  "brands": []
+ },
+ {
+  "id": "robocraze",
+  "name": "Robocraze",
+  "home": "https://robocraze.com/",
+  "kind": "specialist",
+  "based": "India",
+  "local": [
+   "IN"
+  ],
+  "sells_to": [
+   "IN"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Maker and robotics parts in India.",
+  "brands": []
+ },
+ {
+  "id": "pishop-za",
+  "name": "PiShop.co.za",
+  "home": "https://www.pishop.co.za/",
+  "kind": "specialist",
+  "based": "South Africa",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA",
+   "ZW",
+   "BW",
+   "NA",
+   "ZM",
+   "MZ",
+   "MW",
+   "LS",
+   "SZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi, Arduino and sensors.",
+  "brands": []
+ },
+ {
+  "id": "microrobotics",
+  "name": "Micro Robotics",
+  "home": "https://www.robotics.org.za/",
+  "kind": "specialist",
+  "based": "South Africa",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA",
+   "ZW",
+   "BW",
+   "NA",
+   "ZM",
+   "MZ",
+   "MW",
+   "LS",
+   "SZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Robotics parts and modules, based in Centurion.",
+  "brands": []
+ },
+ {
+  "id": "diyelectronics",
+  "name": "DIY Electronics",
+  "home": "https://www.diyelectronics.co.za/",
+  "kind": "specialist",
+  "based": "South Africa",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA",
+   "ZW",
+   "BW",
+   "NA",
+   "ZM",
+   "MZ",
+   "MW",
+   "LS",
+   "SZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Hobby electronics and kits.",
+  "brands": []
+ },
+ {
+  "id": "communica",
+  "name": "Communica",
+  "home": "https://www.communica.co.za/",
+  "kind": "distributor",
+  "based": "South Africa",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA",
+   "ZW",
+   "BW",
+   "NA",
+   "ZM",
+   "MZ",
+   "MW",
+   "LS",
+   "SZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Electronic components, wire and tools, with branches in South Africa.",
+  "brands": []
+ },
+ {
+  "id": "takealot",
+  "name": "Takealot",
+  "home": "https://www.takealot.com/",
+  "search": "https://www.takealot.com/all?qsearch={q}",
+  "kind": "marketplace",
+  "based": "South Africa",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA"
+  ],
+  "carries": [
+   "supplies",
+   "tools"
+  ],
+  "note": "General marketplace: good for tools, chargers and cables.",
+  "brands": []
+ },
+ {
+  "id": "core",
+  "name": "Core Electronics",
+  "home": "https://core-electronics.com.au/",
+  "kind": "specialist",
+  "based": "Australia",
+  "local": [
+   "AU"
+  ],
+  "sells_to": [
+   "AU",
+   "NZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Raspberry Pi, Arduino and maker parts in Australia.",
+  "brands": []
+ },
+ {
+  "id": "jaycar",
+  "name": "Jaycar",
+  "home": "https://www.jaycar.com.au/",
+  "kind": "specialist",
+  "based": "Australia",
+  "local": [
+   "AU",
+   "NZ"
+  ],
+  "sells_to": [
+   "AU",
+   "NZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Electronics stores across Australia and New Zealand: good for wire, switches and tools.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com",
+  "name": "Amazon (amazon.com)",
+  "home": "https://www.amazon.com/",
+  "search": "https://www.amazon.com/s?k={q}",
+  "kind": "marketplace",
+  "based": "US",
+  "local": [
+   "US"
+  ],
+  "sells_to": [
+   "US"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-ca",
+  "name": "Amazon (amazon.ca)",
+  "home": "https://www.amazon.ca/",
+  "search": "https://www.amazon.ca/s?k={q}",
+  "kind": "marketplace",
+  "based": "CA",
+  "local": [
+   "CA"
+  ],
+  "sells_to": [
+   "CA"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com-mx",
+  "name": "Amazon (amazon.com.mx)",
+  "home": "https://www.amazon.com.mx/",
+  "search": "https://www.amazon.com.mx/s?k={q}",
+  "kind": "marketplace",
+  "based": "MX",
+  "local": [
+   "MX"
+  ],
+  "sells_to": [
+   "MX"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com-br",
+  "name": "Amazon (amazon.com.br)",
+  "home": "https://www.amazon.com.br/",
+  "search": "https://www.amazon.com.br/s?k={q}",
+  "kind": "marketplace",
+  "based": "BR",
+  "local": [
+   "BR"
+  ],
+  "sells_to": [
+   "BR"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-co-uk",
+  "name": "Amazon (amazon.co.uk)",
+  "home": "https://www.amazon.co.uk/",
+  "search": "https://www.amazon.co.uk/s?k={q}",
+  "kind": "marketplace",
+  "based": "GB",
+  "local": [
+   "GB",
+   "IE"
+  ],
+  "sells_to": [
+   "GB",
+   "IE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-de",
+  "name": "Amazon (amazon.de)",
+  "home": "https://www.amazon.de/",
+  "search": "https://www.amazon.de/s?k={q}",
+  "kind": "marketplace",
+  "based": "DE",
+  "local": [
+   "DE",
+   "AT"
+  ],
+  "sells_to": [
+   "DE",
+   "AT"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-fr",
+  "name": "Amazon (amazon.fr)",
+  "home": "https://www.amazon.fr/",
+  "search": "https://www.amazon.fr/s?k={q}",
+  "kind": "marketplace",
+  "based": "FR",
+  "local": [
+   "FR"
+  ],
+  "sells_to": [
+   "FR"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-it",
+  "name": "Amazon (amazon.it)",
+  "home": "https://www.amazon.it/",
+  "search": "https://www.amazon.it/s?k={q}",
+  "kind": "marketplace",
+  "based": "IT",
+  "local": [
+   "IT"
+  ],
+  "sells_to": [
+   "IT"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-es",
+  "name": "Amazon (amazon.es)",
+  "home": "https://www.amazon.es/",
+  "search": "https://www.amazon.es/s?k={q}",
+  "kind": "marketplace",
+  "based": "ES",
+  "local": [
+   "ES"
+  ],
+  "sells_to": [
+   "ES"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-nl",
+  "name": "Amazon (amazon.nl)",
+  "home": "https://www.amazon.nl/",
+  "search": "https://www.amazon.nl/s?k={q}",
+  "kind": "marketplace",
+  "based": "NL",
+  "local": [
+   "NL"
+  ],
+  "sells_to": [
+   "NL"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com-be",
+  "name": "Amazon (amazon.com.be)",
+  "home": "https://www.amazon.com.be/",
+  "search": "https://www.amazon.com.be/s?k={q}",
+  "kind": "marketplace",
+  "based": "BE",
+  "local": [
+   "BE"
+  ],
+  "sells_to": [
+   "BE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-pl",
+  "name": "Amazon (amazon.pl)",
+  "home": "https://www.amazon.pl/",
+  "search": "https://www.amazon.pl/s?k={q}",
+  "kind": "marketplace",
+  "based": "PL",
+  "local": [
+   "PL"
+  ],
+  "sells_to": [
+   "PL"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-se",
+  "name": "Amazon (amazon.se)",
+  "home": "https://www.amazon.se/",
+  "search": "https://www.amazon.se/s?k={q}",
+  "kind": "marketplace",
+  "based": "SE",
+  "local": [
+   "SE"
+  ],
+  "sells_to": [
+   "SE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com-tr",
+  "name": "Amazon (amazon.com.tr)",
+  "home": "https://www.amazon.com.tr/",
+  "search": "https://www.amazon.com.tr/s?k={q}",
+  "kind": "marketplace",
+  "based": "TR",
+  "local": [
+   "TR"
+  ],
+  "sells_to": [
+   "TR"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-ae",
+  "name": "Amazon (amazon.ae)",
+  "home": "https://www.amazon.ae/",
+  "search": "https://www.amazon.ae/s?k={q}",
+  "kind": "marketplace",
+  "based": "AE",
+  "local": [
+   "AE"
+  ],
+  "sells_to": [
+   "AE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-sa",
+  "name": "Amazon (amazon.sa)",
+  "home": "https://www.amazon.sa/",
+  "search": "https://www.amazon.sa/s?k={q}",
+  "kind": "marketplace",
+  "based": "SA",
+  "local": [
+   "SA"
+  ],
+  "sells_to": [
+   "SA"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-eg",
+  "name": "Amazon (amazon.eg)",
+  "home": "https://www.amazon.eg/",
+  "search": "https://www.amazon.eg/s?k={q}",
+  "kind": "marketplace",
+  "based": "EG",
+  "local": [
+   "EG"
+  ],
+  "sells_to": [
+   "EG"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-in",
+  "name": "Amazon (amazon.in)",
+  "home": "https://www.amazon.in/",
+  "search": "https://www.amazon.in/s?k={q}",
+  "kind": "marketplace",
+  "based": "IN",
+  "local": [
+   "IN"
+  ],
+  "sells_to": [
+   "IN"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-co-jp",
+  "name": "Amazon (amazon.co.jp)",
+  "home": "https://www.amazon.co.jp/",
+  "search": "https://www.amazon.co.jp/s?k={q}",
+  "kind": "marketplace",
+  "based": "JP",
+  "local": [
+   "JP"
+  ],
+  "sells_to": [
+   "JP"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-sg",
+  "name": "Amazon (amazon.sg)",
+  "home": "https://www.amazon.sg/",
+  "search": "https://www.amazon.sg/s?k={q}",
+  "kind": "marketplace",
+  "based": "SG",
+  "local": [
+   "SG"
+  ],
+  "sells_to": [
+   "SG"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-com-au",
+  "name": "Amazon (amazon.com.au)",
+  "home": "https://www.amazon.com.au/",
+  "search": "https://www.amazon.com.au/s?k={q}",
+  "kind": "marketplace",
+  "based": "AU",
+  "local": [
+   "AU"
+  ],
+  "sells_to": [
+   "AU"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "amazon-co-za",
+  "name": "Amazon (amazon.co.za)",
+  "home": "https://www.amazon.co.za/",
+  "search": "https://www.amazon.co.za/s?k={q}",
+  "kind": "marketplace",
+  "based": "ZA",
+  "local": [
+   "ZA"
+  ],
+  "sells_to": [
+   "ZA"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Fast local delivery for tools, cables, chargers and common boards.",
+  "brands": []
+ },
+ {
+  "id": "jumia-ng",
+  "name": "Jumia (jumia.com.ng)",
+  "home": "https://www.jumia.com.ng/",
+  "search": "https://www.jumia.com.ng/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "NG",
+  "local": [
+   "NG"
+  ],
+  "sells_to": [
+   "NG"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-ke",
+  "name": "Jumia (jumia.co.ke)",
+  "home": "https://www.jumia.co.ke/",
+  "search": "https://www.jumia.co.ke/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "KE",
+  "local": [
+   "KE"
+  ],
+  "sells_to": [
+   "KE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-eg",
+  "name": "Jumia (jumia.com.eg)",
+  "home": "https://www.jumia.com.eg/",
+  "search": "https://www.jumia.com.eg/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "EG",
+  "local": [
+   "EG"
+  ],
+  "sells_to": [
+   "EG"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-ma",
+  "name": "Jumia (jumia.ma)",
+  "home": "https://www.jumia.ma/",
+  "search": "https://www.jumia.ma/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "MA",
+  "local": [
+   "MA"
+  ],
+  "sells_to": [
+   "MA"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-gh",
+  "name": "Jumia (jumia.com.gh)",
+  "home": "https://www.jumia.com.gh/",
+  "search": "https://www.jumia.com.gh/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "GH",
+  "local": [
+   "GH"
+  ],
+  "sells_to": [
+   "GH"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-ug",
+  "name": "Jumia (jumia.ug)",
+  "home": "https://www.jumia.ug/",
+  "search": "https://www.jumia.ug/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "UG",
+  "local": [
+   "UG"
+  ],
+  "sells_to": [
+   "UG"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-ci",
+  "name": "Jumia (jumia.ci)",
+  "home": "https://www.jumia.ci/",
+  "search": "https://www.jumia.ci/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "CI",
+  "local": [
+   "CI"
+  ],
+  "sells_to": [
+   "CI"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-sn",
+  "name": "Jumia (jumia.sn)",
+  "home": "https://www.jumia.sn/",
+  "search": "https://www.jumia.sn/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "SN",
+  "local": [
+   "SN"
+  ],
+  "sells_to": [
+   "SN"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-dz",
+  "name": "Jumia (jumia.dz)",
+  "home": "https://www.jumia.dz/",
+  "search": "https://www.jumia.dz/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "DZ",
+  "local": [
+   "DZ"
+  ],
+  "sells_to": [
+   "DZ"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "jumia-tn",
+  "name": "Jumia (jumia.com.tn)",
+  "home": "https://www.jumia.com.tn/",
+  "search": "https://www.jumia.com.tn/catalog/?q={q}",
+  "kind": "marketplace",
+  "based": "TN",
+  "local": [
+   "TN"
+  ],
+  "sells_to": [
+   "TN"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace: good for tools, cables and common modules. Check the seller.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-ar",
+  "name": "Mercado Libre (mercadolibre.com.ar)",
+  "home": "https://www.mercadolibre.com.ar/",
+  "search": "https://listado.mercadolibre.com.ar/{q-dash}",
+  "kind": "marketplace",
+  "based": "AR",
+  "local": [
+   "AR"
+  ],
+  "sells_to": [
+   "AR"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-mx",
+  "name": "Mercado Libre (mercadolibre.com.mx)",
+  "home": "https://www.mercadolibre.com.mx/",
+  "search": "https://listado.mercadolibre.com.mx/{q-dash}",
+  "kind": "marketplace",
+  "based": "MX",
+  "local": [
+   "MX"
+  ],
+  "sells_to": [
+   "MX"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-co",
+  "name": "Mercado Libre (mercadolibre.com.co)",
+  "home": "https://www.mercadolibre.com.co/",
+  "search": "https://listado.mercadolibre.com.co/{q-dash}",
+  "kind": "marketplace",
+  "based": "CO",
+  "local": [
+   "CO"
+  ],
+  "sells_to": [
+   "CO"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-cl",
+  "name": "Mercado Libre (mercadolibre.cl)",
+  "home": "https://www.mercadolibre.cl/",
+  "search": "https://listado.mercadolibre.cl/{q-dash}",
+  "kind": "marketplace",
+  "based": "CL",
+  "local": [
+   "CL"
+  ],
+  "sells_to": [
+   "CL"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-pe",
+  "name": "Mercado Libre (mercadolibre.com.pe)",
+  "home": "https://www.mercadolibre.com.pe/",
+  "search": "https://listado.mercadolibre.com.pe/{q-dash}",
+  "kind": "marketplace",
+  "based": "PE",
+  "local": [
+   "PE"
+  ],
+  "sells_to": [
+   "PE"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-uy",
+  "name": "Mercado Libre (mercadolibre.com.uy)",
+  "home": "https://www.mercadolibre.com.uy/",
+  "search": "https://listado.mercadolibre.com.uy/{q-dash}",
+  "kind": "marketplace",
+  "based": "UY",
+  "local": [
+   "UY"
+  ],
+  "sells_to": [
+   "UY"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "mercadolibre-br",
+  "name": "Mercado Livre (mercadolivre.com.br)",
+  "home": "https://www.mercadolivre.com.br/",
+  "search": "https://lista.mercadolivre.com.br/{q-dash}",
+  "kind": "marketplace",
+  "based": "BR",
+  "local": [
+   "BR"
+  ],
+  "sells_to": [
+   "BR"
+  ],
+  "carries": [
+   "parts",
+   "supplies",
+   "tools"
+  ],
+  "note": "Local marketplace with many electronics sellers. Check the seller's rating.",
+  "brands": []
+ },
+ {
+  "id": "finder-rpi",
+  "name": "Raspberry Pi approved resellers",
+  "home": "https://www.raspberrypi.com/resellers/",
+  "kind": "finder",
+  "based": "",
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts"
+  ],
+  "brands": [
+   "Raspberry Pi"
+  ],
+  "note": "Official list of shops that sell genuine Raspberry Pi boards, by country.",
+  "local": [],
+  "slots": [
+   "compute",
+   "controller",
+   "camera"
+  ]
+ },
+ {
+  "id": "finder-arduino",
+  "name": "Arduino authorized distributors",
+  "home": "https://store.arduino.cc/distributors",
+  "kind": "finder",
+  "based": "",
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts"
+  ],
+  "brands": [
+   "Arduino"
+  ],
+  "note": "Official list of shops that sell genuine Arduino boards, by country.",
+  "local": [],
+  "slots": [
+   "controller"
+  ]
+ },
+ {
+  "id": "finder-pololu",
+  "name": "Pololu distributors",
+  "home": "https://www.pololu.com/distributors",
+  "kind": "finder",
+  "based": "",
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts"
+  ],
+  "brands": [
+   "Pololu"
+  ],
+  "note": "Shops around the world that stock Pololu parts.",
+  "local": [],
+  "slots": [
+   "drive_motor",
+   "motor_driver",
+   "regulator",
+   "wheels",
+   "caster",
+   "distance_sensor"
+  ]
+ },
+ {
+  "id": "finder-adafruit",
+  "name": "Adafruit distributors",
+  "home": "https://www.adafruit.com/distributors",
+  "kind": "finder",
+  "based": "",
+  "sells_to": [
+   "*"
+  ],
+  "carries": [
+   "parts"
+  ],
+  "brands": [
+   "Adafruit"
+  ],
+  "note": "Shops around the world that stock Adafruit boards.",
+  "local": [],
+  "slots": [
+   "imu",
+   "distance_sensor",
+   "controller"
+  ]
+ }
+]

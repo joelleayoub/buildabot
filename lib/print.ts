@@ -23,6 +23,11 @@ export interface Place {
   name: string;
   lat: number;
   lon: number;
+  /** ISO 3166-1 alpha-2, upper case ("ZW"), when the lookup returned one. */
+  country_code?: string;
+  country?: string;
+  /** Only the country was picked: the point is its capital, so don't list shops "near" it. */
+  approx?: boolean;
 }
 
 export interface Makerspace {
@@ -84,3 +89,42 @@ export function parseOverpass(json: { elements?: Record<string, unknown>[] }, fr
   return out.sort((a, b) => a.km - b.km).slice(0, 8);
 }
 
+
+export interface LocalShop {
+  name: string;
+  lat: number;
+  lon: number;
+  km: number;
+  kind: "Electronic components" | "Electronics" | "Hardware" | "Electrical";
+  website?: string;
+  /** OpenStreetMap page for the shop, with its address and opening hours when mapped. */
+  osm: string;
+}
+
+const SHOP_KIND: Record<string, LocalShop["kind"]> = {
+  radiotechnics: "Electronic components",
+  electronics: "Electronics",
+  hardware: "Hardware",
+  doityourself: "Hardware",
+  electrical: "Electrical",
+};
+
+/** Nearest named shops that may stock parts, screws or tools, from an Overpass response. */
+export function parseShops(json: { elements?: Record<string, unknown>[] }, from: Place): LocalShop[] {
+  const out: LocalShop[] = [];
+  const seen = new Set<string>();
+  for (const e of json.elements ?? []) {
+    const tags = (e.tags ?? {}) as Record<string, string>;
+    const kind = SHOP_KIND[tags.shop];
+    const lat = Number(e.lat ?? (e.center as { lat?: number } | undefined)?.lat);
+    const lon = Number(e.lon ?? (e.center as { lon?: number } | undefined)?.lon);
+    if (!kind || !tags.name || !Number.isFinite(lat) || !Number.isFinite(lon)) continue;
+    const key = tags.name.toLowerCase();
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({ name: tags.name, lat, lon, km: km(from, { lat, lon }), kind, website: tags.website ?? tags["contact:website"], osm: `https://www.openstreetmap.org/${e.type}/${e.id}` });
+  }
+  // Component shops first when they're close, then by distance.
+  const rank = (s: LocalShop) => s.km - (s.kind === "Electronic components" ? 10 : 0);
+  return out.sort((a, b) => rank(a) - rank(b)).slice(0, 12);
+}

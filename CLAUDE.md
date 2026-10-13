@@ -56,7 +56,9 @@ preview at `/arm`: it sizes an arm for a task but has no cart, wiring or guide y
 | `lib/cad/` | 3D-printable part templates (`spec.ts`), offline text parser (`parse.ts`), CSG geometry and STL export (`geometry.ts`) |
 | `app/api/cad` | Text-to-CAD with Claude: description to template + parameters (falls back to `parse.ts` without a key) |
 | `components/studio/CadPanel.tsx` | "Design a part": describe, adjust, preview, download STL, get it printed |
-| `lib/print.ts`, `data/print_providers.json`, `app/api/print/nearby` | Print services sorted by distance or price tier; nearby makerspaces from OpenStreetMap |
+| `lib/print.ts`, `data/print_providers.json` | Print services sorted by distance or price tier; parsers for nearby makerspaces and shops |
+| `app/api/nearby` (`/api/print/nearby` is an alias), `lib/usePlace.ts`, `components/LocationBar.tsx` | The user's place (city search, browser location, or just a country), shared across the app; makerspaces and electronics and hardware shops nearby from OpenStreetMap |
+| `lib/shops.ts`, `data/retailers.json`, `data/countries.json`, `components/studio/OrderPlan.tsx` | Ordering: shops ranked for the user's country (local, nearby, worldwide, official seller finders), a shop per part, the order grouped by shop with a list to copy |
 | `app/parts`, `app/b/[slug]` | Parts catalog and read-only shared build pages (`components/SiteHeader.tsx`) |
 | `lib/advisor/` | Advisor prompt, tools, agent loop, project store (Supabase or memory), AI guide |
 | `lib/compat/` | Compatibility checker and tests |
@@ -81,6 +83,7 @@ Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/
 - The carrier PCB is a netlist, not a routed board. Never claim it is ready to order without the KiCad routing and DRC steps.
 - Printable parts export as STL only. G-code depends on the user's printer, so the slicer makes it; never generate G-code.
 - Print provider prices are tiers, not quotes. Never invent prices or delivery dates for a service.
+- Shop links are searches or home pages from `data/retailers.json`; check new search URLs with `node scripts/check-shop-links.mjs` before relying on them. Never claim a shop delivers to a country it doesn't list, and never invent delivery times or shipping costs.
 - Home page design language is "Showroom": white store, studio-grey stage, one signal blue (`--blue`). Tokens are in `app/globals.css`.
 
 ## Build order (7 days)

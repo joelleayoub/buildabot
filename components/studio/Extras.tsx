@@ -49,7 +49,22 @@ const GROUPS: { kind: Extra["item"]["kind"][]; title: string; blurb: string }[] 
   { kind: ["tool"], title: "Tools and charger", blurb: "Buy once, use for every build after this one." },
 ];
 
-export function ExtrasList({ extras, needed, toggle, setAll, onLinkClick }: { extras: Extra[]; needed: Set<string>; toggle: (id: string) => void; setAll: (need: boolean) => void; onLinkClick?: (id: string) => void }) {
+export function ExtrasList({
+  extras,
+  needed,
+  toggle,
+  setAll,
+  onLinkClick,
+  renderLink,
+}: {
+  extras: Extra[];
+  needed: Set<string>;
+  toggle: (id: string) => void;
+  setAll: (need: boolean) => void;
+  onLinkClick?: (id: string) => void;
+  /** The cart's order plan can supply a shop link for the user's country. */
+  renderLink?: (id: string) => React.ReactNode;
+}) {
   return (
     <div>
       <div className="flex flex-wrap items-baseline justify-between gap-2">
@@ -92,7 +107,8 @@ export function ExtrasList({ extras, needed, toggle, setAll, onLinkClick }: { ex
                     </span>
                     <span className="flex shrink-0 flex-col items-end gap-0.5 text-right">
                       <span className="num text-sm font-bold">{e.item.price_usd_approx ? `~${money(e.item.price_usd_approx * e.qty)}` : "You likely have one"}</span>
-                      {e.item.price_usd_approx > 0 && (
+                      {e.item.price_usd_approx > 0 && renderLink && need && renderLink(e.item.id)}
+                      {e.item.price_usd_approx > 0 && !(renderLink && need) && (
                         <a href={e.item.buy_url} target="_blank" rel="noreferrer" onClick={() => onLinkClick?.(e.item.id)} className="text-xs font-semibold text-blue hover:underline">
                           Find at {retailerName(e.item.buy_url)}
                         </a>

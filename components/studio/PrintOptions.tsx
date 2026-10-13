@@ -1,99 +1,23 @@
 "use client";
 // "Get it printed": print it yourself, find a makerspace nearby, or order from an online service.
-import { useEffect, useMemo, useState } from "react";
-import { mapsSearchUrl, PRICE_TIER_LABEL, rankProviders, type Makerspace, type Place } from "@/lib/print";
-
-const PLACE_KEY = "buildabot.place";
-
-const readPlace = (): Place | null => {
-  try {
-    return JSON.parse(localStorage.getItem(PLACE_KEY) ?? "null");
-  } catch {
-    return null;
-  }
-};
+import { useMemo, useState } from "react";
+import { LocationBar } from "@/components/LocationBar";
+import { usePlace } from "@/lib/usePlace";
+import { mapsSearchUrl, PRICE_TIER_LABEL, rankProviders } from "@/lib/print";
 
 const fmtKm = (km: number) => (km < 10 ? `${km.toFixed(1)} km` : `${Math.round(km).toLocaleString("en-US")} km`);
 
 export default function PrintOptions({ onTrack }: { onTrack?: (providerId: string) => void }) {
-  const [place, setPlace] = useState<Place | null>(readPlace);
-  const [query, setQuery] = useState(place?.name ?? "");
-  const [spaces, setSpaces] = useState<Makerspace[] | null>(null);
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { place, spaces } = usePlace();
   const [sort, setSort] = useState<"nearest" | "cheapest">("nearest");
-
-  const lookup = async (params: string) => {
-    setBusy(true);
-    setError(null);
-    try {
-      const res = await fetch(`/api/print/nearby?${params}`);
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-      setPlace(data.place);
-      setQuery(data.place.name);
-      setSpaces(data.spaces);
-      try {
-        localStorage.setItem(PLACE_KEY, JSON.stringify(data.place));
-      } catch {
-        /* not remembered, still works */
-      }
-    } catch (e) {
-      setError(e instanceof Error && e.message ? e.message : "Location search isn't available right now.");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  // Refresh nearby makerspaces for a remembered place.
-  useEffect(() => {
-    if (!place) return;
-    const t = setTimeout(() => lookup(`lat=${place.lat}&lon=${place.lon}`), 0);
-    return () => clearTimeout(t);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const useMyLocation = () => {
-    if (!navigator.geolocation) return setError("Your browser can't share its location. Type your city instead.");
-    setBusy(true);
-    navigator.geolocation.getCurrentPosition(
-      (pos) => lookup(`lat=${pos.coords.latitude.toFixed(3)}&lon=${pos.coords.longitude.toFixed(3)}`),
-      () => {
-        setBusy(false);
-        setError("Location access was blocked. Type your city instead.");
-      },
-      { timeout: 10000 },
-    );
-  };
 
   const providers = useMemo(() => rankProviders(place, sort), [place, sort]);
 
   return (
     <div>
-      <form
-        className="flex flex-wrap gap-2"
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (query.trim()) lookup(`q=${encodeURIComponent(query.trim())}`);
-        }}
-      >
-        <input
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Your city and country"
-          aria-label="Your city and country"
-          className="h-10 min-w-0 flex-1 rounded-full border border-line px-4 text-sm outline-none focus:border-ink"
-        />
-        <button type="submit" disabled={busy || !query.trim()} className="h-10 rounded-full bg-ink px-4 text-sm font-semibold text-white disabled:bg-faint">
-          {busy ? "Searching…" : "Search"}
-        </button>
-        <button type="button" onClick={useMyLocation} disabled={busy} className="h-10 rounded-full border border-line px-4 text-sm font-semibold hover:border-ink">
-          Use my location
-        </button>
-      </form>
-      {error && <p className="mt-2 text-sm text-warn">{error}</p>}
+      <LocationBar compact />
 
-      {place && (
+      {place && !place.approx && (
         <div className="mt-5">
           <h4 className="text-sm font-semibold">Near {place.name}</h4>
           {spaces && spaces.length > 0 ? (
