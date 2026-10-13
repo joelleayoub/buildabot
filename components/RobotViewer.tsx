@@ -11,14 +11,15 @@ import { SLOT_EXPLAIN, SLOT_LABELS } from "@/lib/slots";
 const BLUE = "#2a44f5";
 
 /** Which slot is selected or hovered, so every material in that part can glow. */
-const HighlightCtx = createContext<{ selected?: Slot; hovered?: Slot }>({});
+const HighlightCtx = createContext<{ selected?: Slot | Slot[]; hovered?: Slot; strong?: boolean }>({});
+const isSelected = (sel: Slot | Slot[] | undefined, slot: Slot) => (Array.isArray(sel) ? sel.includes(slot) : sel === slot);
 const SlotCtx = createContext<Slot | null>(null);
 
 type MatProps = { color: string; metal?: number; rough?: number; opacity?: number; glow?: boolean };
 function Mat({ color, metal = 0.1, rough = 0.55, opacity, glow = true }: MatProps) {
-  const { selected, hovered } = useContext(HighlightCtx);
+  const { selected, hovered, strong } = useContext(HighlightCtx);
   const slot = useContext(SlotCtx);
-  const intensity = !glow || !slot ? 0 : slot === hovered ? 0.32 : slot === selected ? 0.16 : 0;
+  const intensity = !glow || !slot ? 0 : slot === hovered ? 0.32 : isSelected(selected, slot) ? (strong ? 0.42 : 0.16) : 0;
   return (
     <meshStandardMaterial
       color={color}
@@ -85,8 +86,8 @@ function layoutFor(chassis?: Part, wheels?: Part): Layout {
 }
 
 function Deck({ lay, y, w, l }: { lay: Layout; y: number; w: number; l: number }) {
-  const { selected, hovered } = useContext(HighlightCtx);
-  const glow = hovered === "chassis" ? 0.25 : selected === "chassis" ? 0.12 : 0;
+  const { selected, hovered, strong } = useContext(HighlightCtx);
+  const glow = hovered === "chassis" ? 0.25 : isSelected(selected, "chassis") ? (strong ? 0.3 : 0.12) : 0;
   return (
     <group position={[0, y, 0]}>
       <RoundedBox args={[l, 0.035, w]} radius={0.015} smoothness={2} castShadow receiveShadow>
@@ -635,11 +636,14 @@ export default function RobotViewer({
   items,
   byId,
   highlight,
+  strong,
   onSelect,
 }: {
   items: BuildItem[];
   byId: Record<string, Part>;
-  highlight?: Slot;
+  highlight?: Slot | Slot[];
+  /** Guide mode: brighter highlight for the parts added in this step. */
+  strong?: boolean;
   onSelect?: (slot: Slot) => void;
 }) {
   const [hovered, setHovered] = useState<Slot | null>(null);
@@ -669,7 +673,7 @@ export default function RobotViewer({
           <Lightformer form="rect" intensity={0.9} position={[5, 2, -2]} rotation-y={-Math.PI / 2} scale={[6, 3, 1]} color="#dfe5ff" />
           <Lightformer form="ring" intensity={0.6} position={[0, 1, 6]} scale={3} />
         </Environment>
-        <HighlightCtx.Provider value={{ selected: highlight, hovered: hovered ?? undefined }}>
+        <HighlightCtx.Provider value={{ selected: highlight, hovered: hovered ?? undefined, strong }}>
           <group position={[0, -0.6, 0]}>
             <Rover items={items} byId={byId} onHover={setHovered} onPick={(s) => onSelect?.(s)} />
             <mesh rotation-x={-Math.PI / 2} receiveShadow position={[0, -0.001, 0]}>

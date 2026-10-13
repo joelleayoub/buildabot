@@ -40,7 +40,10 @@ generation are explicitly out of scope until real users have tested this version
 | `lib/flow.ts` | Robot types, use cases, environments, experience levels, answers to requirements |
 | `lib/recommend.ts` | Deterministic recommender: answers to the best compatible build |
 | `lib/swap.ts` | Swapping a part re-plans the parts that depend on it so the build stays compatible |
-| `lib/wiring.ts`, `lib/quickGuide.ts` | Wiring plan and step-by-step checklist generated from the build (no AI) |
+| `lib/wiring.ts`, `lib/quickGuide.ts` | Wiring plan and step-by-step guide generated from the build (no AI). Guide steps carry visuals (assembly, wire, code, parts, tools) |
+| `lib/electronics/` | Pin plan per controller (`pins.ts`), starter firmware for Arduino/ESP32/Pico/Teensy or Python for a Pi (`firmware.ts`), carrier PCB with KiCad netlist and BOM export (`board.ts`) |
+| `components/studio/Electronics.tsx` | Pin map, firmware and custom PCB panels shown in the Wiring step |
+| `components/studio/GuideStepper.tsx`, `WiringDiagram.tsx` | Picture guide: one step at a time with the 3D robot built up so far, the highlighted wire, or the code to upload |
 | `lib/slots.ts` | Part labels, beginner explanations (`SLOT_EXPLAIN`), display order and colour families |
 | `lib/cad/` | 3D-printable part templates (`spec.ts`), offline text parser (`parse.ts`), CSG geometry and STL export (`geometry.ts`) |
 | `app/api/cad` | Text-to-CAD with Claude: description to template + parameters (falls back to `parse.ts` without a key) |
@@ -51,7 +54,7 @@ generation are explicitly out of scope until real users have tested this version
 | `lib/compat/` | Compatibility checker and tests |
 | `data/parts.json`, `data/reference_designs.json` | Catalog |
 
-Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts`
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/electronics/*.test.ts`
 
 ## Rules for the codebase
 - **The AI never invents parts.** It can only recommend parts returned by `search_parts`.
@@ -66,6 +69,7 @@ Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts`
 - Keep the advisor loop server-side (`app/api/chat/route.ts`), stream text to the client.
 - Persist each project (requirements, chosen build, messages) so users can come back.
 - The flow works without the AI: recommender, swaps, wiring and checklist are deterministic. The AI advisor explains, suggests and writes the detailed guide.
+- The carrier PCB is a netlist, not a routed board. Never claim it is ready to order without the KiCad routing and DRC steps.
 - Printable parts export as STL only. G-code depends on the user's printer, so the slicer makes it; never generate G-code.
 - Print provider prices are tiers, not quotes. Never invent prices or delivery dates for a service.
 - Home page design language is "Showroom": white store, studio-grey stage, one signal blue (`--blue`). Tokens are in `app/globals.css`.

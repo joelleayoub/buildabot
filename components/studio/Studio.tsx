@@ -283,7 +283,7 @@ export default function Studio() {
     } satisfies GuideRequest);
     setGuideBusy(false);
     if (!res.ok) {
-      setGuideError(res.error.error === "advisor_not_configured" ? "The detailed guide is written by the AI advisor, which isn't switched on yet. The step-by-step checklist has everything you need to build it." : res.error.message);
+      setGuideError(res.error.error === "advisor_not_configured" ? "The detailed guide is written by the AI advisor, which isn't switched on yet. The picture guide and checklist have everything you need to build it." : res.error.message);
       return;
     }
     setAiGuide(res.data.markdown);

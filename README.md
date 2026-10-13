@@ -22,7 +22,7 @@ Everything except the chat and the AI guide works without an Anthropic key.
 
 Database: in the Supabase SQL editor run `supabase/schema.sql`, then `supabase/seed.sql`. Regenerate the seed with `node scripts/build-seed.mjs` when `data/*.json` changes.
 
-Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts`
+Tests: `npx tsx --test lib/*.test.ts lib/compat/*.test.ts lib/cad/*.test.ts lib/electronics/*.test.ts`
 
 Location search uses OpenStreetMap's free Nominatim and Overpass services. Set `OSM_CONTACT` (an email or URL) in production so they can reach you, as their usage policy asks.
 

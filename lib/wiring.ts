@@ -1,5 +1,6 @@
 // Turns a build into a wiring plan: nodes (boards) and numbered connections.
 import type { BuildItem, Part, Slot } from "./compat/types";
+import { planPins } from "./electronics/pins";
 
 export type WireKind = "power" | "ground" | "signal" | "data";
 
@@ -38,6 +39,15 @@ export function planWiring(items: BuildItem[], byId: Record<string, Part>): Wiri
   const regulator = get("regulator");
   const sensors = parts.filter((x) => ["lidar", "camera", "imu", "distance_sensor"].includes(x.part.slot)).map((x) => x.part);
 
+  const plan = planPins(items, byId);
+  const pinOf = (signal: string) => plan?.rows.find((r) => r.signal === signal);
+  /** "PWMA ← GPIO25, AIN1 ← GPIO13" for the given signals, when a pin plan exists. */
+  const mapped = (signals: string[]) =>
+    signals
+      .map(pinOf)
+      .filter(Boolean)
+      .map((r) => `${r!.to.split(" ").pop()} ← ${r!.pin}`)
+      .join(", ");
   const nodes: WireNode[] = [];
   const wires: Wire[] = [];
   const notes: string[] = [];
@@ -86,12 +96,22 @@ export function planWiring(items: BuildItem[], byId: Record<string, Part>): Wiri
   const motorHost = controller ? "controller" : compute ? "compute" : null;
   if (driver && motorHost) {
     const dual = driver.id.includes("cytron");
-    add({ from: motorHost, to: "driver", kind: "signal", label: "Speed and direction signals", pins: dual ? "M1A, M1B, M2A, M2B ← 4 PWM pins" : "PWMA, AIN1, AIN2, PWMB, BIN1, BIN2 ← 6 GPIO pins" + (driver.id.includes("tb6612") ? "; STBY → 3.3 V" : "") });
+    const drvSignals = plan?.rows.filter((r) => r.signal.startsWith("LEFT_") || r.signal.startsWith("RIGHT_")).map((r) => r.signal) ?? [];
+    const exact = mapped(drvSignals);
+    add({
+      from: motorHost,
+      to: "driver",
+      kind: "signal",
+      label: "Speed and direction signals",
+      pins: (exact || (dual ? "M1A, M1B, M2A, M2B ← 4 PWM pins" : "PWMA, AIN1, AIN2, PWMB, BIN1, BIN2 ← 6 GPIO pins")) + (driver.id.includes("tb6612") ? "; STBY and VCC → logic supply" : ""),
+    });
     add({ from: motorHost, to: "driver", kind: "ground", label: "Shared ground", pins: "Controller GND → driver GND", note: "Every board must share ground or the signals won't work." });
   }
   if (motor?.compat.has_encoder && motorHost) {
-    add({ from: "motors_left", to: motorHost, kind: "signal", label: "Left encoder", pins: "Encoder A, B → 2 interrupt-capable pins; VCC → 3.3 V; GND" });
-    add({ from: "motors_right", to: motorHost, kind: "signal", label: "Right encoder", pins: "Encoder A, B → 2 interrupt-capable pins; VCC → 3.3 V; GND" });
+    const v = plan?.logicV === 5 ? "5 V" : "3.3 V";
+    const enc = (side: "L" | "R") => (pinOf(`ENC_${side}_A`) ? `A → ${pinOf(`ENC_${side}_A`)!.pin}, B → ${pinOf(`ENC_${side}_B`)!.pin}` : "Encoder A, B → 2 interrupt-capable pins");
+    add({ from: "motors_left", to: motorHost, kind: "signal", label: "Left encoder", pins: `${enc("L")}; VCC → ${v}; GND` });
+    add({ from: "motors_right", to: motorHost, kind: "signal", label: "Right encoder", pins: `${enc("R")}; VCC → ${v}; GND` });
   }
   if (controller && compute) {
     add({ from: "controller", to: "compute", kind: "data", label: "Controller to computer", pins: "USB cable (also powers the controller)" });
@@ -104,12 +124,13 @@ export function planWiring(items: BuildItem[], byId: Record<string, Part>): Wiri
     const host = iface === "usb" || iface === "csi" ? "compute" : controller ? "controller" : "compute";
     if (iface === "usb") add({ from: id, to: "compute", kind: "data", label: s.name.split(" (")[0], pins: "USB cable to a blue USB 3 port" });
     else if (iface === "csi") add({ from: id, to: "compute", kind: "data", label: s.name.split(" (")[0], pins: "Ribbon cable into the CAM/DISP port (contacts facing the board)" });
-    else if (iface === "i2c") add({ from: id, to: host, kind: "data", label: s.name.split(" (")[0], pins: "SDA, SCL to the I2C pins; VIN → 3.3 V; GND" });
+    else if (iface === "i2c")
+      add({ from: id, to: host, kind: "data", label: s.name.split(" (")[0], pins: pinOf("I2C_SDA") ? `SDA → ${pinOf("I2C_SDA")!.pin}, SCL → ${pinOf("I2C_SCL")!.pin}; VIN → ${plan?.logicV === 5 ? "5 V" : "3.3 V"}; GND` : "SDA, SCL to the I2C pins; VIN → 3.3 V; GND" });
     else if (iface === "uart") add({ from: id, to: host, kind: "data", label: s.name.split(" (")[0], pins: "TX → RX, RX → TX; 5 V; GND (or use the bundled USB adapter)" });
     else if (iface === "gpio") {
       const hostPart = host === "controller" ? controller : compute;
       const divider = s.compat.sensor_logic_v === 5 && hostPart?.compat.host_logic_v === 3.3;
-      add({ from: id, to: host, kind: "signal", label: s.name.split(" (")[0], pins: "TRIG → any GPIO, ECHO → any GPIO; VCC → 5 V; GND", note: divider ? "ECHO is 5 V: add a 1 kΩ + 2 kΩ divider before the 3.3 V pin." : undefined });
+      add({ from: id, to: host, kind: "signal", label: s.name.split(" (")[0], pins: pinOf("SONAR_TRIG") ? `TRIG → ${pinOf("SONAR_TRIG")!.pin}, ECHO → ${pinOf("SONAR_ECHO")!.pin}; VCC → 5 V; GND` : "TRIG → any GPIO, ECHO → any GPIO; VCC → 5 V; GND", note: divider ? "ECHO is 5 V: add a 1 kΩ + 2 kΩ divider before the 3.3 V pin." : undefined });
     }
   });
 

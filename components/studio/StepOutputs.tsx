@@ -8,107 +8,48 @@ import { type Answers, SLOT_LABELS, SLOT_ORDER, findUseCase } from "@/lib/flow";
 import { BuildStats } from "@/components/BuildStats";
 import { Guide } from "@/components/Guide";
 import { buildGuide, guideToMarkdown } from "@/lib/quickGuide";
-import { planWiring, type Wire, type WireKind, type WireNode } from "@/lib/wiring";
+import { planWiring } from "@/lib/wiring";
+import { KIND, WiringDiagram } from "./WiringDiagram";
+import type { WireKind } from "@/lib/wiring";
+import GuideStepper from "./GuideStepper";
 import { Button, IssueList, StepHeading } from "./ui";
 import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { downloadStl } from "./CadPanel";
-
-const KIND: Record<WireKind, { color: string; label: string; dash?: string }> = {
-  power: { color: "#d2372c", label: "Power" },
-  ground: { color: "#15171c", label: "Ground", dash: "6 4" },
-  signal: { color: "#2a44f5", label: "Signal" },
-  data: { color: "#0f8a7e", label: "Data / USB" },
-};
-
-const NW = 190;
-const NH = 62;
-
-function positions(nodes: WireNode[]): Record<string, { x: number; y: number }> {
-  const pos: Record<string, { x: number; y: number }> = {};
-  const has = (id: string) => nodes.some((n) => n.id === id);
-  pos.battery = { x: 20, y: 430 };
-  pos.regulator = { x: 20, y: 120 };
-  pos.driver = { x: 290, y: 430 };
-  pos.controller = { x: 290, y: has("compute") ? 270 : 220 };
-  pos.compute = { x: 560, y: 120 };
-  pos.motors_left = { x: 560, y: 390 };
-  pos.motors_right = { x: 560, y: 480 };
-  const sensors = nodes.filter((n) => n.id.startsWith("sensor"));
-  sensors.forEach((n, i) => (pos[n.id] = { x: 830, y: 60 + i * 100 }));
-  return pos;
-}
-
-function WiringDiagram({ nodes, wires }: { nodes: WireNode[]; wires: Wire[] }) {
-  const pos = positions(nodes);
-  const pairCount: Record<string, number> = {};
-  return (
-    <svg viewBox="0 0 1040 570" className="h-auto w-full min-w-[760px]" role="img" aria-label="Wiring diagram">
-      {wires.map((w) => {
-        const a = pos[w.from];
-        const b = pos[w.to];
-        if (!a || !b) return null;
-        const key = [w.from, w.to].sort().join("-");
-        const k = (pairCount[key] = (pairCount[key] ?? 0) + 1) - 1;
-        const off = (k - 0.5) * 12;
-        let x1, y1, x2, y2, d;
-        if (Math.abs(a.x - b.x) < 10) {
-          const down = b.y > a.y;
-          x1 = a.x + NW / 2 + off;
-          y1 = down ? a.y + NH : a.y;
-          x2 = b.x + NW / 2 + off;
-          y2 = down ? b.y : b.y + NH;
-          d = `M${x1},${y1} L${x2},${y2}`;
-        } else {
-          const right = b.x > a.x;
-          x1 = right ? a.x + NW : a.x;
-          y1 = a.y + NH / 2 + off;
-          x2 = right ? b.x : b.x + NW;
-          y2 = b.y + NH / 2 + off;
-          const mx = (x1 + x2) / 2;
-          d = `M${x1},${y1} C${mx},${y1} ${mx},${y2} ${x2},${y2}`;
-        }
-        const s = KIND[w.kind];
-        // Stagger badges on parallel wires so numbers never overlap.
-        const vertical = Math.abs(a.x - b.x) < 10;
-        const lx = (x1 + x2) / 2 + (vertical ? (k % 2 ? 14 : -14) : 0);
-        const ly = (y1 + y2) / 2 + (vertical ? 0 : k * 26 - 13 * Math.min(1, k));
-        return (
-          <g key={w.n}>
-            <path d={d} fill="none" stroke={s.color} strokeWidth={2.6} strokeDasharray={s.dash} strokeLinecap="round" />
-            <circle cx={lx} cy={ly} r={11} fill="#fff" stroke={s.color} strokeWidth={2} />
-            <text x={lx} y={ly + 4} textAnchor="middle" fontSize={11} fontWeight={700} fill={s.color}>
-              {w.n}
-            </text>
-          </g>
-        );
-      })}
-      {nodes.map((n) => {
-        const p = pos[n.id];
-        if (!p) return null;
-        return (
-          <g key={n.id} transform={`translate(${p.x},${p.y})`}>
-            <rect width={NW} height={NH} rx={14} fill="#fff" stroke="#d5d9df" />
-            <text x={14} y={26} fontSize={13} fontWeight={700} fill="#15171c">
-              {n.label.length > 26 ? n.label.slice(0, 25) + "…" : n.label}
-            </text>
-            <text x={14} y={45} fontSize={11.5} fill="#5d6472">
-              {n.slot === "motors_left" || n.slot === "motors_right" ? n.sub : `${SLOT_LABELS[n.slot as keyof typeof SLOT_LABELS] ?? ""}, ${n.sub}`}
-            </text>
-          </g>
-        );
-      })}
-    </svg>
-  );
-}
+import { PcbPanel, PinMapPanel } from "./Electronics";
 
 export function StepWiring({ items, onBack, onNext }: { items: BuildItem[]; onBack: () => void; onNext: () => void }) {
   const plan = useMemo(() => planWiring(items, PARTS_BY_ID), [items]);
   const name = (id: string) => plan.nodes.find((n) => n.id === id)?.label ?? id;
+  const [tab, setTab] = useState<"wiring" | "pins" | "pcb">("wiring");
+  const TABS = [
+    { id: "wiring", label: "Wiring diagram" },
+    { id: "pins", label: "Pin map and code" },
+    { id: "pcb", label: "Custom PCB" },
+  ] as const;
   return (
     <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-14">
       <StepHeading kicker="Step 5 of 7" title="How it all connects">
-        {plan.wires.length} connections, generated from the parts in your bag. Numbers on the diagram match the table.
+        {plan.wires.length} connections, generated from the parts in your bag. Get the exact controller pins and starter code, or replace the jumper wires with your own circuit board.
       </StepHeading>
+      <div className="mt-6 flex w-fit flex-wrap rounded-full bg-stage-2 p-1 text-sm font-semibold" role="tablist">
+        {TABS.map((t) => (
+          <button key={t.id} role="tab" aria-selected={tab === t.id} onClick={() => setTab(t.id)} className={`rounded-full px-4 py-2 ${tab === t.id ? "bg-paper shadow-sm" : "text-mute hover:text-ink"}`}>
+            {t.label}
+          </button>
+        ))}
+      </div>
+      {tab === "pins" && (
+        <div className="mt-8">
+          <PinMapPanel items={items} />
+        </div>
+      )}
+      {tab === "pcb" && (
+        <div className="mt-8">
+          <PcbPanel items={items} />
+        </div>
+      )}
+      {tab === "wiring" && (
+      <>
       <div className="mt-6 flex flex-wrap gap-4 text-sm">
         {(Object.keys(KIND) as WireKind[]).map((k) => (
           <span key={k} className="flex items-center gap-2">
@@ -160,6 +101,8 @@ export function StepWiring({ items, onBack, onNext }: { items: BuildItem[]; onBa
           </tbody>
         </table>
       </div>
+      </>
+      )}
       <div className="mt-10 flex gap-3">
         <Button onClick={onBack}>Back</Button>
         <Button variant="dark" onClick={onNext}>
@@ -352,19 +295,22 @@ export function StepGuide({
   onBack: () => void;
 }) {
   const sections = useMemo(() => buildGuide(items, PARTS_BY_ID, answers), [items, answers]);
-  const [view, setView] = useState<"quick" | "ai">(aiGuide ? "ai" : "quick");
+  const [view, setView] = useState<"step" | "quick" | "ai">(aiGuide ? "ai" : "step");
   const title = `Build guide: ${findUseCase(answers.useCase)?.name ?? "your rover"}`;
   // Steps are numbered continuously across sections.
   const firstStep = sections.map((_, i) => 1 + sections.slice(0, i).reduce((sum, x) => sum + x.steps.length, 0));
   return (
-    <section className="mx-auto max-w-[900px] px-4 py-10 sm:px-6 sm:py-14">
+    <section className={`mx-auto px-4 py-10 sm:px-6 sm:py-14 ${view === "step" ? "max-w-[1180px]" : "max-w-[900px]"}`}>
       <StepHeading kicker="Step 7 of 7" title="Build it, step by step">
         Written for your exact parts. Total time is about {answers.useCase === "map" || answers.useCase === "carry" || answers.useCase === "follow" ? "a weekend" : "an afternoon"}.
       </StepHeading>
 
       <div className="mt-6 flex flex-wrap items-center gap-2 print:hidden" role="tablist" aria-label="Guide version">
+        <button role="tab" aria-selected={view === "step"} onClick={() => setView("step")} className={`h-10 rounded-full px-4 text-sm font-semibold ${view === "step" ? "bg-ink text-white" : "border border-line"}`}>
+          Picture guide
+        </button>
         <button role="tab" aria-selected={view === "quick"} onClick={() => setView("quick")} className={`h-10 rounded-full px-4 text-sm font-semibold ${view === "quick" ? "bg-ink text-white" : "border border-line"}`}>
-          Step-by-step checklist
+          Checklist
         </button>
         <button
           role="tab"
@@ -380,7 +326,11 @@ export function StepGuide({
         </button>
       </div>
 
-      {view === "quick" ? (
+      {view === "step" ? (
+        <div className="mt-8">
+          <GuideStepper sections={sections} items={items} />
+        </div>
+      ) : view === "quick" ? (
         <>
           <div className="mt-4 flex flex-wrap gap-2 print:hidden">
             <Button onClick={() => download("buildabot-checklist.md", guideToMarkdown(title, sections), "text/markdown")}>Download checklist</Button>
