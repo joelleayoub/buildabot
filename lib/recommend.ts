@@ -27,6 +27,7 @@ const WARNING_COST: Record<string, number> = {
   SENSOR_5V_SIGNAL: 8,
   NAV_NO_MICROCONTROLLER: 60,
   USB_PORTS: 20,
+  NO_WIRELESS: 300,
 };
 
 function cartesian<T>(lists: T[][]): T[][] {

@@ -76,6 +76,26 @@ export interface Answers {
   environment: Environment;
   experience: Experience;
   budget?: number;
+  /** Tools the user already has (see OWNED_TOOLS), so the cart doesn't count them. */
+  owned?: string[];
+}
+
+/** The tools question: each choice matches extras by id, or by prefix for chargers. */
+export const OWNED_TOOLS: { id: string; label: string; match: string[] }[] = [
+  { id: "screwdrivers", label: "Small screwdrivers", match: ["tool-screwdrivers"] },
+  { id: "multimeter", label: "Multimeter", match: ["tool-multimeter"] },
+  { id: "stripper", label: "Wire stripper", match: ["tool-stripper"] },
+  { id: "soldering", label: "Soldering iron", match: ["tool-soldering", "sup-heatshrink"] },
+  { id: "hex", label: "Hex keys", match: ["tool-hex"] },
+  { id: "pliers", label: "Pliers", match: ["tool-pliers"] },
+  { id: "charger", label: "A battery charger", match: ["chg-"] },
+  { id: "kit", label: "Jumper wires and screws", match: ["sup-jumpers", "sup-standoffs-m3", "sup-mounting"] },
+];
+
+/** Extra ids covered by the user's answer to the tools question. */
+export function ownedExtraIds(owned: string[] | undefined, extraIds: string[]): string[] {
+  const rules = OWNED_TOOLS.filter((t) => owned?.includes(t.id)).flatMap((t) => t.match);
+  return extraIds.filter((id) => rules.some((m) => (m.endsWith("-") ? id.startsWith(m) : id === m)));
 }
 
 export const findUseCase = (id?: UseCaseId) => USE_CASES.find((u) => u.id === id);

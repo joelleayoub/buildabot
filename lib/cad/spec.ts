@@ -218,3 +218,16 @@ export interface CustomPart {
   id: string;
   design: PartDesign;
 }
+
+/** Validates designed parts from untrusted input (a saved project): known templates, clamped numbers. */
+export function parseCustomParts(raw: unknown): CustomPart[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  const out: CustomPart[] = [];
+  for (const r of raw.slice(0, 12)) {
+    const d = (r as { design?: { template?: unknown; params?: Record<string, unknown>; name?: unknown } })?.design;
+    const id = (r as { id?: unknown })?.id;
+    if (!d || !isTemplateId(d.template) || typeof id !== "string") continue;
+    out.push({ id: id.slice(0, 64), design: { template: d.template, params: normalise(d.template, d.params ?? {}), name: typeof d.name === "string" ? d.name.slice(0, 60) : TEMPLATES[d.template].name } });
+  }
+  return out;
+}

@@ -168,7 +168,7 @@ const statusOf = (margin: number): JointStatus => (margin >= 1.2 ? "ok" : margin
 /** Cheapest motor of the family that is fast enough and has a comfortable margin, else a tight
  * one, else the strongest. */
 function chooseMotor(family: Family, required: number, dps: number): { motor: ArmPart; usable: number } {
-  const all = ARM_PARTS.filter((p) => familyOf(p) === family).map((m) => ({ motor: m, usable: usableTorque(m) }));
+  const all = ARM_PARTS.filter((p) => familyOf(p) === family && (!p.machines || p.machines.includes("articulated"))).map((m) => ({ motor: m, usable: usableTorque(m) }));
   const fast = all.filter((x) => x.motor.max_dps! >= dps * 0.8);
   const motors = fast.some((x) => x.usable >= required) ? fast : all;
   const byPrice = [...motors].sort((a, b) => a.motor.price_usd_approx - b.motor.price_usd_approx || a.motor.mass_g - b.motor.mass_g);
@@ -277,7 +277,7 @@ export function sizeFamily(t: ArmTask, family: Family, geo: ArmGeometry, gripper
   for (const j of joints) if (j.status === "over") problems.push(`${j.name}: needs ${j.required_nm} N·m, the strongest motor here gives ${j.usable_nm} N·m.`);
   if (tip_error_mm > t.precision_mm) problems.push(`Placing accuracy is about ±${tip_error_mm} mm; the task needs ±${t.precision_mm} mm.`);
   if (!speed_ok) problems.push(`Too slow: the moves need about ${needed_dps}°/s and the slowest joint does ${slowest}°/s.`);
-  return { family, label: FAMILY_LABEL[family], joints, tip_error_mm, speed_ok, needed_dps, parts, cost_usd, mass_kg, feasible: problems.length === 0, problems };
+  return { family, label: FAMILY_LABEL[family], machine: "articulated", joints, tip_error_mm, speed_ok, needed_dps, parts, cost_usd, mass_kg, feasible: problems.length === 0, problems };
 }
 
 // ---------------------------------------------------------------- build or buy
@@ -289,13 +289,143 @@ function judge(t: ArmTask, chosen: FamilyPlan | null, top: MachineType): { verdi
   if (t.reach_cm > 80) buy.push("Over 80 cm of reach makes a home-built arm bend and drift.");
   if (t.precision_mm < 0.2) buy.push("Placing within 0.2 mm needs industrial gearboxes and calibration.");
   if (t.near_people && t.hours_per_day >= 4) buy.push("Working next to people for hours needs an arm that senses collisions and stops (a cobot). Home-built arms don't.");
-  if (!chosen && top === "articulated") buy.push("None of the motor options can do this task safely.");
+  if (!chosen && top !== "delta") buy.push("None of the motor options can do this task safely.");
   if (t.hours_per_day >= 8) (chosen?.family === "pwm" ? buy : care).push("All-day use wears out hobby gears; plan spare motors and regular checks.");
   if (t.near_people && t.hours_per_day < 4) care.push("People will be nearby: keep it slow, put the emergency stop within reach, and never lean into its reach while it runs.");
   if (chosen?.joints.some((j) => j.status === "tight")) care.push("Some joints are close to their limit. Keep the object at or under the weight you entered.");
   if (buy.length) return { verdict: "buy", reasons: [...buy, "A ready-made cobot or industrial arm (for example from Universal Robots, UFACTORY or igus) is the safer choice. Ask a supplier for a quote."] };
   if (care.length) return { verdict: "diy_with_care", reasons: care };
   return { verdict: "diy", reasons: ["Well within what a home-built machine can do."] };
+}
+
+// ---------------------------------------------------------------- SCARA and gantry
+
+const PULLEY_R = 0.00637; // GT2 20-tooth pulley pitch radius (m)
+const LEAD = 0.008; // T8 lead screw: 8 mm per turn
+const SCREW_EFF = 0.3; // trapezoidal lead screw efficiency
+
+function moveTime(t: ArmTask) {
+  return Math.max(0.3, 60 / Math.max(0.1, t.per_minute) / 4);
+}
+
+/** Torque a belt axis needs to move `kg` across `dist` m in `secs` (triangular speed profile), with friction and margin. */
+const beltTorque = (kg: number, dist: number, secs: number) => kg * ((4 * dist) / (secs * secs) + 0.1 * G) * DYNAMIC_FACTOR * PULLEY_R;
+const beltDps = (dist: number, secs: number) => Math.round(((2 * dist) / secs / (2 * Math.PI * PULLEY_R)) * 360);
+const screwTorque = (kg: number, dist: number, secs: number) => (kg * (G + (4 * dist) / (secs * secs)) * DYNAMIC_FACTOR * LEAD) / (2 * Math.PI * SCREW_EFF);
+const screwDps = (dist: number, secs: number) => Math.round(((2 * dist) / secs / LEAD) * 360);
+
+function machineJoint(name: string, role: string, axis: JointSize["axis"], required: number, motorId: string): JointSize {
+  const motor = ARM_PARTS_BY_ID[motorId];
+  const usable = usableTorque(motor);
+  const margin = usable / required;
+  return { name, role, axis, required_nm: round(required, 3), motor, usable_nm: round(usable), margin: round(margin), status: statusOf(margin) };
+}
+
+/** Above these, printed home-built frames bend and lose accuracy, whatever the motors can do. */
+const MAX_PAYLOAD_G: Partial<Record<MachineType, number>> = { scara: 1000, gantry: 3000 };
+
+function finishPlan(t: ArmTask, machine: MachineType, label: string, joints: JointSize[], needed_dps: number[], tip_error_mm: number, extras: [string, number, string][], massKg: number): FamilyPlan {
+  const parts: FamilyPlan["parts"] = [];
+  const add = (id: string, qty: number, why: string) => {
+    const part = ARM_PARTS_BY_ID[id];
+    const existing = parts.find((x) => x.part.id === id);
+    if (existing) {
+      existing.qty += qty;
+      existing.why += `, ${why.toLowerCase()}`;
+    } else parts.push({ part, qty, why });
+  };
+  for (const j of joints) add(j.motor.id, 1, `Axis: ${j.name.toLowerCase()}`);
+  for (const [id, qty, why] of extras) add(id, qty, why);
+  const cost_usd = Math.round(parts.reduce((s, p) => s + p.part.price_usd_approx * p.qty, 0) + 20);
+  const slow = joints.map((j, i) => j.motor.max_dps! / Math.max(1, needed_dps[i]));
+  const speed_ok = slow.every((r) => r >= 0.8);
+  const problems: string[] = [];
+  for (const j of joints) if (j.status === "over") problems.push(`${j.name}: needs ${j.required_nm} N·m, the motor gives ${j.usable_nm} N·m.`);
+  if (tip_error_mm > t.precision_mm) problems.push(`Placing accuracy is about ±${tip_error_mm} mm; the task needs ±${t.precision_mm} mm.`);
+  if (!speed_ok) problems.push(`Too fast for these motors: the moves need about ${Math.max(...needed_dps)}°/s at the motor.`);
+  const maxG = MAX_PAYLOAD_G[machine];
+  if (maxG && t.object_g > maxG) problems.push(`A home-built ${MACHINE_NOUN[machine]} bends under more than about ${maxG / 1000} kg.`);
+  return { family: "stepper", label, machine, joints, tip_error_mm, speed_ok, needed_dps: Math.max(...needed_dps), parts, cost_usd, mass_kg: round(massKg, 2), feasible: problems.length === 0, problems };
+}
+
+/** XYZ gantry: belt-driven X and Y (two Y motors on wide frames), lead screw Z. */
+export function sizeGantry(t: ArmTask): FamilyPlan {
+  const tool = pickGripper(t);
+  const side = Math.max(0.15, t.reach_cm / 100);
+  // Each pick lifts a few centimetres; the full height is only for reaching the top of the work.
+  const zTravel = Math.min(0.05, Math.max(0.02, t.lift_cm / 100 + 0.02));
+  const secs = moveTime(t);
+  const payload = (t.object_g + tool.mass_g) / 1000;
+  const mz = payload + 0.15; // tool plate
+  const mx = mz + 0.35 + 0.2 + 0.3; // Z motor, lead screw and carriage ride on X
+  const my = mx + 0.6 * side + 0.35; // the X beam and its motor ride on Y
+  const dualY = side > 0.35;
+  const joints = [
+    machineJoint("X axis", "Moves the tool left and right", "linear", beltTorque(mx, side, secs), "stepper-nema17"),
+    machineJoint(dualY ? "Y axis (each of 2 motors)" : "Y axis", "Moves the whole beam back and forth", "linear", beltTorque(my, side, secs) / (dualY ? 2 : 1), "stepper-nema17"),
+    machineJoint("Z axis", t.motion === "draw" ? "Lowers and lifts the pen or tool" : "Lowers and lifts the tool", "linear", screwTorque(mz, zTravel, secs), "stepper-nema17"),
+  ];
+  const dps = [beltDps(side, secs), beltDps(side, secs), screwDps(zTravel, secs)];
+  if (t.orientation !== "none") {
+    joints.push({ ...machineJoint("Tool turn", "Spins the tool", "roll", 0.1, "servo-mg996r") });
+    dps.push(90);
+  }
+  const extras: [string, number, string][] = [
+    [tool.id, 1, t.motion === "draw" || t.motion === "inspect" ? "Holds the pen, laser or camera" : "Holds the object"],
+    ["mech-vslot-frame", 1, `Frame about ${Math.round(side * 100 + 15)} cm square`],
+    ["mech-gt2-kit", 1, "Belts for X and Y"],
+    ["mech-t8-leadscrew", 1, "Z axis"],
+    ["ctrl-cnc-shield", 1, "Runs the motors (GRBL)"],
+    ["psu-12v-5a", 1, "Motor power"],
+    ["sw-limit", 3, "Lets each axis find its zero"],
+    ["mech-estop", 1, "Cuts motor power instantly"],
+  ];
+  if (t.motion === "draw") extras.push(["servo-sg90", 1, "Optional pen lift instead of moving Z"]);
+  const stepperMotors = joints.filter((j) => j.motor.family === "stepper").length + (dualY ? 1 : 0);
+  if (dualY) extras.push(["stepper-nema17", 1, "Second Y motor"]);
+  if (stepperMotors > 4) extras.push(["drv-tmc2209", stepperMotors - 4, "Drivers beyond the shield's four"]);
+  return finishPlan(t, "gantry", "Gantry with NEMA 17 steppers", joints, dps, round(Math.hypot(0.1, 0.1), 2), extras, my + 2.5);
+}
+
+/** SCARA: two arm segments swinging flat on belt-reduced steppers, a lead screw Z, an optional wrist turn. */
+export function sizeScara(t: ArmTask): FamilyPlan {
+  const grip = pickGripper(t);
+  const R = Math.max(0.12, t.reach_cm / 100) * 1.05;
+  const L1 = R * 0.5;
+  const L2 = R * 0.5;
+  const secs = moveTime(t);
+  const theta = Math.PI / 2;
+  const alpha = (4 * theta) / (secs * secs);
+  const tipKg = (t.object_g + grip.mass_g) / 1000 + (t.orientation !== "none" ? 0.07 : 0);
+  const link = 0.35; // kg per metre of printed arm with its bearings
+  const elbowKg = 0.4 + 0.12; // J2 motor and pulleys at the elbow
+  const I2 = tipKg * L2 * L2 + (link * L2 * L2 * L2) / 3;
+  const I1 = tipKg * R * R + elbowKg * L1 * L1 + (link * L1 * L1 * L1) / 3 + link * L2 * ((L1 + L2 / 2) ** 2);
+  const armKg = tipKg + elbowKg + link * (L1 + L2) + 0.3;
+  const zTravel = Math.min(0.05, Math.max(0.02, t.lift_cm / 100 + 0.02));
+  const joints = [
+    machineJoint("Shoulder (J1)", "Swings the whole arm across the table", "yaw", I1 * alpha * DYNAMIC_FACTOR + 0.1, "stepper-nema17-belt4"),
+    machineJoint("Elbow (J2)", "Swings the outer arm", "yaw", I2 * alpha * DYNAMIC_FACTOR + 0.05, "stepper-nema17-belt4"),
+    machineJoint("Z axis", "Lifts the arm up and down", "linear", screwTorque(armKg, zTravel, secs), "stepper-nema17"),
+  ];
+  const jdps = Math.round((2 * 90) / secs);
+  const dps = [jdps, jdps, screwDps(zTravel, secs)];
+  if (t.orientation !== "none") {
+    joints.push(machineJoint("Wrist turn", "Spins the gripper", "roll", 0.1, "servo-mg996r"));
+    dps.push(90);
+  }
+  const err = Math.hypot(((0.1 * Math.PI) / 180) * R, ((0.1 * Math.PI) / 180) * L2) * 1000 + 0.2;
+  const extras: [string, number, string][] = [
+    [grip.id, 1, "Holds the object"],
+    ["mech-belt-reduction", 2, "4:1 belts for J1 and J2"],
+    ["mech-thrust-bearings", 1, "J1 and J2"],
+    ["mech-t8-leadscrew", 1, "Z axis"],
+    ["ctrl-cnc-shield", 1, "Runs the motors"],
+    ["psu-12v-5a", 1, "Motor power"],
+    ["sw-limit", 3, "Lets each axis find its zero"],
+    ["mech-estop", 1, "Cuts motor power instantly"],
+  ];
+  return finishPlan(t, "scara", "SCARA with NEMA 17 steppers", joints, dps, round(err, 1), extras, armKg + 1.5);
 }
 
 // ---------------------------------------------------------------- what would make it work
@@ -330,6 +460,20 @@ export function whatWouldWork(t: ArmTask): string | null {
   return ideas.length ? `A home-built arm could do this with ${ideas.slice(0, 3).join(", or ")}.` : null;
 }
 
+/** Same idea as whatWouldWork, for a SCARA or a gantry. */
+function whatWouldWorkFor(t: ArmTask, size: (t: ArmTask) => FamilyPlan, noun: string): string | null {
+  const ok = (x: ArmTask) => size(x).feasible;
+  const ideas: string[] = [];
+  const g = search(5, t.object_g, (v) => ok({ ...t, object_g: v }));
+  if (g !== null && g < t.object_g * 0.97) ideas.push(`objects up to about ${g >= 100 ? Math.floor(g / 50) * 50 : Math.floor(g / 5) * 5} g`);
+  const pm = search(0.5, t.per_minute, (v) => ok({ ...t, per_minute: v }));
+  if (pm !== null && pm < t.per_minute * 0.97) ideas.push(`about ${Math.max(1, Math.floor(pm))} moves a minute`);
+  const r = search(10, t.reach_cm, (v) => ok({ ...t, reach_cm: v }));
+  if (r !== null && r < t.reach_cm * 0.97) ideas.push(`a reach of about ${Math.floor(r)} cm`);
+  if (t.precision_mm < 2 && ok({ ...t, precision_mm: 2 })) ideas.push("placing within ±2 mm");
+  return ideas.length ? `A home-built ${noun} could do this with ${ideas.slice(0, 3).join(", or ")}.` : null;
+}
+
 // ---------------------------------------------------------------- plan
 
 export function planArm(task: Partial<ArmTask>): ArmPlan {
@@ -342,7 +486,8 @@ export function planArm(task: Partial<ArmTask>): ArmPlan {
   families.sort((a, b) => Number(b.feasible) - Number(a.feasible) || (a.feasible ? a.cost_usd - b.cost_usd : a.problems.length - b.problems.length || a.cost_usd - b.cost_usd));
   const chosen = families.find((f) => f.feasible) ?? null;
   const top = machines[0].type;
-  const judged = judge(t, chosen, top);
+  const machinePlan = top === "gantry" ? sizeGantry(t) : top === "scara" ? sizeScara(t) : null;
+  const judged = judge(t, machinePlan ? (machinePlan.feasible ? machinePlan : null) : chosen, top);
   let verdict = judged.verdict;
   const reasons = judged.reasons;
   // Some jobs are hard because of the software, not the motors.
@@ -364,7 +509,11 @@ export function planArm(task: Partial<ArmTask>): ArmPlan {
     const hint = whatWouldWork(t);
     if (hint) notes.unshift(hint);
   }
-  if (top !== "articulated") notes.push(`The motor sizes below are for a jointed arm. Detailed sizing for a ${MACHINE_NOUN[top]} is coming next; start from its reference design.`);
+  if (machinePlan && !machinePlan.feasible) {
+    const hint = whatWouldWorkFor(t, top === "gantry" ? sizeGantry : sizeScara, MACHINE_NOUN[top]);
+    if (hint) notes.unshift(hint);
+  }
+  if (top === "delta") notes.push(`Detailed sizing for a ${MACHINE_NOUN[top]} is coming next; start from its reference design. The motor sizes below are for a jointed arm.`);
   if (gripper.max_object_g! < t.object_g) notes.push(`No gripper in the catalog is rated for ${t.object_g} g of this kind of object; the strongest one is shown.`);
   if (gripper.id === "grip-suction") notes.push("Suction needs flat, smooth, clean surfaces. Test it on your real objects first.");
   const d = t.description.toLowerCase();
@@ -372,5 +521,5 @@ export function planArm(task: Partial<ArmTask>): ArmPlan {
   if (t.motion === "sort" || /\b(conveyor|pile|bin|random|anywhere|find|detect|recogni[sz]e|jenga|chess|strawberr|fruit|weed)\w*/.test(d))
     notes.push("This sizes the arm. Finding objects that aren't always in the same place (on a conveyor, in a pile, on a board) also needs a camera and vision software, such as OpenCV or a LeRobot policy.");
   notes.push("Torques assume the arm stretched out flat, the worst case. Motors are only counted at about half their rated torque so they stay cool.");
-  return { task: t, machines, geometry, gripper, families, chosen, verdict, verdict_reasons: reasons, designs, notes };
+  return { task: t, machines, geometry, gripper, families, chosen, machinePlan, verdict, verdict_reasons: reasons, designs, notes };
 }

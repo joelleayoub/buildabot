@@ -42,10 +42,10 @@ preview at `/arm`: it sizes an arm for a task but has no cart, wiring or guide y
 | `lib/recommend.ts` | Deterministic recommender: answers to the best compatible build |
 | `lib/swap.ts` | Swapping a part re-plans the parts that depend on it so the build stays compatible |
 | `lib/wiring.ts`, `lib/quickGuide.ts` | Wiring plan and step-by-step guide generated from the build (no AI). Guide steps carry visuals (assembly, wire, code, parts, tools) |
-| `lib/electronics/` | Pin plan per controller (`pins.ts`), starter firmware for Arduino/ESP32/Pico/Teensy or Python for a Pi (`firmware.ts`), carrier PCB with KiCad netlist and BOM export (`board.ts`) |
+| `lib/electronics/` | Pin plan per controller (`pins.ts`), starter firmware for Arduino/ESP32/Pico/Teensy or Python for a Pi, and a phone-driving sketch for ESP32 (`firmware.ts`), carrier PCB with KiCad netlist and BOM export (`board.ts`) |
 | `components/studio/Electronics.tsx` | Pin map, firmware and custom PCB panels shown in the Wiring step |
 | `components/studio/GuideStepper.tsx`, `WiringDiagram.tsx` | Picture guide: one step at a time with the 3D robot built up so far, the highlighted wire, or the code to upload |
-| `app/arm`, `components/arm/`, `lib/arm/` | Arm advisor preview: task to machine type (`rankMachines`), joint torques and motors per family (`sizeFamily`), build or buy verdict, parts list. `data/arm_parts.json`, `data/arm_designs.json` |
+| `app/arm`, `components/arm/`, `lib/arm/` | Arm advisor preview: task to machine type (`rankMachines`), joint torques and motors per family (`sizeFamily`), SCARA and gantry axis sizing (`sizeScara`, `sizeGantry`), build or buy verdict, parts list. `data/arm_parts.json`, `data/arm_designs.json` |
 | `app/api/arm` | Claude reads the task description into numbers (falls back to `lib/arm/parse.ts` without a key) |
 | `lib/telemetry.ts`, `app/api/events`, `app/api/feedback`, `components/FeedbackButton.tsx` | Analytics events and in-app feedback, stored in Supabase `events` and `feedback` (memory without a database) |
 | `scripts/smoke.mjs`, `docs/USER_TEST.md` | End-to-end check of the definition of done (works on the deployed URL) and the 5-user test plan |
@@ -60,6 +60,12 @@ preview at `/arm`: it sizes an arm for a task but has no cart, wiring or guide y
 | `app/api/nearby` (`/api/print/nearby` is an alias), `lib/usePlace.ts`, `components/LocationBar.tsx` | The user's place (city search, browser location, or just a country), shared across the app; makerspaces and electronics and hardware shops nearby from OpenStreetMap |
 | `lib/shops.ts`, `data/retailers.json`, `data/countries.json`, `components/studio/OrderPlan.tsx` | Ordering: shops ranked for the user's country (local, nearby, worldwide, official seller finders), a shop per part, the order grouped by shop with a list to copy |
 | `app/parts`, `app/b/[slug]` | Parts catalog and read-only shared build pages (`components/SiteHeader.tsx`) |
+| `lib/rateLimit.ts` | Per-visitor hourly and site-wide daily limits on the AI routes (Supabase `ai_usage`, memory fallback). Env `AI_LIMIT_*`, `AI_DAILY_LIMIT`, `RATE_LIMIT_SALT` |
+| `components/studio/PrintableGuide.tsx` | "Save as PDF": the whole build as a print document (parts, supplies, wiring, pins, steps, code) |
+| `lib/myRobots.ts`, `components/studio/MyRobots.tsx` | "My robots": every build made in this browser, to reopen, rename, copy or delete |
+| `app/admin` | Usage dashboard (funnel, feedback, links, arm tasks) behind `ADMIN_KEY` |
+| `app/icon.svg`, `lib/og.tsx`, `app/opengraph-image.tsx`, `app/b/[slug]/opengraph-image.tsx` | Favicon and share previews |
+| `components/StlButton.tsx` | STL download for designed parts on share pages (designed parts are saved with the project) |
 | `lib/advisor/` | Advisor prompt, tools, agent loop, project store (Supabase or memory), AI guide |
 | `lib/compat/` | Compatibility checker and tests |
 | `data/parts.json`, `data/reference_designs.json` | Catalog |

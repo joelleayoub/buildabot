@@ -40,38 +40,46 @@ function speedCap(parts: Part[]): { cap: number; why?: string } {
   return { cap: 255 };
 }
 
-function cpp(plan: PinPlan, parts: Part[]): string {
-  const has = (s: string) => !!row(plan, s);
-  const defs = plan.rows.filter((r) => r.kind !== "i2c" && r.kind !== "uart").map((r: PinRow) => `const int ${r.signal.padEnd(10)} = ${codePin(r.pin)};${" ".repeat(Math.max(1, 6 - codePin(r.pin).length))}// ${r.label} -> ${r.to}`);
-  const { cap, why } = speedCap(parts);
-  const enc = has("ENC_L_A");
-  const sonar = has("SONAR_TRIG");
-  const i2c = plan.rows.some((r) => r.kind === "i2c");
-  const driver = parts.find((p) => p.slot === "motor_driver");
+const pinDefs = (plan: PinPlan) =>
+  plan.rows.filter((r) => r.kind !== "i2c" && r.kind !== "uart").map((r: PinRow) => `const int ${r.signal.padEnd(10)} = ${codePin(r.pin)};${" ".repeat(Math.max(1, 6 - codePin(r.pin).length))}// ${r.label} -> ${r.to}`);
 
-  const setMotor =
-    plan.driverStyle === "dual_pwm"
-      ? `void setMotor(bool left, int speed) {
+const outputPins = (plan: PinPlan) => plan.rows.filter((r) => r.kind === "pwm" || (r.kind === "digital" && r.signal !== "SONAR_ECHO")).map((r) => `  pinMode(${r.signal}, OUTPUT);`);
+
+function setMotorCode(plan: PinPlan): string {
+  return plan.driverStyle === "dual_pwm"
+    ? `void setMotor(bool left, int speed) {
   speed = constrain(speed, -MAX_SPEED, MAX_SPEED);
   int a = left ? LEFT_A : RIGHT_A;
   int b = left ? LEFT_B : RIGHT_B;
   analogWrite(a, speed > 0 ? speed : 0);
   analogWrite(b, speed < 0 ? -speed : 0);
 }`
-      : plan.driverStyle === "pwm_dir"
-        ? `void setMotor(bool left, int speed) {
+    : plan.driverStyle === "pwm_dir"
+      ? `void setMotor(bool left, int speed) {
   speed = constrain(speed, -MAX_SPEED, MAX_SPEED);
   digitalWrite(left ? LEFT_DIR : RIGHT_DIR, speed >= 0 ? HIGH : LOW);
   analogWrite(left ? LEFT_PWM : RIGHT_PWM, abs(speed));
 }`
-        : `void setMotor(bool left, int speed) {
+      : `void setMotor(bool left, int speed) {
   speed = constrain(speed, -MAX_SPEED, MAX_SPEED);
   digitalWrite(left ? LEFT_IN1 : RIGHT_IN1, speed > 0 ? HIGH : LOW);
   digitalWrite(left ? LEFT_IN2 : RIGHT_IN2, speed < 0 ? HIGH : LOW);
   analogWrite(left ? LEFT_PWM : RIGHT_PWM, abs(speed));
 }`;
+}
 
-  const outPins = plan.rows.filter((r) => r.kind === "pwm" || (r.kind === "digital" && r.signal !== "SONAR_ECHO")).map((r) => `  pinMode(${r.signal}, OUTPUT);`);
+function cpp(plan: PinPlan, parts: Part[]): string {
+  const has = (s: string) => !!row(plan, s);
+  const defs = pinDefs(plan);
+  const { cap, why } = speedCap(parts);
+  const enc = has("ENC_L_A");
+  const sonar = has("SONAR_TRIG");
+  const i2c = plan.rows.some((r) => r.kind === "i2c");
+  const driver = parts.find((p) => p.slot === "motor_driver");
+
+  const setMotor = setMotorCode(plan);
+
+  const outPins = outputPins(plan);
 
   return `// buildabot starter code
 // Controller: ${plan.hostName}. Motor driver: ${driver?.name ?? "none"}.
@@ -225,5 +233,130 @@ export function generateFirmware(items: BuildItem[], byId: Record<string, Part>)
     language: "cpp",
     code: cpp(plan, parts),
     howTo: [...(BOARD_SETUP[plan.host] ?? []), "Open buildabot_test.ino, plug in the board by USB, and click Upload.", "Lift the robot and open the Serial Monitor at 115200 baud."],
+  };
+}
+
+// ---------------------------------------------------------------- drive from your phone
+
+const PHONE_PAGE = `<!doctype html>
+<html><head><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>buildabot</title>
+<style>
+  body{margin:0;font-family:system-ui,sans-serif;background:#eceef1;color:#15171c;display:flex;flex-direction:column;align-items:center;gap:16px;padding:20px;touch-action:none;user-select:none}
+  h1{font-size:20px;margin:0} p{margin:0;color:#5d6472;font-size:14px}
+  #pad{width:80vmin;height:80vmin;max-width:340px;max-height:340px;border-radius:50%;background:#fff;position:relative;box-shadow:0 2px 12px #0002}
+  #knob{width:30%;height:30%;border-radius:50%;background:#2a44f5;position:absolute;left:35%;top:35%}
+  #stop{width:80vmin;max-width:340px;height:64px;border:0;border-radius:32px;background:#15171c;color:#fff;font-size:20px;font-weight:700}
+  #speed{width:80vmin;max-width:340px}
+</style></head><body>
+<h1>buildabot</h1><p>Drag the blue dot to drive. Let go to stop.</p>
+<div id="pad"><div id="knob"></div></div>
+<label><p>Speed</p><input id="speed" type="range" min="20" max="100" value="60"></label>
+<button id="stop">STOP</button>
+<p id="status">connecting...</p>
+<script>
+const pad=document.getElementById('pad'),knob=document.getElementById('knob'),st=document.getElementById('status'),speed=document.getElementById('speed');
+let x=0,y=0,active=false;
+function place(){knob.style.left=(35+x*35)+'%';knob.style.top=(35-y*35)+'%';}
+function move(e){const r=pad.getBoundingClientRect();let dx=(e.clientX-r.left)/r.width*2-1,dy=1-(e.clientY-r.top)/r.height*2;const d=Math.hypot(dx,dy);if(d>1){dx/=d;dy/=d;}x=dx;y=dy;place();}
+pad.addEventListener('pointerdown',e=>{active=true;pad.setPointerCapture(e.pointerId);move(e);});
+pad.addEventListener('pointermove',e=>{if(active)move(e);});
+function release(){active=false;x=0;y=0;place();}
+pad.addEventListener('pointerup',release);pad.addEventListener('pointercancel',release);
+document.getElementById('stop').addEventListener('click',release);
+setInterval(()=>{const s=speed.value/100;const l=Math.max(-1,Math.min(1,y+x))*s,r=Math.max(-1,Math.min(1,y-x))*s;
+fetch('/drive?l='+Math.round(l*100)+'&r='+Math.round(r*100)).then(t=>t.text()).then(t=>st.textContent=t).catch(()=>st.textContent='not connected');},120);
+</script></body></html>`;
+
+function phoneCpp(plan: PinPlan, parts: Part[]): string {
+  const { cap, why } = speedCap(parts);
+  const sonar = !!row(plan, "SONAR_TRIG");
+  return `// buildabot: drive from your phone
+// The robot makes its own Wi-Fi network. On your phone, join "buildabot-robot"
+// (password below), then open http://192.168.4.1 and drag the blue dot.
+// The wheels stop by themselves if the phone stops sending for half a second.
+${why ? `// ${why}\n` : ""}
+#include <WiFi.h>
+#include <WebServer.h>
+
+const char* WIFI_NAME = "buildabot-robot";
+const char* WIFI_PASSWORD = "build1234"; // at least 8 characters: change it
+
+// Pins, matching the pin map in buildabot
+${pinDefs(plan).join("\n")}
+
+const int MAX_SPEED = ${cap}; // 0 to 255
+${sonar ? "const float STOP_CM = 15;   // won't drive forward into anything closer than this\n" : ""}
+WebServer server(80);
+unsigned long lastCommand = 0;
+
+const char PAGE[] = R"PAGE(${PHONE_PAGE})PAGE";
+
+${setMotorCode(plan)}
+${sonar ? `
+float distanceCm() {
+  digitalWrite(SONAR_TRIG, LOW);
+  delayMicroseconds(2);
+  digitalWrite(SONAR_TRIG, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(SONAR_TRIG, LOW);
+  long us = pulseIn(SONAR_ECHO, HIGH, 20000);
+  return us ? us / 58.0 : -1;
+}
+` : ""}
+void handleDrive() {
+  int l = constrain(server.arg("l").toInt(), -100, 100);
+  int r = constrain(server.arg("r").toInt(), -100, 100);
+${sonar ? `  float d = distanceCm();
+  if (d > 0 && d < STOP_CM && l > 0 && r > 0) {
+    l = 0;
+    r = 0;
+  }
+` : ""}  setMotor(true, l * MAX_SPEED / 100);
+  setMotor(false, r * MAX_SPEED / 100);
+  lastCommand = millis();
+${sonar ? `  server.send(200, "text/plain", d > 0 ? String("connected, ") + String((int)d) + " cm ahead" : String("connected"));` : `  server.send(200, "text/plain", "connected");`}
+}
+
+void setup() {
+  Serial.begin(115200);
+${outputPins(plan).join("\n")}
+${sonar ? "  pinMode(SONAR_ECHO, INPUT);\n" : ""}  setMotor(true, 0);
+  setMotor(false, 0);
+  WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
+  server.on("/", []() { server.send(200, "text/html", PAGE); });
+  server.on("/drive", handleDrive);
+  server.begin();
+  Serial.print("Join Wi-Fi ");
+  Serial.print(WIFI_NAME);
+  Serial.print(", then open http://");
+  Serial.println(WiFi.softAPIP());
+}
+
+void loop() {
+  server.handleClient();
+  if (millis() - lastCommand > 500) {
+    setMotor(true, 0);
+    setMotor(false, 0);
+  }
+}
+`;
+}
+
+/** A sketch that turns an ESP32 into a Wi-Fi joystick page for the "drive it from my phone" job. */
+export function generatePhoneDrive(items: BuildItem[], byId: Record<string, Part>): Firmware | null {
+  const plan = planPins(items, byId);
+  if (!plan || !plan.driverStyle || plan.host !== "esp32") return null;
+  const parts = items.map((i) => byId[i.part_id]).filter(Boolean);
+  return {
+    filename: "buildabot_phone_drive.ino",
+    language: "cpp",
+    code: phoneCpp(plan, parts),
+    howTo: [
+      ...BOARD_SETUP.esp32,
+      "Open buildabot_phone_drive.ino, change WIFI_PASSWORD, plug in the board by USB and click Upload.",
+      "Unplug the USB, switch the robot on, and join the buildabot-robot Wi-Fi on your phone.",
+      "Open http://192.168.4.1 in your phone's browser and drag the blue dot. Start with the speed slider low.",
+    ],
   };
 }

@@ -100,3 +100,17 @@ create table if not exists feedback (
 
 alter table events enable row level security;
 alter table feedback enable row level security;
+
+-- Usage limits for the AI routes (lib/rateLimit.ts). Visitors are a salted hash, never an IP.
+create table if not exists ai_usage (
+  id          bigint generated always as identity primary key,
+  visitor     text not null,
+  route       text not null,
+  created_at  timestamptz not null default now()
+);
+create index if not exists ai_usage_visitor_idx on ai_usage (visitor, route, created_at);
+create index if not exists ai_usage_time_idx on ai_usage (created_at);
+alter table ai_usage enable row level security;
+
+-- 3D-printable parts the user designed (lib/cad/spec.ts CustomPart[]), kept with the project.
+alter table projects add column if not exists custom_parts jsonb not null default '[]'::jsonb;

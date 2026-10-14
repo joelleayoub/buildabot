@@ -16,6 +16,15 @@ ANTHROPIC_API_KEY=...              # turns on the advisor chat and the detailed 
 NEXT_PUBLIC_SUPABASE_URL=...       # without these two, projects are kept in memory
 SUPABASE_SERVICE_ROLE_KEY=...
 NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+ADMIN_KEY=...                      # opens /admin?key=... (usage funnel, feedback, top links)
+NEXT_PUBLIC_SITE_URL=https://...   # used for share previews; Vercel's own URL is the fallback
+RATE_LIMIT_SALT=...                # any random text; visitors are counted by a salted IP hash
+# Optional limits on the AI routes (defaults shown): calls per visitor per hour, and per day for everyone
+AI_LIMIT_CHAT=40
+AI_LIMIT_GUIDE=6
+AI_LIMIT_CAD=30
+AI_LIMIT_ARM=30
+AI_DAILY_LIMIT=1500
 ```
 
 Everything except the chat and the AI guide works without an Anthropic key.
@@ -34,8 +43,9 @@ Import the GitHub repo on vercel.com and add the same variables under Project Se
 
 - Part pictures are studio renders of the 3D models. Add a photo by setting `"image_url"` on a part in `data/parts.json` (only images you have the rights to).
 - Prices and specs in `data/parts.json` are approximate, and "Find at" links are shop searches until they're replaced with product or affiliate links.
-- Add a usage limit on `/api/chat` and `/api/guide` before the link goes public, since both spend Anthropic credit.
-- Add a usage limit on `/api/arm` and `/api/cad` too.
+- The AI routes (`/api/chat`, `/api/guide`, `/api/cad`, `/api/arm`) have usage limits (see the variables above). Still set a monthly spending limit on the Anthropic key.
+- Re-run `supabase/schema.sql` after pulling: it adds the `ai_usage` table and the `custom_parts` column, and is safe to run twice.
+- Run `node scripts/check-shop-links.mjs` from a machine with normal internet before relying on shop search links.
 
 ## User test
 
@@ -49,4 +59,12 @@ error. `node scripts/e2e-matrix.mjs <url>` runs it for 18 different users (about
 
 `/arm` sizes a robot arm for a described task: which kind of machine fits, the torque each joint
 needs, motors that cover it, a parts list and open-source reference designs. It also says when a
-ready-made arm is the better choice. It isn't part of the rover flow yet.
+ready-made arm is the better choice. When a SCARA arm or an XYZ gantry fits better than a jointed
+arm, it sizes that machine axis by axis (belt and lead screw torques, speed, accuracy) and lets you
+compare it with a jointed arm. It isn't part of the rover flow yet.
+
+## Other pages
+
+- **My robots** (header): every build made in this browser, to reopen, rename, copy or delete.
+- **Save as PDF** on the Guide step: parts with shops, supplies and tools, wiring, pin map, all steps and the code.
+- **/admin?key=ADMIN_KEY**: visitors, how far they got, feedback, most-clicked shop links and arm tasks.

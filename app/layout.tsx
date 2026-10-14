@@ -4,8 +4,13 @@ import "@fontsource-variable/schibsted-grotesk";
 import "./globals.css";
 import FeedbackButton from "@/components/FeedbackButton";
 
+const site = process.env.NEXT_PUBLIC_SITE_URL ?? (process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(site),
   title: "buildabot: build your first robot",
+  openGraph: { title: "buildabot: build your first robot", description: "Answer a few questions, get a compatible parts list, a wiring diagram and a step-by-step build guide.", siteName: "buildabot", type: "website" },
+  twitter: { card: "summary_large_image" },
   description: "Answer a few questions, get a compatible parts list, a wiring diagram and a step-by-step build guide.",
 };
 

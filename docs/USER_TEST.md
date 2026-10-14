@@ -7,11 +7,13 @@ no errors.
 ## 1. Deploy (once, about 30 minutes)
 
 1. **Supabase**: create a project, open the SQL editor and run `supabase/schema.sql` (it also
-   creates the `events` and `feedback` tables), then `supabase/seed.sql` to load the parts.
+   creates the `events`, `feedback` and `ai_usage` tables; it is safe to run again after an update), then `supabase/seed.sql` to load the parts.
    If `data/*.json` changed, regenerate the seed first with `node scripts/build-seed.mjs`.
 2. **Vercel**: import the GitHub repo, pick the `showroom` branch, and add these environment
    variables: `ANTHROPIC_API_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`,
-   `SUPABASE_SERVICE_ROLE_KEY`. Deploy.
+   `SUPABASE_SERVICE_ROLE_KEY`, plus `ADMIN_KEY` (any long random text, for `/admin`) and
+   `RATE_LIMIT_SALT` (any random text). `NEXT_PUBLIC_SITE_URL` is optional once you have a domain.
+   The AI usage limits default to sensible values; see the README to change them. Deploy.
 3. **Set a spending limit** on the Anthropic key before sharing the link.
 4. **Smoke test the live URL** from your laptop:
    `npm i -D playwright && npx playwright install chromium`, then
@@ -19,6 +21,8 @@ no errors.
    It walks the whole flow, fails on any error, and prints how long each step took. Delete the
    test row from the `feedback` table afterwards.
 5. Open the link on your phone too. A third of testers will.
+6. During and after the sessions, open `https://your-app.vercel.app/admin?key=YOUR_ADMIN_KEY` to see
+   how far each visitor got and what they wrote in the Feedback tab.
 
 ## 2. Who to recruit
 

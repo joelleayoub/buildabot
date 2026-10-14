@@ -161,6 +161,15 @@ export function checkBuild(
   const lidar = one("lidar");
   const cameras = bySlot("camera");
   const depthCam = cameras.find((c) => c.part.tags.includes("depth"));
+  if (requirements.autonomy === "remote_control" && (controller || compute) && !compute && !controller?.part.tags.includes("wifi")) {
+    add({
+      severity: "warning",
+      code: "NO_WIRELESS",
+      message: `The ${controller!.part.name} has no Wi-Fi or Bluetooth, so you can't drive it from a phone; it would have to stay plugged into a computer.`,
+      part_ids: [controller!.part.id],
+      fix: "Pick the ESP32 controller: it has Wi-Fi and Bluetooth built in.",
+    });
+  }
   if (requirements.autonomy === "mapping_navigation") {
     if (!compute) add({ severity: "error", code: "NAV_NEEDS_COMPUTE", message: "Mapping and autonomous navigation need a Linux computer running ROS 2.", fix: "Add a Raspberry Pi 5 or similar." });
     else if (!compute.part.compat.ros2) add({ severity: "error", code: "NAV_COMPUTE_TOO_WEAK", message: `${compute.part.name} can't comfortably run ROS 2 mapping and navigation.`, part_ids: [compute.part.id], fix: "Use a Raspberry Pi 5 (8 GB) or Jetson." });

@@ -4,6 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import type { ApiError } from "@/lib/advisor/api";
 import { advisorConfigured, describeAdvisorError, NOT_CONFIGURED } from "@/lib/advisor/errors";
 import { designWarnings, isTemplateId, normalise, TEMPLATE_ORDER, TEMPLATES } from "@/lib/cad/spec";
+import { checkLimit, limited } from "@/lib/rateLimit";
 
 export const maxDuration = 60;
 
@@ -49,6 +50,8 @@ export async function POST(req: Request) {
   const text = typeof body?.text === "string" ? body.text.trim().slice(0, MAX_CHARS) : "";
   if (!text) return Response.json({ error: "bad_request", message: "Describe the part first." } satisfies ApiError, { status: 400 });
   if (!advisorConfigured()) return Response.json(NOT_CONFIGURED, { status: 503 });
+  const limit = await checkLimit(req, "cad");
+  if (!limit.ok) return limited(limit);
   try {
     client ??= new Anthropic();
     const res = await client.messages.create({

@@ -7,6 +7,7 @@ import type { BuildItem } from "@/lib/compat/types";
 import { PARTS_BY_ID } from "@/lib/catalog";
 import { defaultNeeded, type Extra, extrasFor, extrasTotal } from "@/lib/extras";
 import { ToolIcon } from "@/components/ToolIcon";
+import { ownedExtraIds } from "@/lib/flow";
 
 const KEY = "buildabot.extras";
 
@@ -20,8 +21,9 @@ function loadChoices(): Record<string, boolean> {
 }
 
 /** The extras for a build and which ones the user still needs to buy. */
-export function useExtras(items: BuildItem[]) {
+export function useExtras(items: BuildItem[], ownedTools?: string[]) {
   const extras = useMemo(() => extrasFor(items, PARTS_BY_ID), [items]);
+  const owned = useMemo(() => ownedExtraIds(ownedTools, extras.map((e) => e.item.id)), [ownedTools, extras]);
   const [choices, setChoices] = useState<Record<string, boolean>>(loadChoices);
   useEffect(() => {
     try {
@@ -31,14 +33,14 @@ export function useExtras(items: BuildItem[]) {
     }
   }, [choices]);
   const needed = useMemo(() => {
-    const d = defaultNeeded(extras);
+    const d = defaultNeeded(extras, owned);
     for (const e of extras) {
       if (!(e.item.id in choices)) continue;
       if (choices[e.item.id]) d.add(e.item.id);
       else d.delete(e.item.id);
     }
     return d;
-  }, [extras, choices]);
+  }, [extras, choices, owned]);
   const toggle = (id: string) => setChoices((c) => ({ ...c, [id]: !needed.has(id) }));
   const setAll = (need: boolean) => setChoices((c) => ({ ...c, ...Object.fromEntries(extras.map((e) => [e.item.id, need && !e.optional])) }));
   return { extras, needed, toggle, setAll, total: extrasTotal(extras, needed), supplies: extrasTotal(extras, needed, ["supply", "safety"]), tools: extrasTotal(extras, needed, ["tool"]) };

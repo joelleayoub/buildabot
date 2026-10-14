@@ -1,7 +1,7 @@
 // Generates a step-by-step build guide from a build. Deterministic, so it always matches the cart.
 import type { BuildItem, Part, Slot } from "./compat/types";
 import { type Answers, findUseCase } from "./flow";
-import { generateFirmware } from "./electronics/firmware";
+import { generateFirmware, generatePhoneDrive } from "./electronics/firmware";
 import { planWiring } from "./wiring";
 import { type ExtraIcon, extrasFor } from "./extras";
 
@@ -154,7 +154,14 @@ export function buildGuide(items: BuildItem[], byId: Record<string, Part>, answe
   const first: GuideStep[] = [];
   switch (uc?.id) {
     case "drive":
-      first.push({ title: "Drive from your phone", body: controller?.tags.includes("wifi") ? "Use a Bluetooth gamepad library (e.g. Bluepad32) or host a small web page on the ESP32 with four buttons. Start slow: cap speed at 50%." : "Add a Bluetooth module or drive over USB from your laptop to start." });
+      {
+        const phone = generatePhoneDrive(items, byId);
+        first.push(
+          phone
+            ? { title: "Drive from your phone", body: `${phone.howTo.slice(-3).join(" ")} The wheels stop by themselves if your phone loses the connection.`, visual: { kind: "code", filename: phone.filename, language: phone.language, code: phone.code } }
+            : { title: "Drive from your phone", body: "This controller has no Wi-Fi or Bluetooth. Swap in the ESP32 controller in the Build step to drive from your phone, or drive it over a USB cable from your laptop to start." },
+        );
+      }
       break;
     case "avoid":
       first.push({ title: "Avoid obstacles", body: "Loop: read the distance; if it's under 25 cm, stop, reverse for half a second and turn; otherwise drive forward. Tune the distance and turn time on your floor." });

@@ -19,6 +19,8 @@ import Header from "./Header";
 import StepBuild from "./StepBuild";
 import { StepRobotType, StepStartFrom, StepUseCase } from "./StepIntro";
 import { StepCart, StepGuide, StepWiring } from "./StepOutputs";
+import MyRobots from "./MyRobots";
+import { getRobot, renameRobot, upsertRobot, type RobotEntry } from "@/lib/myRobots";
 
 const PROJECT_KEY = "buildabot.projectId";
 const FLOW_KEY = "buildabot.flow";
@@ -103,6 +105,8 @@ export default function Studio() {
   const [shareBusy, setShareBusy] = useState(false);
   const [toast, setToast] = useState<{ text: string; undo?: BuildItem[] } | null>(null);
   const [ready, setReady] = useState(false);
+  const [robotsOpen, setRobotsOpen] = useState(false);
+  const [openRobotId, setOpenRobotId] = useState<string | null>(null);
 
   const projectId = useRef<string | null>(null);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -127,10 +131,18 @@ export default function Studio() {
   };
 
   /** Applies a new build and saves it shortly after (the server clears any old AI guide). */
-  const applyBuild = (next: BuildItem[], nextAnswers: Answers = answers) => {
+  const applyBuild = (next: BuildItem[], nextAnswers: Answers = answers, nextCustom: CustomPart[] = customParts) => {
     setItems(next);
     setAiGuide(null);
-    pendingSave.current = { items: next.map(({ part_id, quantity, reason }) => ({ part_id, quantity, reason })), requirements: requirementsFrom(nextAnswers) };
+    pendingSave.current = { items: next.map(({ part_id, quantity, reason }) => ({ part_id, quantity, reason })), requirements: requirementsFrom(nextAnswers), customParts: nextCustom };
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(flushSave, SAVE_DELAY_MS);
+  };
+
+  /** Saves designed parts with the project (the build itself and its AI guide stay as they are). */
+  const saveCustomParts = (next: CustomPart[]) => {
+    if (!items.length) return;
+    pendingSave.current = { items: items.map(({ part_id, quantity, reason }) => ({ part_id, quantity, reason })), requirements: requirementsFrom(answers), customParts: next };
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(flushSave, SAVE_DELAY_MS);
   };
@@ -150,11 +162,22 @@ export default function Studio() {
     api<ProjectResponse>("GET", `/api/projects/${id}`).then((res) => {
       if (cancelled) return;
       if (!res.ok) {
-        if (res.status === 404) write(PROJECT_KEY, null);
+        // The server forgot this build (a restart or another deployment): rebuild it from the copy in "My robots".
+        const local = res.status === 404 ? getRobot(id) : undefined;
+        if (local?.items.length) {
+          projectId.current = id;
+          const a = { ...DEFAULT_ANSWERS, ...local.flow.answers };
+          setAnswers(a);
+          setItems(withReasons(local.items, a));
+          setCustomParts(local.flow.customParts ?? []);
+          pendingSave.current = { items: local.items, requirements: requirementsFrom(a), customParts: local.flow.customParts ?? [] };
+          saveTimer.current = setTimeout(flushSave, SAVE_DELAY_MS);
+        } else if (res.status === 404) write(PROJECT_KEY, null);
         setReady(true);
         return;
       }
       projectId.current = id;
+      if (!flow?.customParts?.length && res.data.customParts?.length) setCustomParts(res.data.customParts);
       const a = flow ? restoredAnswers : answersFromRequirements(res.data.requirements, restoredAnswers);
       setAnswers(a);
       setItems(withReasons(res.data.items, a));
@@ -170,11 +193,28 @@ export default function Studio() {
     return () => {
       cancelled = true;
     };
+    // Runs once on load; flushSave only reads refs.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [savedFlow]);
 
   useEffect(() => {
     if (ready) write(FLOW_KEY, JSON.stringify({ step, maxStep, answers, customParts } satisfies Flow));
   }, [ready, step, maxStep, answers, customParts]);
+
+  // Keep this build in "My robots".
+  useEffect(() => {
+    if (!ready || items.length === 0) return;
+    const id = ensureProjectId();
+    const uc = findUseCase(answers.useCase);
+    upsertRobot({
+      id,
+      title: uc ? `${uc.name}` : "My rover",
+      total: Math.round(checkBuild(items, PARTS_BY_ID, requirementsFrom(answers)).totals.price_usd_approx),
+      parts: items.length,
+      flow: { step, maxStep, answers, customParts },
+      items: items.map(({ part_id, quantity, reason }) => ({ part_id, quantity, reason })),
+    });
+  }, [ready, items, answers, customParts, step, maxStep]);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -314,6 +354,27 @@ export default function Studio() {
     setShareSlug(res.data.slug);
   };
 
+  const openRobot = async (r: RobotEntry) => {
+    await flushSave();
+    write(PROJECT_KEY, r.id);
+    write(FLOW_KEY, JSON.stringify(r.flow));
+    window.location.reload();
+  };
+  const duplicateRobot = async (r: RobotEntry) => {
+    await flushSave();
+    const id = crypto.randomUUID();
+    const res = await api("PUT", `/api/projects/${id}`, { items: r.items, requirements: requirementsFrom({ ...DEFAULT_ANSWERS, ...r.flow.answers }), customParts: r.flow.customParts ?? [] });
+    if (!res.ok) return setToast({ text: res.error.message });
+    upsertRobot({ ...r, id, title: `${r.title} (copy)` });
+    renameRobot(id, `${r.title} (copy)`);
+    await openRobot({ ...r, id });
+  };
+  const newRobot = async () => {
+    await flushSave();
+    setRobotsOpen(false);
+    startOver();
+  };
+
   const startOver = () => {
     if (saveTimer.current) clearTimeout(saveTimer.current);
     pendingSave.current = null;
@@ -333,7 +394,19 @@ export default function Studio() {
 
   return (
     <div className="min-h-dvh bg-paper text-ink" style={{ colorScheme: "light" }}>
-      <Header step={step} maxStep={maxStep} onStep={go} bagCount={items.length + customParts.length} onChat={() => setChatOpen(true)} />
+      <Header step={step} maxStep={maxStep} onStep={go} bagCount={items.length + customParts.length} onChat={() => setChatOpen(true)} onRobots={() => {
+          setOpenRobotId(items.length ? projectId.current : null);
+          setRobotsOpen(true);
+        }} />
+      <MyRobots
+        open={robotsOpen}
+        currentId={openRobotId}
+        onClose={() => setRobotsOpen(false)}
+        onOpen={openRobot}
+        onDuplicate={duplicateRobot}
+        onNew={newRobot}
+        onDeleted={(id) => id === projectId.current && startOver()}
+      />
       <main>
         {step === 0 && <StepRobotType onPick={(id) => (setAnswers({ ...answers, robotType: id }), go(1))} />}
         {step === 1 && <StepUseCase answers={answers} setAnswers={setAnswers} onBack={() => go(0)} onNext={() => go(2)} />}
@@ -356,6 +429,7 @@ export default function Studio() {
         {step === 5 && (
           <StepCart
             items={items}
+            answers={answers}
             report={report}
             shareUrl={shareUrl}
             shareBusy={shareBusy}
@@ -403,12 +477,16 @@ export default function Studio() {
           initial={cad.part}
           onClose={() => setCad(null)}
           onSave={(part) => {
-            setCustomParts((list) => (list.some((x) => x.id === part.id) ? list.map((x) => (x.id === part.id ? part : x)) : [...list, part]));
+            const next = customParts.some((x) => x.id === part.id) ? customParts.map((x) => (x.id === part.id ? part : x)) : [...customParts, part];
+            setCustomParts(next);
+            saveCustomParts(next);
             setCad(null);
             setToast({ text: `${part.design.name} is in your bag. Download its STL from the cart any time.` });
           }}
           onDelete={(id) => {
-            setCustomParts((list) => list.filter((x) => x.id !== id));
+            const next = customParts.filter((x) => x.id !== id);
+            setCustomParts(next);
+            saveCustomParts(next);
             setCad(null);
           }}
         />

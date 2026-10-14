@@ -7,6 +7,7 @@ import { advisorKnownItems, cartNote, designsShown } from "@/lib/advisor/transcr
 import { isProjectId, parseItems, parseRequirements } from "@/lib/advisor/validate";
 import { checkBuild } from "@/lib/compat/checkBuild";
 import type { BuildItem, BuildReport, Requirements } from "@/lib/compat/types";
+import { checkLimit, limited } from "@/lib/rateLimit";
 
 export const maxDuration = 120;
 
@@ -25,6 +26,8 @@ export async function POST(req: Request) {
   if (!items) return bad("Invalid cart.");
 
   if (!advisorConfigured()) return Response.json(NOT_CONFIGURED, { status: 503 });
+  const limit = await checkLimit(req, "chat");
+  if (!limit.ok) return limited(limit);
 
   try {
     const store = projectStore();

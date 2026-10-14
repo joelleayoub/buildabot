@@ -200,7 +200,7 @@ async function run(c, i) {
     });
     await step("guide", async () => {
       await btn("Get the build guide").click();
-      await page.getByText("Build it, step by step").waitFor();
+      await page.getByRole("heading", { name: "Build it, step by step" }).waitFor();
       let n = 1;
       const next = page.getByRole("button", { name: /^(Next step|Finish)$/ });
       while (n < 60 && (await next.isEnabled())) {
@@ -231,7 +231,7 @@ async function run(c, i) {
     });
     await step("reload", async () => {
       await page.reload({ waitUntil: "domcontentloaded" });
-      await page.getByText("Build it, step by step").waitFor({ timeout: 20000 });
+      await page.getByRole("heading", { name: "Build it, step by step" }).waitFor({ timeout: 20000 });
     });
   } catch (e) {
     if (e.message !== "stop") {

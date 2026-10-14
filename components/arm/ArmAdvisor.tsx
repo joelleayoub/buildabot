@@ -153,7 +153,7 @@ function FamilyView({ plan, hover, setHover }: { plan: FamilyPlan; hover?: strin
         <table className="w-full min-w-[620px] text-left text-sm">
           <thead className="text-xs text-mute">
             <tr className="border-b border-ink">
-              <th className="py-2 font-medium">Joint</th>
+              <th className="py-2 font-medium">{plan.machine === "articulated" ? "Joint" : "Axis"}</th>
               <th className="py-2 font-medium">Needs</th>
               <th className="py-2 font-medium">Motor</th>
               <th className="py-2 font-medium">Gives</th>
@@ -181,9 +181,9 @@ function FamilyView({ plan, hover, setHover }: { plan: FamilyPlan; hover?: strin
       <dl className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
         {[
           ["Parts", money(plan.cost_usd)],
-          ["Arm weight", `${plan.mass_kg} kg`],
+          [plan.machine === "articulated" ? "Arm weight" : "Machine weight", `${plan.mass_kg} kg`],
           ["Placing accuracy", `±${plan.tip_error_mm} mm`],
-          ["Joint speed needed", `${plan.needed_dps}°/s`],
+          [plan.machine === "articulated" ? "Joint speed needed" : "Motor speed needed", `${plan.needed_dps}°/s`],
         ].map(([k, v]) => (
           <div key={k} className="rounded-2xl bg-stage-2 px-4 py-3">
             <dt className="text-xs text-mute">{k}</dt>
@@ -217,6 +217,10 @@ export default function ArmAdvisor() {
 
   const plan = useMemo(() => (task ? planArm(task) : null), [task]);
   const shown = plan ? (plan.families.find((f) => f.family === family) ?? plan.chosen ?? plan.families[0]) : null;
+  const [buildAs, setBuildAs] = useState<"machine" | "articulated">("machine");
+  const machine = plan?.machinePlan ?? null;
+  const useMachine = !!machine && buildAs === "machine";
+  const listed = useMachine ? machine : shown;
 
   const update = (patch: Partial<ArmTask>) => {
     const next = { ...(task ?? {}), ...patch };
@@ -229,6 +233,7 @@ export default function ArmAdvisor() {
     if (!d) return;
     setText(d);
     setFamily(null);
+    setBuildAs("machine");
     const offline = parseTask(d);
     setGuessed([offline.object_g === undefined && "the weight", offline.reach_cm === undefined && "the reach"].filter(Boolean) as string[]);
     setTask(offline);
@@ -437,11 +442,48 @@ export default function ArmAdvisor() {
               </div>
             </section>
 
+            {machine && (
+              <section className="mt-14">
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <h2 className="text-2xl font-bold tracking-tight">{useMachine ? `Your ${plan.machines[0].name}, axis by axis` : "Your jointed arm, joint by joint"}</h2>
+                  <div className="flex gap-1.5 rounded-full bg-stage-2 p-1" role="tablist" aria-label="Build as">
+                    {(
+                      [
+                        ["machine", `Best fit: ${plan.machines[0].name.replace(/ \(.*\)$/, "")}`],
+                        ["articulated", "Jointed arm instead"],
+                      ] as const
+                    ).map(([id, label]) => (
+                      <button key={id} role="tab" aria-selected={buildAs === id} onClick={() => setBuildAs(id)} className={`rounded-full px-3.5 py-1.5 text-sm font-semibold ${buildAs === id ? "bg-paper shadow-sm" : "text-mute hover:text-ink"}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                {useMachine && (
+                  <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
+                    <div className="min-w-0 rounded-3xl bg-stage-2 p-6">
+                      <MachineIcon type={machine.machine} className="h-24 w-24 text-ink" />
+                      <p className="mt-3 font-semibold">{machine.label}</p>
+                      <p className="mt-1 text-sm leading-relaxed text-mute">{MACHINE_EXPLAIN[machine.machine]}</p>
+                      <p className="mt-3 text-sm text-mute">
+                        {machine.machine === "gantry"
+                          ? `Working area about ${Math.round(t.reach_cm)} × ${Math.round(t.reach_cm)} cm. Belts move X and Y; a lead screw moves Z and holds it when the power is off.`
+                          : `Two arm segments of about ${Math.round(t.reach_cm * 0.52)} cm each on 4:1 belt reductions, and a lead screw for up and down.`}
+                      </p>
+                    </div>
+                    <div className="min-w-0">
+                      <FamilyView plan={machine} hover={hover} setHover={setHover} />
+                    </div>
+                  </div>
+                )}
+              </section>
+            )}
+
             {/* joints */}
-            <section className="mt-14">
+            <section className={`mt-14 ${useMachine ? "hidden" : ""}`}>
               <div className="flex flex-wrap items-end justify-between gap-3">
                 <div>
-                  <h2 className="text-2xl font-bold tracking-tight">{plan.machines[0].type === "articulated" ? "Your arm, joint by joint" : "If you build a jointed arm instead"}</h2>
+                  <h2 className={`text-2xl font-bold tracking-tight ${machine ? "sr-only" : ""}`}>{plan.machines[0].type === "articulated" ? "Your arm, joint by joint" : "If you build a jointed arm instead"}</h2>
                   <p className="mt-1 max-w-[720px] text-mute">
                     Upper arm {Math.round(plan.geometry.upper * 100)} cm, forearm {Math.round(plan.geometry.fore * 100)} cm, gripper: {plan.gripper.name}. Point at a joint to see what it needs.
                   </p>
@@ -477,14 +519,14 @@ export default function ArmAdvisor() {
             </section>
 
             {/* parts */}
-            {shown && (
+            {listed && (
               <section className="mt-14">
                 <div className="flex items-baseline justify-between border-b border-ink pb-2">
-                  <h2 className="text-2xl font-bold tracking-tight">Parts list: {shown.label}</h2>
-                  <span className="num text-lg font-bold">{money(shown.cost_usd)}</span>
+                  <h2 className="text-2xl font-bold tracking-tight">Parts list: {listed.label}</h2>
+                  <span className="num text-lg font-bold">{money(listed.cost_usd)}</span>
                 </div>
                 <ul className="divide-y divide-line">
-                  {shown.parts.map(({ part, qty, why }) => (
+                  {listed.parts.map(({ part, qty, why }) => (
                     <li key={part.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 py-3">
                       <span className="num w-8 text-sm font-bold text-mute">{qty}×</span>
                       <span className="w-[calc(100%-3rem)] min-w-0 sm:w-auto sm:flex-1">
@@ -500,7 +542,7 @@ export default function ArmAdvisor() {
                     </li>
                   ))}
                 </ul>
-                <p className="mt-3 text-xs text-mute">Prices are approximate and include about {money(25 + 8 * shown.joints.length)} for filament, bolts, bearings and wire. Links open a retailer search.</p>
+                <p className="mt-3 text-xs text-mute">Prices are approximate and include about {money(listed.machine === "articulated" ? 25 + 8 * listed.joints.length : 20)} for filament, bolts, bearings and wire. Links open a retailer search.</p>
               </section>
             )}
 

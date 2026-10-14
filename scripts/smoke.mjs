@@ -60,7 +60,7 @@ try {
   lap(`cart (${links} retailer links)`);
 
   await click("button", "Get the build guide");
-  await page.getByText("Build it, step by step").waitFor();
+  await page.getByRole("heading", { name: "Build it, step by step" }).waitFor();
   for (let i = 0; i < 5; i++) await click("button", /Next step/);
   lap("picture guide, 5 steps");
 

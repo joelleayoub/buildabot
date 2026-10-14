@@ -4,10 +4,10 @@ import { BotMark } from "./ui";
 
 export const STEPS = ["Robot type", "Use case", "Start from", "Build", "Wiring", "Cart", "Guide"] as const;
 
-export default function Header({ step, maxStep, onStep, bagCount, onChat }: { step: number; maxStep: number; onStep: (n: number) => void; bagCount: number; onChat: () => void }) {
+export default function Header({ step, maxStep, onStep, bagCount, onChat, onRobots }: { step: number; maxStep: number; onStep: (n: number) => void; bagCount: number; onChat: () => void; onRobots: () => void }) {
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-paper/95 backdrop-blur">
-      <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-4 px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-[1440px] items-center gap-3 px-4 xl:gap-4 sm:px-6">
         <button onClick={() => onStep(0)} className="flex items-center gap-1.5 text-[1.35rem] font-bold tracking-[-0.03em]">
           <BotMark className="h-6 w-6 text-blue" />
           <span>
@@ -25,7 +25,7 @@ export default function Header({ step, maxStep, onStep, bagCount, onChat }: { st
                     disabled={!reachable}
                     onClick={() => onStep(i)}
                     aria-current={active ? "step" : undefined}
-                    className={`relative flex h-16 items-center gap-1.5 px-3 text-sm font-medium transition-colors ${active ? "text-ink" : reachable ? "text-mute hover:text-ink" : "text-faint"}`}
+                    className={`relative flex h-16 items-center gap-1.5 whitespace-nowrap px-1.5 text-sm font-medium transition-colors xl:px-3 ${active ? "text-ink" : reachable ? "text-mute hover:text-ink" : "text-faint"}`}
                   >
                     <span className={`num grid h-5 w-5 place-items-center rounded-full text-[0.7rem] ${i < step ? "bg-blue text-white" : active ? "bg-ink text-white" : "bg-stage text-mute"}`}>
                       {i < step ? "✓" : i + 1}
@@ -43,14 +43,25 @@ export default function Header({ step, maxStep, onStep, bagCount, onChat }: { st
           <span className="font-semibold text-ink">{STEPS[step]}</span>
         </p>
         <div className="flex items-center gap-2">
-          <Link href="/parts" className="hidden px-2 text-sm font-medium text-mute hover:text-ink xl:inline">
+          <Link href="/parts" className="hidden px-2 text-sm font-medium text-mute hover:text-ink 2xl:inline">
             Parts catalog
           </Link>
-          <button onClick={onChat} className="hidden h-10 items-center gap-2 rounded-full border border-line px-4 text-sm font-semibold hover:border-ink sm:flex">
+          <button onClick={onRobots} className="hidden whitespace-nowrap px-2 text-sm font-medium text-mute hover:text-ink xl:inline">
+            My robots
+          </button>
+          <button onClick={onRobots} aria-label="My robots" title="My robots" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-line xl:hidden">
+            <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth={1.8} aria-hidden>
+              <rect x="4" y="4" width="7" height="7" rx="1.5" />
+              <rect x="13" y="4" width="7" height="7" rx="1.5" />
+              <rect x="4" y="13" width="7" height="7" rx="1.5" />
+              <rect x="13" y="13" width="7" height="7" rx="1.5" />
+            </svg>
+          </button>
+          <button onClick={onChat} className="hidden h-10 items-center gap-2 whitespace-nowrap rounded-full border border-line px-4 text-sm font-semibold hover:border-ink sm:flex lg:hidden xl:flex">
             <span className="h-2 w-2 rounded-full bg-blue" />
             Ask buildabot
           </button>
-          <button onClick={onChat} aria-label="Ask buildabot" className="grid h-10 w-10 place-items-center rounded-full border border-line sm:hidden">
+          <button onClick={onChat} aria-label="Ask buildabot" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-line sm:hidden lg:grid xl:hidden">
             <BotMark className="h-5 w-5 text-blue" />
           </button>
           <button

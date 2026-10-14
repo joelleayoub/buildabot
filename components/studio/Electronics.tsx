@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import { PARTS_BY_ID } from "@/lib/catalog";
 import type { BuildItem } from "@/lib/compat/types";
 import { designCarrierBoard, pinXY, toBomCsv, toKicadNetlist, type BoardComponent, type CarrierBoard } from "@/lib/electronics/board";
-import { generateFirmware } from "@/lib/electronics/firmware";
+import { generateFirmware, generatePhoneDrive } from "@/lib/electronics/firmware";
 import { planPins } from "@/lib/electronics/pins";
 import { Button } from "./ui";
 
@@ -65,6 +65,7 @@ function NoHost({ items, what }: { items: BuildItem[]; what: string }) {
 export function PinMapPanel({ items }: { items: BuildItem[] }) {
   const plan = useMemo(() => planPins(items, PARTS_BY_ID), [items]);
   const fw = useMemo(() => generateFirmware(items, PARTS_BY_ID), [items]);
+  const phone = useMemo(() => generatePhoneDrive(items, PARTS_BY_ID), [items]);
   if (!plan) {
     return <NoHost items={items} what="Pin maps and starter code" />;
   }
@@ -116,6 +117,20 @@ export function PinMapPanel({ items }: { items: BuildItem[] }) {
           </ol>
           <div className="mt-4">
             <CodeBlock code={fw.code} filename={fw.filename} />
+          </div>
+        </div>
+      )}
+      {phone && (
+        <div>
+          <h3 className="text-lg font-bold">Drive it from your phone</h3>
+          <p className="mt-1 text-sm text-mute">Once the wheel test works: the ESP32 makes its own Wi-Fi network and shows a joystick page on your phone. No app to install.</p>
+          <ol className="mt-3 list-decimal space-y-1 pl-5 text-sm text-mute">
+            {phone.howTo.map((h) => (
+              <li key={h}>{h}</li>
+            ))}
+          </ol>
+          <div className="mt-4">
+            <CodeBlock code={phone.code} filename={phone.filename} />
           </div>
         </div>
       )}

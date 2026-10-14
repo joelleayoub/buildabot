@@ -18,6 +18,7 @@ import { TEMPLATES, type CustomPart } from "@/lib/cad/spec";
 import { downloadStl } from "./CadPanel";
 import { PcbPanel, PinMapPanel } from "./Electronics";
 import { ExtrasList, useExtras } from "./Extras";
+import { PrintableGuide } from "./PrintableGuide";
 import { extraLine, OrderPlan, partLine, ShopLinkButton, useOrderPlan } from "./OrderPlan";
 import { countryName } from "@/lib/shops";
 
@@ -128,6 +129,7 @@ function download(filename: string, text: string, type: string) {
 
 export function StepCart({
   items,
+  answers,
   report,
   shareUrl,
   shareBusy,
@@ -141,6 +143,7 @@ export function StepCart({
   onEdit,
 }: {
   items: BuildItem[];
+  answers?: Answers;
   report: BuildReport;
   shareUrl: string | null;
   shareBusy: boolean;
@@ -154,7 +157,7 @@ export function StepCart({
   onEdit: () => void;
 }) {
   const [copied, setCopied] = useState(false);
-  const extras = useExtras(items);
+  const extras = useExtras(items, answers?.owned);
   const lines = SLOT_ORDER.flatMap((s) => items.filter((i) => PARTS_BY_ID[i.part_id]?.slot === s)).map((i) => ({ item: i, part: PARTS_BY_ID[i.part_id] }));
   const orderLines = useMemo(
     () => [...lines.map((l) => partLine(l.part, l.item.quantity)), ...extras.extras.filter((e) => extras.needed.has(e.item.id) && e.item.price_usd_approx > 0).map(extraLine)],
@@ -384,7 +387,19 @@ export function StepGuide({
         >
           Detailed guide by buildabot
         </button>
+        <Button
+          variant="dark"
+          className="ml-auto"
+          onClick={() => {
+            track("guide_downloaded", { steps: sections.reduce((n, s) => n + s.steps.length, 0), format: "pdf" });
+            window.print();
+          }}
+        >
+          Save as PDF
+        </Button>
       </div>
+      <p className="mt-2 text-xs text-mute print:hidden">Save as PDF opens your print window: choose &quot;Save as PDF&quot; to keep the whole guide, with parts, shops, wiring and code, or print it.</p>
+      <PrintableGuide items={items} answers={answers} sections={sections} />
 
       {view === "step" ? (
         <div className="mt-8">
@@ -395,7 +410,7 @@ export function StepGuide({
           <div className="mt-4 flex flex-wrap gap-2 print:hidden">
             <Button onClick={() => (download("buildabot-checklist.md", guideToMarkdown(title, sections), "text/markdown"), track("guide_downloaded", { steps: sections.reduce((n, s) => n + s.steps.length, 0) }))}>Download checklist</Button>
             <Button variant="ghost" onClick={() => window.print()}>
-              Print
+              Print or save as PDF
             </Button>
           </div>
           <div className="mt-10 space-y-12">

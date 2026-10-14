@@ -1,6 +1,7 @@
 // Request/response shapes shared by the API routes and the client.
 
 import type { BuildItem, Requirements } from "../compat/types";
+import type { CustomPart } from "../cad/spec";
 import type { TranscriptMessage } from "./transcript";
 import type { ReferenceDesign } from "./tools";
 
@@ -34,6 +35,7 @@ export interface GuideResponse {
 export interface SaveProjectRequest {
   items: BuildItem[];
   requirements: Requirements | null;
+  customParts?: CustomPart[];
 }
 
 /** GET /api/projects/[id] */
@@ -43,6 +45,7 @@ export interface ProjectResponse {
   messages: TranscriptMessage[];
   guide: string | null;
   shareSlug: string | null;
+  customParts: CustomPart[];
 }
 
 /** POST /api/projects/[id]/share */

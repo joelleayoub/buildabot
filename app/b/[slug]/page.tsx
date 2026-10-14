@@ -6,6 +6,8 @@ import { Suspense } from "react";
 import { BuildIssues, BuildStats } from "@/components/BuildStats";
 import { Guide } from "@/components/Guide";
 import { defaultNeeded, extrasFor, extrasTotal } from "@/lib/extras";
+import { StlButton } from "@/components/StlButton";
+import { TEMPLATES } from "@/lib/cad/spec";
 import { RoverDiagram } from "@/components/RoverDiagram";
 import { SlotBadge } from "@/components/SlotIcon";
 import { jsonCatalog } from "@/lib/advisor/agent";
@@ -13,7 +15,11 @@ import { projectStore } from "@/lib/advisor/store";
 import { checkBuild } from "@/lib/compat/checkBuild";
 import { AUTONOMY_LABELS, SLOT_LABELS, SLOT_ORDER } from "@/lib/slots";
 
-export const metadata: Metadata = { title: "Shared build | BuildABot" };
+export const metadata: Metadata = {
+  title: "A robot build | buildabot",
+  description: "A robot build made with buildabot: the parts, prices and shops, the wiring and the steps.",
+  openGraph: { title: "A robot build on buildabot", description: "The parts, prices and shops, the wiring and the steps." },
+};
 
 async function SharedBuild({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -66,6 +72,23 @@ async function SharedBuild({ params }: { params: Promise<{ slug: string }> }) {
             )),
         )}
       </ul>
+
+      {shared.customParts.length > 0 && (
+        <>
+          <h2 className="mt-10 text-lg font-semibold">3D-printed parts</h2>
+          <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+            {shared.customParts.map((cp) => (
+              <li key={cp.id} className="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 p-3 text-sm dark:border-zinc-800">
+                <span>
+                  <span className="font-medium">{cp.design.name}</span>
+                  <span className="block text-xs text-zinc-500">{TEMPLATES[cp.design.template].name}, printed in PLA</span>
+                </span>
+                <StlButton design={cp.design} />
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
 
       <h2 className="mt-10 text-lg font-semibold">Also needed to build it</h2>
       <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">Screws, wire, a charger and tools. About ${extrasTotal(extras, defaultNeeded(extras))} if you have none of them.</p>

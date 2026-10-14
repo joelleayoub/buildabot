@@ -1,5 +1,6 @@
 import { jsonCatalog } from "@/lib/advisor/agent";
-import type { ApiError, ProjectResponse } from "@/lib/advisor/api";
+import { sameItems, type ApiError, type ProjectResponse } from "@/lib/advisor/api";
+import { parseCustomParts } from "@/lib/cad/spec";
 import { projectStore } from "@/lib/advisor/store";
 import { transcript } from "@/lib/advisor/transcript";
 import { isProjectId, parseItems, parseRequirements } from "@/lib/advisor/validate";
@@ -21,6 +22,7 @@ export async function GET(_req: Request, { params }: Ctx) {
       messages: transcript(p.history),
       guide: p.guide,
       shareSlug: p.shareSlug,
+      customParts: p.customParts ?? [],
     } satisfies ProjectResponse);
   } catch (err) {
     console.error("load project failed", err);
@@ -38,7 +40,11 @@ export async function PUT(req: Request, { params }: Ctx) {
   try {
     const byId = Object.fromEntries((await jsonCatalog.parts()).map((p) => [p.id, p]));
     const report = checkBuild(items, byId, requirements ?? undefined);
-    await projectStore().save(id, { items, requirements, report, guide: null });
+    const store = projectStore();
+    // Keep the AI guide when only the designed parts changed.
+    const prev = await store.load(id);
+    const guide = prev && sameItems(prev.items, items) ? undefined : null;
+    await store.save(id, { items, requirements, report, guide, customParts: parseCustomParts(body?.customParts) });
     return Response.json({ saved: true });
   } catch (err) {
     console.error("save project failed", err);

@@ -1,7 +1,7 @@
 "use client";
 // Steps 1–3: robot type, use case questions, starting point.
 import { PARTS_BY_ID, DESIGNS, money } from "@/lib/catalog";
-import { ENVIRONMENTS, EXPERIENCE, ROBOT_TYPES, USE_CASES, type Answers, type RobotTypeId, findUseCase } from "@/lib/flow";
+import { ENVIRONMENTS, EXPERIENCE, OWNED_TOOLS, ROBOT_TYPES, USE_CASES, type Answers, type RobotTypeId, findUseCase } from "@/lib/flow";
 import type { Recommendation } from "@/lib/recommend";
 import Link from "next/link";
 import PartArt from "@/components/PartArt";
@@ -129,7 +129,7 @@ export function StepUseCase({ answers, setAnswers, onNext, onBack }: { answers: 
   return (
     <section className="mx-auto max-w-[1200px] px-4 py-10 sm:px-6 sm:py-14">
       <StepHeading kicker="Your rover" title="What should it do?">
-        Three quick questions. Each answer changes which parts I pick.
+        A few quick questions. Each answer changes which parts I pick.
       </StepHeading>
 
       <fieldset className="mt-10">
@@ -159,6 +159,28 @@ export function StepUseCase({ answers, setAnswers, onNext, onBack }: { answers: 
           {EXPERIENCE.map((e) => (
             <Choice key={e.id} active={answers.experience === e.id} onClick={() => setAnswers({ ...answers, experience: e.id })} title={e.name} body={e.blurb} />
           ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-10">
+        <legend className="text-lg font-bold">4. Tools you already have</legend>
+        <p className="mt-1 text-sm text-mute">Pick any you own, so the cost of what you still need is right. Skip it if you have none.</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {OWNED_TOOLS.map((t) => {
+            const on = answers.owned?.includes(t.id) ?? false;
+            return (
+              <button
+                key={t.id}
+                type="button"
+                aria-pressed={on}
+                onClick={() => setAnswers({ ...answers, owned: on ? (answers.owned ?? []).filter((x) => x !== t.id) : [...(answers.owned ?? []), t.id] })}
+                className={`h-10 rounded-full border px-4 text-sm font-medium transition ${on ? "border-ink bg-ink text-white" : "border-line hover:border-ink"}`}
+              >
+                {on ? "✓ " : ""}
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </fieldset>
 

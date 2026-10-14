@@ -440,5 +440,86 @@
   "mass_g": 80,
   "description": "Big red button that cuts motor power. Wire it into the power supply output, not the controller.",
   "buy_url": "https://www.aliexpress.com/wholesale?SearchText=emergency%20stop%20button%2022mm"
+ },
+ {
+  "id": "stepper-nema17-belt4",
+  "kind": "motor",
+  "family": "stepper",
+  "machines": [
+   "scara"
+  ],
+  "name": "NEMA 17 stepper with a 4:1 belt reduction",
+  "brand": "StepperOnline / generic",
+  "price_usd_approx": 14,
+  "mass_g": 400,
+  "description": "A standard NEMA 17 driving a big pulley through a GT2 belt: four times the torque, almost no play. How most printed SCARA arms move their joints.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=NEMA%2017%20stepper%20motor%2045Ncm",
+  "holding_nm": 0.45,
+  "ratio": 4,
+  "gear_cap_nm": null,
+  "volts": 12,
+  "backlash_deg": 0.1,
+  "max_dps": 450
+ },
+ {
+  "id": "mech-vslot-frame",
+  "kind": "mechanical",
+  "name": "V-slot 2020 extrusion frame kit with wheels and plates",
+  "brand": "OpenBuilds-style / generic",
+  "price_usd_approx": 70,
+  "mass_g": 2500,
+  "description": "The rails and carriages of the gantry, like a 3D printer frame. Cut to your working area.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=V-slot%202020%20extrusion%20kit%20gantry%20plate%20wheels"
+ },
+ {
+  "id": "mech-gt2-kit",
+  "kind": "mechanical",
+  "name": "GT2 belt, 20-tooth pulleys and idlers",
+  "brand": "Generic",
+  "price_usd_approx": 12,
+  "mass_g": 150,
+  "description": "Turns each motor's spin into straight-line movement.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=GT2%20belt%2020%20tooth%20pulley%20idler%20kit"
+ },
+ {
+  "id": "mech-belt-reduction",
+  "kind": "mechanical",
+  "name": "GT2 pulley set for a 4:1 belt reduction",
+  "brand": "Generic",
+  "price_usd_approx": 15,
+  "mass_g": 120,
+  "description": "A 20-tooth and an 80-tooth pulley with a closed belt for each joint.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=GT2%2080%20teeth%20pulley%2020%20teeth%20closed%20loop%20belt"
+ },
+ {
+  "id": "mech-t8-leadscrew",
+  "kind": "mechanical",
+  "name": "T8 lead screw (8 mm lead), nut and coupler",
+  "brand": "Generic",
+  "price_usd_approx": 12,
+  "mass_g": 200,
+  "description": "Moves the tool up and down and holds it there when the power is off.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=T8%20lead%20screw%208mm%20lead%20nut%20coupler"
+ },
+ {
+  "id": "mech-thrust-bearings",
+  "kind": "mechanical",
+  "name": "Thrust bearings for the arm joints",
+  "brand": "Generic",
+  "price_usd_approx": 10,
+  "mass_g": 100,
+  "description": "Carry the weight of the arm so the motors only have to turn it.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=thrust%20bearing%208mm%2010mm"
+ },
+ {
+  "id": "ctrl-cnc-shield",
+  "kind": "electronics",
+  "family": "stepper",
+  "name": "Arduino Uno with CNC Shield and A4988 drivers",
+  "brand": "Generic",
+  "price_usd_approx": 20,
+  "mass_g": 60,
+  "description": "Drives up to four steppers. Runs GRBL, so drawing and laser software can send it paths.",
+  "buy_url": "https://www.aliexpress.com/wholesale?SearchText=Arduino%20Uno%20CNC%20shield%20V3%20A4988%20kit"
  }
 ]

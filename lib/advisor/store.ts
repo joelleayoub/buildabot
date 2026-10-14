@@ -7,6 +7,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { randomBytes } from "node:crypto";
 import type { BuildItem, BuildReport, Requirements } from "../compat/types";
+import type { CustomPart } from "../cad/spec";
 
 export interface ProjectState {
   history: Anthropic.MessageParam[];
@@ -14,12 +15,14 @@ export interface ProjectState {
   items: BuildItem[];
   guide: string | null;
   shareSlug: string | null;
+  customParts: CustomPart[];
 }
 
 export interface SharedBuild {
   items: BuildItem[];
   requirements: Requirements | null;
   guide: string | null;
+  customParts: CustomPart[];
 }
 
 export interface CartPatch {
@@ -28,6 +31,8 @@ export interface CartPatch {
   report: BuildReport;
   /** `undefined` leaves the stored guide alone; `null` clears it. */
   guide?: string | null;
+  /** 3D-printable parts the user designed. `undefined` leaves them alone. */
+  customParts?: CustomPart[];
 }
 
 export interface ProjectStore {
@@ -49,7 +54,7 @@ function supabaseStore(db: SupabaseClient): ProjectStore {
   };
   return {
     async load(id) {
-      const { data: p, error } = await db.from("projects").select("requirements, build, guide_md, share_slug").eq("id", id).maybeSingle();
+      const { data: p, error } = await db.from("projects").select("requirements, build, guide_md, share_slug, custom_parts").eq("id", id).maybeSingle();
       fail("load project", error);
       if (!p) return null;
       const { data: rows, error: e2 } = await db.from("messages").select("role, content").eq("project_id", id).order("id");
@@ -60,6 +65,7 @@ function supabaseStore(db: SupabaseClient): ProjectStore {
         items: p.build ?? [],
         guide: p.guide_md,
         shareSlug: p.share_slug,
+        customParts: p.custom_parts ?? [],
       };
     },
     async save(id, patch, newMessages = []) {
@@ -70,6 +76,7 @@ function supabaseStore(db: SupabaseClient): ProjectStore {
         last_report: patch.report,
         updated_at: new Date().toISOString(),
         ...(patch.guide !== undefined ? { guide_md: patch.guide } : {}),
+        ...(patch.customParts !== undefined ? { custom_parts: patch.customParts } : {}),
       };
       fail("save project", (await db.from("projects").upsert(row)).error);
       if (newMessages.length) {
@@ -87,10 +94,10 @@ function supabaseStore(db: SupabaseClient): ProjectStore {
       return slug;
     },
     async loadShared(slug) {
-      const { data: p, error } = await db.from("projects").select("requirements, build, guide_md").eq("share_slug", slug).maybeSingle();
+      const { data: p, error } = await db.from("projects").select("requirements, build, guide_md, custom_parts").eq("share_slug", slug).maybeSingle();
       fail("load shared project", error);
       if (!p) return null;
-      return { items: p.build ?? [], requirements: hasRequirements(p.requirements) ? p.requirements : null, guide: p.guide_md };
+      return { items: p.build ?? [], requirements: hasRequirements(p.requirements) ? p.requirements : null, guide: p.guide_md, customParts: p.custom_parts ?? [] };
     },
   };
 }
@@ -107,13 +114,14 @@ function memoryStore(): ProjectStore {
     },
     async save(id, patch, newMessages = []) {
       if (!projects.has(id) && projects.size >= MAX_PROJECTS) projects.delete(projects.keys().next().value as string);
-      const p = projects.get(id) ?? { history: [], requirements: null, items: [], guide: null, shareSlug: null };
+      const p = projects.get(id) ?? { history: [], requirements: null, items: [], guide: null, shareSlug: null, customParts: [] };
       projects.set(id, {
         ...p,
         history: [...p.history, ...newMessages],
         requirements: patch.requirements,
         items: patch.items,
         guide: patch.guide !== undefined ? patch.guide : p.guide,
+        customParts: patch.customParts !== undefined ? patch.customParts : (p.customParts ?? []),
       });
     },
     async share(id) {
@@ -123,7 +131,7 @@ function memoryStore(): ProjectStore {
     },
     async loadShared(slug) {
       const p = [...projects.values()].find((x) => x.shareSlug === slug);
-      return p ? { items: p.items, requirements: p.requirements, guide: p.guide } : null;
+      return p ? { items: p.items, requirements: p.requirements, guide: p.guide, customParts: p.customParts ?? [] } : null;
     },
   };
 }

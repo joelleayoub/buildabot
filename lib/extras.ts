@@ -106,7 +106,7 @@ export function extrasFor(items: BuildItem[], byId: Record<string, Part>): Extra
 }
 
 /** What starts ticked as "need to buy": everything except optional extras and things most people own. */
-export const defaultNeeded = (extras: Extra[]) => new Set(extras.filter((e) => !e.optional && !e.likelyOwned).map((e) => e.item.id));
+export const defaultNeeded = (extras: Extra[], owned: string[] = []) => new Set(extras.filter((e) => !e.optional && !e.likelyOwned && !owned.includes(e.item.id)).map((e) => e.item.id));
 
 export function extrasTotal(extras: Extra[], needed: Set<string>, kinds?: ExtraKind[]): number {
   return extras.filter((e) => needed.has(e.item.id) && (!kinds || kinds.includes(e.item.kind))).reduce((s, e) => s + e.item.price_usd_approx * e.qty, 0);

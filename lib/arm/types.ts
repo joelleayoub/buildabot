@@ -54,6 +54,8 @@ export interface ArmPart {
   grips?: ObjectKind[];
   // electronics
   per_joint?: "nema17" | "nema23" | "all";
+  /** Only offered for these machine types (a belt-reduced joint suits a SCARA, not a jointed arm). */
+  machines?: MachineType[];
 }
 
 export interface ArmDesign {
@@ -85,7 +87,7 @@ export interface JointSize {
   name: string;
   /** What this joint does, for beginners. */
   role: string;
-  axis: "yaw" | "pitch" | "roll";
+  axis: "yaw" | "pitch" | "roll" | "linear";
   /** Torque the joint needs, including the margin for speeding up and friction (N·m). */
   required_nm: number;
   motor: ArmPart;
@@ -99,6 +101,8 @@ export interface JointSize {
 export interface FamilyPlan {
   family: Family;
   label: string;
+  /** Which machine this sizes. */
+  machine: MachineType;
   joints: JointSize[];
   /** Estimated repeatability at the tool tip, mm. */
   tip_error_mm: number;
@@ -131,6 +135,8 @@ export interface ArmPlan {
   /** Every family that was sized, best first. `chosen` is the first feasible one. */
   families: FamilyPlan[];
   chosen: FamilyPlan | null;
+  /** Axis-by-axis sizing for the best-fit machine when it's a SCARA or a gantry. */
+  machinePlan: FamilyPlan | null;
   verdict: Verdict;
   verdict_reasons: string[];
   designs: ArmDesign[];

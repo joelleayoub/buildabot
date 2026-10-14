@@ -121,3 +121,28 @@ body {
   scrollbar-width: thin;
   scrollbar-color: var(--line) transparent;
 }
+
+/* Printable build guide (components/studio/PrintableGuide.tsx): only it prints, as A4 pages. */
+@media screen {
+  #print-root {
+    display: none;
+  }
+}
+@media print {
+  body > *:not(#print-root) {
+    display: none !important;
+  }
+  #print-root {
+    display: block;
+  }
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+  .print-doc .page-break {
+    break-before: page;
+  }
+  .print-doc .avoid-break {
+    break-inside: avoid;
+  }
+}
